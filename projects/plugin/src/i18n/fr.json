@@ -1,0 +1,48 @@
+{
+  "pages": {
+    "settings": {
+      "provider": {
+        "header": "Providers",
+        "item": "Configurer les providers"
+      },
+      "cloud-account": {
+        "header": "Cloud Accounts (beta)",
+        "item": "Configure Cloud Accounts"
+      }
+    },
+    "providers": {
+      "title": "Providers",
+      "list": {
+        "header": "Configuration",
+        "providersUrl": "Providers URL:",
+        "noUrl": "aucune"
+      },
+      "automaticSearch": {
+        "header": "Automatic search",
+        "item": "Enable automatic search"
+      },
+      "enabledSource": {
+        "header": "Source activée",
+        "howItWorks": "Pour des raisons de performance, il est recommandé de n'activer que la meilleure qualité que vous préférez. Si moins de 20 sources sont trouvées pour cette qualité, alors la qualité inférieure sera utilisée jusqu'à ce que la qualité la plus basse soit atteinte."
+      },
+      "providerList": {
+        "header": "Providers"
+      }
+    },
+    "cloud-account": {
+      "list": {
+        "title": "Cloud Accounts",
+        "logout": "Se déconnecter",
+        "login": "Se connecter",
+        "noPremimumizeAccount": "Pas de compte Premiumize ? Cliquez ici",
+        "noRealDebridAccount": "Pas de compte Real Debrid ? Cliquez ici",
+        "premiumize": {
+          "preferTranscoded": "Prefer transcoded files"
+        }
+      }
+    }
+  },
+  "settings": {
+    "title": "Mon Plugin - Paramètres"
+  }
+}

@@ -1,0 +1,52 @@
+<ion-header class="search-list">
+  <ion-toolbar>
+    <ion-title>{{ 'pages.cloud-account.list.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="modalCtrl.dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        Premiumize.me
+      </ion-label>
+      <ion-spinner *ngIf="isLoadingPremiumize"></ion-spinner>
+    </ion-list-header>
+    <ion-item *ngIf="isPremiumizeLogged">
+      <ion-label>{{ 'pages.cloud-account.list.premiumize.preferTranscoded' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)"></ion-toggle>
+    </ion-item>
+    <ion-item *ngIf="isPremiumizeLogged" button (click)="logoutPremiumize()">
+      <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="!isPremiumizeLogged" button (click)="loginPremiumize()">
+      <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="!isPremiumizeLogged" button (click)="openPremiumize()">
+      <ion-label>{{ 'pages.cloud-account.list.noPremimumizeAccount' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        Real Debrid
+      </ion-label>
+      <ion-spinner *ngIf="isLoadingRealDebrid"></ion-spinner>
+    </ion-list-header>
+    <ion-item *ngIf="isRealDebridLogged" button (click)="logoutRealDebrid()">
+      <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="!isRealDebridLogged" button (click)="loginRealDebrid()">
+      <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="!isRealDebridLogged" button (click)="openRealDebrid()">
+      <ion-label>{{ 'pages.cloud-account.list.noRealDebridAccount' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

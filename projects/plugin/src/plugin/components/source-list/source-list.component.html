@@ -1,0 +1,154 @@
+<div *ngIf="initialized && providers.length === 0">
+  <ion-card-content>{{ 'source-list.noProviderSet' | translate }}</ion-card-content>
+</div>
+
+<div *ngIf="initialized">
+  <ion-card *ngIf="!retrievingTorrents && totalTorrents === 0">
+    <ion-card-content>{{ 'shared.noResult' | translate }}</ion-card-content>
+  </ion-card>
+
+  <div *ngIf="sourceResult">
+    <ion-list *ngIf="retrievingTorrents && sourceResult.step === 'providers'" lines="none">
+      <ion-item *ngFor="let data of loadingByProvider">
+        <ion-label>
+          {{ data.displayName }}
+          <ion-spinner name="dots" *ngIf="data.isLoading"></ion-spinner>
+        </ion-label>
+
+        <p slot="end">
+          <ion-badge *ngIf="!data.isLoading" [color]="data.torrents.length > 0 ? 'success' : 'primary'">{{
+            data.torrents.length
+          }}</ion-badge>
+
+          <ion-button *ngIf="data.isLoading" color="danger" (click)="stopLoadingProvider(data)">
+            <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+          </ion-button>
+        </p>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="retrievingTorrents && sourceResult.step === 'debrid'" lines="none">
+      <ion-item>
+        <ion-label>
+          Retrieving cached source
+        </ion-label>
+
+        <ion-spinner name="crescent"></ion-spinner>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div *ngIf="!retrievingTorrents && totalTorrents > 0">
+    <ion-segment *ngIf="hasCloudAccount" [(ngModel)]="segment" scrollable>
+      <ion-segment-button value="cached">
+        <ion-label>
+          {{ 'sources.segments.cached' | translate }}
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="all">
+        <ion-label>
+          {{ 'sources.segments.all' | translate }}
+        </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [ngSwitch]="segment">
+      <ion-list *ngSwitchCase="'cached'">
+        <ion-card *ngIf="totalCachedTorrents === 0">
+          <ion-card-content>
+            {{ 'shared.noResult' | translate }}
+          </ion-card-content>
+        </ion-card>
+        <div *ngIf="cached2160p.length > 0">
+          <ion-list-header>
+            <ion-label> 2160p/4k ({{ cached2160p.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of cached2160p"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+
+        <div *ngIf="cached1080p.length > 0">
+          <ion-list-header>
+            <ion-label> 1080p ({{ cached1080p.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of cached1080p"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+
+        <div *ngIf="cached720p.length > 0">
+          <ion-list-header>
+            <ion-label> 720p ({{ cached720p.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of cached720p"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+
+        <div *ngIf="cachedOther.length > 0">
+          <ion-list-header>
+            <ion-label> Other ({{ cachedOther.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of cachedOther"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'all'">
+        <div *ngIf="torrents2160p.length > 0">
+          <ion-list-header>
+            <ion-label> 2160p/4k ({{ torrents2160p.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of torrents2160p"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+
+        <div *ngIf="torrents1080p.length > 0">
+          <ion-list-header>
+            <ion-label> 1080p ({{ torrents1080p.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of torrents1080p"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+
+        <div *ngIf="torrents720p.length > 0">
+          <ion-list-header>
+            <ion-label> 720p ({{ torrents720p.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of torrents720p"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+
+        <div *ngIf="torrentsOther.length > 0">
+          <ion-list-header>
+            <ion-label> Other ({{ torrentsOther.length }})</ion-label>
+          </ion-list-header>
+          <wk-source-item
+            *ngFor="let torrent of torrentsOther"
+            [kodiOpenMedia]="kodiOpenMedia"
+            [torrent]="torrent"
+          ></wk-source-item>
+        </div>
+      </ion-list>
+    </div>
+  </div>
+</div>

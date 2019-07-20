@@ -1,0 +1,20 @@
+<ion-toolbar>
+  <ion-searchbar
+    (ionChange)="onSearch($event)"
+    debounce="1000"
+    [placeholder]="'modals.search-manual.search' | translate"
+    mode="ios"
+  ></ion-searchbar>
+</ion-toolbar>
+<ion-toolbar>
+  <ion-item>
+    <ion-label>{{ 'modals.search-manual.category' | translate }}</ion-label>
+    <ion-select [(ngModel)]="category" [cancelText]="'alerts.cancelButton' | translate">
+      <ion-select-option value="movies">{{ 'modals.search-manual.categoryOptions.movies' | translate }}</ion-select-option>
+      <ion-select-option value="tv">{{ 'modals.search-manual.categoryOptions.tv' | translate }}</ion-select-option>
+      <ion-select-option value="anime">{{ 'modals.search-manual.categoryOptions.anime' | translate }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-toolbar>
+
+<wk-source-list *ngIf="searchInput.length > 0" [filter]="{ query: searchInput, category: category }"></wk-source-list>
