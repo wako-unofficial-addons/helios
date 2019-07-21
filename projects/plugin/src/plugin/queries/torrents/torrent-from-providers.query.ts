@@ -61,11 +61,7 @@ export class TorrentFromProvidersQuery {
       }
     });
 
-    if (
-      !match &&
-      filename.toLowerCase().match('s' + codes.season2) &&
-      filename.toLowerCase().match('e' + codes.episode2)
-    ) {
+    if (!match && filename.toLowerCase().match('s' + codes.season2) && filename.toLowerCase().match('e' + codes.episode2)) {
       match = true;
     }
 
@@ -100,10 +96,7 @@ export class TorrentFromProvidersQuery {
               Object.keys(rd).forEach(key => {
                 const file = rd[key];
 
-                if (
-                  file.filename.match(/.mkv|.mp4/) &&
-                  this.matchEpisodeCode(torrentsQueryFilter.episodeCode, file.filename)
-                ) {
+                if (file.filename.match(/.mkv|.mp4/) && this.matchEpisodeCode(torrentsQueryFilter.episodeCode, file.filename)) {
                   groupWithFile.push(index);
                 }
               });
@@ -253,11 +246,7 @@ export class TorrentFromProvidersQuery {
 
                           const title = this.cleanTitle(names.join('/'));
 
-                          if (
-                            !file &&
-                            title.indexOf(filterTitle) !== -1 &&
-                            title.indexOf(torrentsQueryFilter.year.toString()) !== -1
-                          ) {
+                          if (!file && title.indexOf(filterTitle) !== -1 && title.indexOf(torrentsQueryFilter.year.toString()) !== -1) {
                             file = _file;
                           }
                         });
@@ -276,7 +265,36 @@ export class TorrentFromProvidersQuery {
                           });
                         }
                       } else {
-                        if (files.length > 0) {
+                        if (torrentsQueryFilter.query && files.length > 0) {
+                          // Sort by name
+                          files.sort((stream1, stream2) => {
+                            if (stream1.path === stream2.path) {
+                              return 0;
+                            }
+
+                            return stream1.path > stream2.path ? 1 : -1;
+                          });
+
+                          const cachedDataLinks: CachedLink[] = [];
+
+                          files.forEach(file => {
+                            const names = file.path.split('/');
+                            if (names.length > 1) {
+                              names.shift();
+                            }
+
+                            const title = names.join('/');
+
+                            cachedDataLinks.push({
+                              filename: title,
+                              is_streamable: !!file.stream_link,
+                              url: file.link,
+                              transcoded_url: file.stream_link
+                            });
+                          });
+
+                          return of(cachedDataLinks);
+                        } else if (files.length > 0) {
                           file = files.shift();
                         }
                       }
@@ -531,11 +549,7 @@ export class TorrentFromProvidersQuery {
         subscription: null
       };
 
-      sourceByProvider[provider.name].subscription = TorrentFromProviderQuery.getData(
-        provider,
-        torrentsQueryFilter,
-        excludeQualities
-      )
+      sourceByProvider[provider.name].subscription = TorrentFromProviderQuery.getData(provider, torrentsQueryFilter, excludeQualities)
         .pipe(
           map(torrents => {
             return torrents.filter(torrent => {
