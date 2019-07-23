@@ -67,7 +67,7 @@ export class ProvidersComponent implements OnInit {
         inputs: [
           {
             name: 'url',
-            type: 'text',
+            type: 'url',
             placeholder: 'URL',
             value: this.providersUrl ? this.providersUrl : ''
           }
