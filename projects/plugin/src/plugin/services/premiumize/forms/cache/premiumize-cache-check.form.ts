@@ -15,6 +15,10 @@ export class PremiumizeCacheCheckForm {
       hashGroup.push(h);
     });
 
+    if (hashGroup.length > 0) {
+      allGroups.push(hashGroup);
+    }
+
     const obss = [];
 
     allGroups.forEach(hashes => {
