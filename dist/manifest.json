@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a multi-source addon for wako with the added ability to install custom provider. Helios allows users to connect to multiple online/offline services at once for their viewing with a single click.",
@@ -15,6 +15,7 @@
     "fr": "/i18n/fr.json"
   },
   "changeLogs": {
+    "1.0.5": "Fix issue with too many links which return no result",
     "1.0.4": "Fix missing translations",
     "1.0.3": "Fix Elementum issue that doesn't open the stream.<br>Fix missing translations",
     "1.0.2": "Use URL input type",
