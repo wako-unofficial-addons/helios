@@ -5,13 +5,12 @@ import { IonicModule } from '@ionic/angular';
 import { PluginService } from './services/plugin.service';
 import { MovieButtonComponent } from './movie-button/movie-button.component';
 
-import { BrowserService, PluginBaseModule } from '@wako-app/mobile-sdk';
+import { BrowserService, PluginBaseModule, ToastService } from '@wako-app/mobile-sdk';
 import { SettingsComponent } from './settings/settings.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { EpisodeButtonComponent } from './episode-button/episode-button.component';
 import { FormsModule } from '@angular/forms';
 import { TorrentService } from './services/torrent.service';
-import { ToastService } from './services/toast.service';
 import { ProviderService } from './services/provider.service';
 import { ProvidersComponent } from './settings/providers/providers.component';
 import { CloudAccountService } from './services/cloud-account.service';

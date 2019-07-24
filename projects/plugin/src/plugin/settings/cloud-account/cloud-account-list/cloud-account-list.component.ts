@@ -3,13 +3,12 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { CloudAccountService, REAL_DEBRID_CLIENT_ID } from '../../../services/cloud-account.service';
-import { ToastService } from '../../../services/toast.service';
+import { BrowserService, ToastService } from '@wako-app/mobile-sdk';
 import { ProviderService } from '../../../services/provider.service';
 import { PremiumizeApiService } from '../../../services/premiumize/services/premiumize-api.service';
 import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
 import { PremiumizeAccountInfoForm } from '../../../services/premiumize/forms/account/premiumize-account-info.form';
 import { RealDebridOauthCodeForm } from '../../../services/real-debrid/forms/oauth/real-debrid-oauth-code.form';
-import { BrowserService } from '@wako-app/mobile-sdk';
 import { ClipboardService } from 'ngx-clipboard';
 
 @Component({

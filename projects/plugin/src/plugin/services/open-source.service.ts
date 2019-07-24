@@ -2,17 +2,17 @@ import { Injectable } from '@angular/core';
 import { ActionSheetController, LoadingController, Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CloudAccountService } from './cloud-account.service';
-import { ToastService } from './toast.service';
-import { TorrentService } from './torrent.service';
-import { catchError, finalize, map, switchMap } from 'rxjs/operators';
-import { EMPTY, NEVER, of } from 'rxjs';
 import {
   BrowserService,
   KodiApiService,
   KodiAppService,
   KodiGetAddonDetailsForm,
-  OpenMedia
+  OpenMedia,
+  ToastService
 } from '@wako-app/mobile-sdk';
+import { TorrentService } from './torrent.service';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
+import { EMPTY, NEVER, of } from 'rxjs';
 import { CachedLink, Torrent } from '../entities/torrent';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { PremiumizeTransferCreateForm } from './premiumize/forms/transfer/premiumize-transfer-create.form';
@@ -391,7 +391,7 @@ export class OpenSourceService {
             episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
           };
         }
-        KodiAppService.excuteAddon('plugin.video.elementum', this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
+        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
           () => {
             const toastMessage = 'toasts.startOpening';
             const toastParams = {
@@ -418,7 +418,7 @@ export class OpenSourceService {
   }
 
   private getElementumUrlBySourceUrl(sourceUrl: string) {
-    const url = `/play`;
+    const url = `plugin://plugin.video.elementum/play`;
 
     const urlSearchParams = new URLSearchParams();
 

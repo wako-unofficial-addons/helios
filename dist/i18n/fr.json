@@ -1,13 +1,15 @@
 {
   "pages": {
     "settings": {
-      "provider": {
-        "header": "Providers",
-        "item": "Configurer les providers"
-      },
-      "cloud-account": {
-        "header": "Cloud Accounts (beta)",
-        "item": "Configure Cloud Accounts"
+      "list": {
+        "provider": {
+          "header": "Providers",
+          "item": "Configurer les providers"
+        },
+        "cloud-account": {
+          "header": "Cloud Accounts (beta)",
+          "item": "Configure Cloud Accounts"
+        }
       }
     },
     "providers": {
@@ -16,10 +18,6 @@
         "header": "Configuration",
         "providersUrl": "Providers URL:",
         "noUrl": "aucune"
-      },
-      "automaticSearch": {
-        "header": "Automatic search",
-        "item": "Enable automatic search"
       },
       "enabledSource": {
         "header": "Source activée",
@@ -42,7 +40,89 @@
       }
     }
   },
-  "settings": {
-    "title": "Mon Plugin - Paramètres"
+  "toasts": {
+    "kodi": {
+      "hostUnreachable": "Aïe, votre hôte kodi {{hostName}} est injoignable",
+      "noHost": "Aucun hôte définit pour kodi"
+    },
+    "startOpening": "Ouverture {{title}} on {{hostName}}",
+    "providersUpdated": "Les Providers ont été mis à jour",
+    "providers": {
+      "providerUrlAdded": "Providers ajoutés",
+      "providerUrlFailedToAdd": "Impossible d'ajouter les Providers. Vérifier l'URL"
+    },
+    "cloud-account": {
+      "needToAddProviders": "vous avez besoin d'ajouter des providers pour profiter des services debrid."
+    },
+    "premiumize": {
+      "invalidApiKey": "La clé API n'est pas valide"
+    },
+    "real-debrid": {
+      "failedToLogin": "Impossible de se connecter"
+    },
+    "copyToClipboard": "{{element}} a été copié dans votre presse-papiers",
+    "open-source": {
+      "cannotRetrieveUrl": "Cette source est illisible, on ne peut pas récupérer son URL",
+      "addedToPM": "La source a été ajoutée à votre compte PM",
+      "failedToAddToPM": "Impossible d'ajouter la source à votre compte PM :{{error}}",
+      "addedToRD": "La source a été ajoutée à votre compte RD",
+      "failedToAddToRD": "Impossible d'ajouter la source à votre compte RD: {{error}}",
+      "sourceNotCached": "Impossible de récupérer l'URL de la vidéo"
+    }
+  },
+  "actionSheets": {
+    "open-source": {
+      "openTitle": "Que faire ?",
+      "options": {
+        "kodi": "Ouvrir avec Kodi",
+        "browser": "Ouvrir dans votre navigateur",
+        "copy": "Copier l'URL",
+        "vlc": "Ouvert avec VLC",
+        "downloadVlc": "Télécharger avec VLC",
+        "openWithElementum": "Ouvrir avec l'add-on Elementum",
+        "addToPM": "Ajouter à PM",
+        "addToRD": "Ajouter à RD"
+      },
+      "selectLink": {
+        "openTitle": "Cette source a plusieurs liens, lequel voulez-vous ouvrir ?"
+      }
+    }
+  },
+  "alerts": {
+    "cancelButton": "Annuler",
+    "cloud-account": {
+      "real-debrid": {
+        "authHeader": "Real Debrid Autentification",
+        "enterCode": "Ouvrir le lient: https://real-debrid.com/device<br><br>Entrer ce code :",
+        "openUrlButton": "Open le lient"
+      }
+    }
+  },
+  "modals": {
+    "search-manual": {
+      "search": "Rechercher une source",
+      "category": "Categorie",
+      "categoryOptions": {
+        "movies": "Film",
+        "tv": "Série",
+        "anime": "Anime"
+      }
+    }
+  },
+  "source-list": {
+    "noProviderSet": "Aucun Provider n'est défini"
+  },
+  "open-button": {
+    "text": "Recherche de sources"
+  },
+  "sources": {
+    "segments": {
+      "cached": "Cached only",
+      "all": "Tous"
+    }
+  },
+  "shared": {
+    "noResult": "Aucun résultat",
+    "cancel": "Annuler"
   }
 }

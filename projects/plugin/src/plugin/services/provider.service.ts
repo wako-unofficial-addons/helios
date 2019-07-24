@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { from, of } from 'rxjs';
-import { ToastService } from './toast.service';
+import { ToastService, WakoHttpRequestService } from '@wako-app/mobile-sdk';
 import { Provider, ProviderList } from '../entities/provider';
 import { countryCodeToEmoji } from './tools';
-import { WakoHttpRequestService } from '@wako-app/mobile-sdk';
 import { SourceQuality } from '../entities/source-quality';
 import { HeliosCacheService } from './provider-cache.service';
 

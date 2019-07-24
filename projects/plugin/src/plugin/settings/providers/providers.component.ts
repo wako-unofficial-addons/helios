@@ -5,7 +5,7 @@ import { finalize } from 'rxjs/operators';
 import { ProviderList } from '../../entities/provider';
 import { SourceQuality } from '../../entities/source-quality';
 import { ProviderService } from '../../services/provider.service';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '@wako-app/mobile-sdk';
 
 interface ProdviderArray {
   key: string;
@@ -33,7 +33,8 @@ export class ProvidersComponent implements OnInit {
     private translateService: TranslateService,
     private toastService: ToastService,
     public modalCtrl: ModalController
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.providerService.getSourceQualitySettings().then(sourceQuality => (this.sourceQuality = sourceQuality));

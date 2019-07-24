@@ -19,10 +19,6 @@
         "providersUrl": "Providers URL:",
         "noUrl": "Click here to add one"
       },
-      "automaticSearch": {
-        "header": "Automatic search",
-        "item": "Enable automatic search"
-      },
       "enabledSource": {
         "header": "Enabled Source",
         "howItWorks": "For performance reason, it's recommended to only enable the best quality you prefer. If less than 20 sources are found for this quality, then the lower quality will be used until the lowest quality is reach"
@@ -51,10 +47,6 @@
     },
     "startOpening": "Opening {{title}} on {{hostName}}",
     "providersUpdated": "Providers have been updated",
-    "kodi-open-button": {
-      "plugingUrlAdded": "Plugins added",
-      "plugingUrlFailedToAdd": "Failed to add plugins, please check the given URL"
-    },
     "providers": {
       "providerUrlAdded": "Providers added",
       "providerUrlFailedToAdd": "Failed to add Providers, please check the given URL"
@@ -79,13 +71,6 @@
     }
   },
   "actionSheets": {
-    "open-button": {
-      "openTitle": "Open...",
-      "options": {
-        "cached": "the source URL",
-        "kodi": "with a kodi add-on"
-      }
-    },
     "open-source": {
       "openTitle": "What to do?",
       "options": {
@@ -104,7 +89,6 @@
     }
   },
   "alerts": {
-    "okButton": "Ok",
     "cancelButton": "Cancel",
     "cloud-account": {
       "real-debrid": {
@@ -125,7 +109,7 @@
       }
     }
   },
-  "source-list" : {
+  "source-list": {
     "noProviderSet": "No providers set"
   },
   "open-button": {
@@ -136,9 +120,6 @@
       "cached": "Cached only",
       "all": "All"
     }
-  },
-  "movie-option": {
-    "search-source-manually": "Search source manually"
   },
   "shared": {
     "noResult": "No result",
