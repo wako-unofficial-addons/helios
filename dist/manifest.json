@@ -12,8 +12,7 @@
   "entryPoint": "/plugin.js",
   "languages": {
     "en": "/i18n/en.json",
-    "fr": "/i18n/fr.json",
-    "pl": "/i18n/pl.json"
+    "fr": "/i18n/fr.json"
   },
   "changeLogs": {
     "1.0.3": "Fix Elementum issue that doesn't open the stream.<br>Fix missing translations",
