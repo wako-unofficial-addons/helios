@@ -392,7 +392,7 @@ export class OpenSourceService {
             episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
           };
         }
-        KodiAppService.openPlugin(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
+        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
           () => {
             const toastMessage = 'toasts.startOpening';
             const toastParams = {
