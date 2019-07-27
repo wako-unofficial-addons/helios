@@ -245,7 +245,8 @@ export class OpenSourceService {
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
+            return of(true);
+           // this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -391,7 +392,7 @@ export class OpenSourceService {
             episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
           };
         }
-        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
+        KodiAppService.openPlugin(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
           () => {
             const toastMessage = 'toasts.startOpening';
             const toastParams = {

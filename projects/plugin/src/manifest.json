@@ -1,8 +1,8 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "1.0.6",
-  "id": "plugin.helios",
-  "name": "Helios",
+  "version": "1.0.7",
+  "id": "plugin.helios-beta",
+  "name": "Helios Beta",
   "description": "Helios is a multi-source addon for wako with the added ability to install custom provider. Helios allows users to connect to multiple online/offline services at once for their viewing with a single click.",
   "author": "Davy",
   "actions": [
@@ -15,6 +15,7 @@
     "fr": "/i18n/fr.json"
   },
   "changeLogs": {
+    "1.0.7": "Fixes dialog that open 5 times on Kodi 18.3",
     "1.0.6": "Fix issue with too many links which return no result",
     "1.0.4": "Fix missing translations",
     "1.0.3": "Fix Elementum issue that doesn't open the stream.<br>Fix missing translations",
