@@ -68,7 +68,8 @@
       "addedToRD": "Source has been added to you RD account",
       "failedToAddToRD": "Failed to add the source to your RD account: {{error}}",
       "sourceNotCached": "Failed to retrieved the video URL"
-    }
+    },
+    "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi"
   },
   "actionSheets": {
     "open-source": {

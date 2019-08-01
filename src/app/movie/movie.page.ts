@@ -7,7 +7,7 @@ import { Movie, PluginLoaderService } from '@wako-app/mobile-sdk';
   styleUrls: ['movie.page.scss']
 })
 export class MoviePage implements OnInit {
-  @ViewChild('movieRef', {read: ViewContainerRef})
+  @ViewChild('movieRef', {read: ViewContainerRef, static: true})
   movieVCRef: ViewContainerRef;
 
   constructor(private pluginLoader: PluginLoaderService) {

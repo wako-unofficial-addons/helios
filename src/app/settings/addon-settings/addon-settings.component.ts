@@ -8,10 +8,10 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./addon-settings.component.scss']
 })
 export class AddonSettingsComponent implements OnInit {
-  @ViewChild('settingsRef', { read: ViewContainerRef })
+  @ViewChild('settingsRef', { read: ViewContainerRef, static: true })
   settingsRef: ViewContainerRef;
 
-  constructor(private pluginLoader: PluginLoaderService, public modalCtrl: ModalController) {}
+  constructor(private pluginLoader: PluginLoaderService) {}
 
   ngOnInit() {
     this.pluginLoader.createComponent('settings', this.settingsRef, null);

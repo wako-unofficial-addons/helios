@@ -7,10 +7,11 @@ import { Episode, PluginLoaderService, Show } from '@wako-app/mobile-sdk';
   styleUrls: ['episode.page.scss']
 })
 export class EpisodePage implements OnInit {
-  @ViewChild('episodeRef', { read: ViewContainerRef })
+  @ViewChild('episodeRef', {read: ViewContainerRef, static: true})
   episodeVCRef: ViewContainerRef;
 
-  constructor(private pluginLoader: PluginLoaderService) {}
+  constructor(private pluginLoader: PluginLoaderService) {
+  }
 
   ngOnInit() {
     this.loadPlugin();

@@ -9,12 +9,14 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['settings.page.scss']
 })
 export class SettingsPage implements OnInit {
-  @ViewChild('settingsRef', { read: ViewContainerRef })
+  @ViewChild('settingsRef', {read: ViewContainerRef, static: true})
   settingsRef: ViewContainerRef;
 
-  constructor(private pluginLoader: PluginLoaderService, private modalCtrl: ModalController) {}
+  constructor(private pluginLoader: PluginLoaderService, private modalCtrl: ModalController) {
+  }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   async addonSettings() {
     const modal = await this.modalCtrl.create({
