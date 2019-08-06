@@ -5,7 +5,7 @@ import { throwError } from 'rxjs';
 import { RealDebridTorrentsSelectFilesForm } from '../forms/torrents/real-debrid-torrents-select-files.form';
 
 export class RealDebridCacheUrlCommand {
-  static handdle(url: string) {
+  static handle(url: string) {
     return RealDebridTorrentsAddMagnetForm.submit(url).pipe(
       switchMap(t => {
         return RealDebridTorrentsInfoForm.submit(t.id);
@@ -15,17 +15,7 @@ export class RealDebridCacheUrlCommand {
           return throwError('Cannot add this source');
         }
 
-        let size = 0;
-        let fileId = 'all';
-
-        info.files.forEach(file => {
-          if (file.bytes > size) {
-            fileId = file.id.toString();
-            size = file.bytes;
-          }
-        });
-
-        return RealDebridTorrentsSelectFilesForm.submit(info.id, fileId).pipe(
+        return RealDebridTorrentsSelectFilesForm.submit(info.id, 'all').pipe(
           retry(2),
           switchMap(() => {
             return RealDebridTorrentsInfoForm.submit(info.id);

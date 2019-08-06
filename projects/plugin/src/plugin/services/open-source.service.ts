@@ -339,7 +339,7 @@ export class OpenSourceService {
 
     loader.present();
 
-    RealDebridCacheUrlCommand.handdle(url)
+    RealDebridCacheUrlCommand.handle(url)
       .pipe(
         catchError(err => {
           this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err});

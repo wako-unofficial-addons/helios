@@ -17,7 +17,8 @@ export const REAL_DEBRID_CLIENT_ID = 'X245A4XAIBGVM';
 export class CloudAccountService {
   hasAtLeastOneAccount$ = new ReplaySubject<boolean>(1);
 
-  private realDebridInterval;
+  private realDebridRefreshTokenInterval;
+  private realDebridAuthInterval;
 
   constructor(private storage: Storage, private platform: Platform) {
     this.hasAtLeastOneAccount();
@@ -102,8 +103,10 @@ export class CloudAccountService {
             ).pipe(mapTo(token));
           }),
           catchError(err => {
-            this.deleteRealDebridSettings();
-            RealDebridApiService.setToken(null);
+            if (err instanceof WakoHttpError && err.status === 403) {
+              this.deleteRealDebridSettings();
+              RealDebridApiService.setToken(null);
+            }
 
             return throwError(err);
           })
@@ -113,11 +116,11 @@ export class CloudAccountService {
   }
 
   private initializeRefreshTokenRealDebridInterval(settings: RealDebridSettings) {
-    if (this.realDebridInterval) {
-      clearInterval(this.realDebridInterval);
+    if (this.realDebridRefreshTokenInterval) {
+      clearInterval(this.realDebridRefreshTokenInterval);
     }
 
-    this.realDebridInterval = setInterval(() => {
+    this.realDebridRefreshTokenInterval = setInterval(() => {
       this.realDebridRefreshToken().subscribe();
     }, (settings.expires_in - 700) * 1000);
   }
@@ -143,13 +146,17 @@ export class CloudAccountService {
     });
   }
 
+  stopRealDebridAuthInterval() {
+    clearInterval(this.realDebridAuthInterval);
+  }
+
   authRealDebrid(clientId: string, data: RealDebridOauthCodeDto) {
     return new Observable(observer => {
       const endTime = Date.now() + data.expires_in * 1000;
 
-      const timer = setInterval(() => {
+      this.realDebridAuthInterval = setInterval(() => {
         if (Date.now() > endTime) {
-          clearInterval(timer);
+          this.stopRealDebridAuthInterval();
           observer.error('Cannot get code');
           return;
         }
@@ -164,13 +171,9 @@ export class CloudAccountService {
             })
           )
           .subscribe(credentials => {
-            clearInterval(timer);
+            this.stopRealDebridAuthInterval();
 
-            RealDebridOauthTokenForm.submit(
-              credentials.client_id,
-              credentials.client_secret,
-              data.device_code
-            ).subscribe(token => {
+            RealDebridOauthTokenForm.submit(credentials.client_id, credentials.client_secret, data.device_code).subscribe(token => {
               this.setRealDebridSettings({
                 client_id: credentials.client_id,
                 client_secret: credentials.client_secret,

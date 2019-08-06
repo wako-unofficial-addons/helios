@@ -130,10 +130,9 @@ export class CloudAccountListComponent implements OnInit {
     });
   }
 
-  logoutRealDebrid() {
-    this.cloudAccountService.deleteRealDebridSettings().then(() => {
-      this.ngOnInit();
-    });
+  async logoutRealDebrid() {
+    await this.cloudAccountService.deleteRealDebridSettings();
+    this.ngOnInit();
   }
 
   loginRealDebrid() {
@@ -190,6 +189,10 @@ export class CloudAccountListComponent implements OnInit {
               this.toastService.simpleMessage('toasts.real-debrid.failedToLogin');
             }
           });
+
+          alert.onDidDismiss().then(() => {
+            this.cloudAccountService.stopRealDebridAuthInterval();
+          })
         });
     });
   }
