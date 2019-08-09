@@ -39,7 +39,7 @@
   </div>
 
   <div *ngIf="!retrievingTorrents && totalTorrents > 0">
-    <ion-segment *ngIf="hasCloudAccount" [(ngModel)]="segment" scrollable>
+    <ion-segment *ngIf="hasCloudAccount" (ionChange)="segment = $event.detail.value" [value]="segment" scrollable>
       <ion-segment-button value="cached">
         <ion-label>
           {{ 'sources.segments.cached' | translate }}
