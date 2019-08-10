@@ -78,6 +78,7 @@
         "kodi": "Open with Kodi",
         "browser": "Open in your browser",
         "copy": "Copy URL",
+        "share": "Share URL",
         "vlc": "Open with VLC",
         "downloadVlc": "Download with VLC",
         "openWithElementum": "Open with Elementum Kodi add-on",

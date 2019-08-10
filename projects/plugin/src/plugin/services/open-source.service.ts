@@ -161,7 +161,14 @@ export class OpenSourceService {
           this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'Video URL'});
         }
       });
-
+      if (window['plugins'] && window['plugins'].socialsharing) {
+        buttons.push({
+          text: this.translateService.instant('actionSheets.open-source.options.share'),
+          handler: () => {
+            this.share(torrent.title, preferTranscodedFiles && cachedTranscodedUrl ? cachedTranscodedUrl : cachedUrl)
+          }
+        });
+      }
       buttons.push({
         text: this.translateService.instant('actionSheets.open-source.options.vlc'),
         handler: () => {
@@ -245,7 +252,7 @@ export class OpenSourceService {
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
+            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -425,5 +432,19 @@ export class OpenSourceService {
     urlSearchParams.set('uri', sourceUrl);
 
     return url + '?' + urlSearchParams.toString();
+  }
+
+  share(
+    torrentTitle: string,
+    cachedUrl: string
+  ) {
+    window['plugins'].socialsharing
+      .shareWithOptions({
+        message: torrentTitle, // fi. for email
+        subject: torrentTitle, // fi. for email
+        url: cachedUrl,
+        chooserTitle: torrentTitle
+      })
+
   }
 }
