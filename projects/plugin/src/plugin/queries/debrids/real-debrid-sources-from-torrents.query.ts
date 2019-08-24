@@ -7,6 +7,7 @@ import { isEpisodeCodeMatchesFileName } from '../../services/tools';
 import { RealDebridApiService } from '../../services/real-debrid/services/real-debrid-api.service';
 import { TorrentSource } from '../../entities/torrent-source';
 import { DebridSource, DebridSourceFile } from '../../entities/debrid-source';
+import { RealDebridUnrestrictLinkDto } from '../../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
 
 export class RealDebridSourcesFromTorrentsQuery {
   private static hasRealDebrid() {
@@ -98,33 +99,28 @@ export class RealDebridSourcesFromTorrentsQuery {
           ).pipe(
             map(links => {
               let debridSourceFile: DebridSourceFile = null;
+              let foundLink: RealDebridUnrestrictLinkDto = null;
 
               if (sourceQuery instanceof SourceEpisodeQuery) {
                 links.forEach(link => {
-                  if (!debridSourceFile && isEpisodeCodeMatchesFileName(sourceQuery.episodeCode, link.filename)) {
-                    debridSourceFile = new DebridSourceFile(
-                      torrent.title,
-                      link.download,
-                      link.filename,
-                      !!link.streamable,
-                      !!link.streamable ? link.download : null
-                    );
+                  if (!foundLink && isEpisodeCodeMatchesFileName(sourceQuery.episodeCode, link.filename)) {
+                    foundLink = link;
                   }
                 });
               } else if (sourceQuery instanceof SourceQuery) {
-                const link = links.shift();
+                foundLink = links.shift();
+              }
+
+              if (foundLink) {
 
                 debridSourceFile = new DebridSourceFile(
                   torrent.title,
-                  link.download,
-                  link.filename,
-                  !!link.streamable,
-                  !!link.streamable ? link.download : null
+                  foundLink.download,
+                  foundLink.filename,
+                  !!foundLink.streamable,
+                  null,
+                  `https://real-debrid.com/streaming-${foundLink.id}`
                 );
-              }
-
-              if (debridSourceFile) {
-
                 return debridSourceFile;
               }
 
@@ -136,7 +132,8 @@ export class RealDebridSourcesFromTorrentsQuery {
                   link.download,
                   link.filename,
                   !!link.streamable,
-                  !!link.streamable ? link.download : null
+                  null,
+                  `https://real-debrid.com/streaming-${link.id}`
                 );
                 debridSourceFiles.push(debridSourceFile);
               });

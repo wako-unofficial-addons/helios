@@ -204,7 +204,11 @@ export class OpenSourceService {
       switch (action) {
         case 'open-browser':
           buttonOptions.handler = () => {
-            this.openBrowser(debridSourceFile.url, debridSourceFile.transcodedUrl, title, posterUrl);
+            if (debridSourceFile.servicePlayerUrl) { // They have their own player
+              this.openBrowserUrl(debridSourceFile.servicePlayerUrl);
+            } else {
+              this.openBrowser(debridSourceFile.url, debridSourceFile.transcodedUrl, title, posterUrl);
+            }
           };
           break;
         case 'copy-url':
@@ -318,10 +322,15 @@ export class OpenSourceService {
 
     const wakoUrl = `https://wako.app/player?${decodeURIComponent(urlSearchParams.toString())}`;
 
+    this.openBrowserUrl(wakoUrl);
+
+  }
+
+  private openBrowserUrl(url: string) {
     if (this.platform.is('ios')) {
-      this.browserService.open(wakoUrl, true);
+      this.browserService.open(url, true);
     } else {
-      window.open(wakoUrl, '_system', 'location=yes');
+      window.open(url, '_system', 'location=yes');
     }
   }
 

@@ -2,8 +2,14 @@ import { SourceQuality } from './source-quality';
 import { Observable } from 'rxjs';
 
 export class DebridSourceFile {
-  constructor(public title: string, public url: string, public filename: string, public isStreamable: boolean, public transcodedUrl: string) {
-  }
+  constructor(
+    public title: string,
+    public url: string,
+    public filename: string,
+    public isStreamable: boolean,
+    public transcodedUrl: string,
+    public servicePlayerUrl: string = null
+  ) {}
 }
 
 export class DebridSource {
@@ -19,6 +25,5 @@ export class DebridSource {
     public isPackage: boolean,
     public serviceName: 'PM' | 'RD',
     public torrentProviderName: string
-  ) {
-  }
+  ) {}
 }
