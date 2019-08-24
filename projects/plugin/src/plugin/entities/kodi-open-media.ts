@@ -4,5 +4,4 @@ export interface KodiOpenMedia {
   movie?: Movie;
   show?: Show;
   episode?: Episode;
-  category?: 'movie' | 'episode';
 }

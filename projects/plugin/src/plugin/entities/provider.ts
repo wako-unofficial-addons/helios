@@ -1,3 +1,22 @@
+export interface ProviderQueryInfo {
+  query: string;
+  keywords: string | string[];
+}
+
+export interface ProviderQueryReplacement {
+  title: string;
+  titleFirstLetter: string;
+  imdbId: string;
+  token: string;
+  episodeCode: string;
+  seasonCode: string;
+  year: string;
+  season: string;
+  episode: string;
+  query: string;
+  [key: string]: string;
+}
+
 export interface Provider {
   name: string;
   enabled: boolean;
@@ -8,6 +27,7 @@ export interface Provider {
   response_type: 'json' | 'text';
   time_to_wait_between_each_request_ms?: number; // In list mode we're gonna do request on all visible media
   time_to_wait_on_too_many_request_ms?: number;
+  timeout_ms?: number
   token?: {
     // If we need to store a token for each request
     query: string;
@@ -18,22 +38,10 @@ export interface Provider {
   };
   title_replacement?: { [key: string]: string }; // Object off char to replace by
   separator?: string; // words separator
-  movie?: {
-    query: string;
-    keywords: string | string[];
-  };
-  episode?: {
-    query: string;
-    keywords: string | string[];
-  };
-  season?: {
-    query: string;
-    keywords: string | string[];
-  };
-  anime?: {
-    query: string;
-    keywords: string | string[];
-  };
+  movie?: ProviderQueryInfo;
+  episode?: ProviderQueryInfo;
+  season?: ProviderQueryInfo;
+  anime?: ProviderQueryInfo;
   json_format?: {
     results: string;
     sub_results?: string;

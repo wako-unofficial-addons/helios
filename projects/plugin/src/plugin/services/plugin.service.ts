@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { PluginBaseService } from '@wako-app/mobile-sdk';
 import { TranslateService } from '@ngx-translate/core';
 import { logData } from './tools';
-import { CloudAccountService } from './cloud-account.service';
+import { DebridAccountService } from './debrid-account.service';
+import { ProviderService } from './provider.service';
 
 @Injectable()
 export class PluginService extends PluginBaseService {
-  constructor(protected translate: TranslateService, private cloudService: CloudAccountService) {
+  constructor(protected translate: TranslateService, private cloudService: DebridAccountService, private providerService: ProviderService) {
     super();
   }
 
@@ -14,6 +15,8 @@ export class PluginService extends PluginBaseService {
     logData('plugin initialized');
 
     this.cloudService.initialize();
+
+    this.providerService.setDefaultProvidersIfEmpty();
   }
 
   afterInstall(): any {

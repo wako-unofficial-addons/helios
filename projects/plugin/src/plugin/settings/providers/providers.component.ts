@@ -3,9 +3,10 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 import { ProviderList } from '../../entities/provider';
-import { SourceQuality } from '../../entities/source-quality';
 import { ProviderService } from '../../services/provider.service';
 import { ToastService } from '@wako-app/mobile-sdk';
+import { SettingsService } from '../../services/settings.service';
+import { Settings } from '../../entities/settings';
 
 interface ProdviderArray {
   key: string;
@@ -23,7 +24,7 @@ export class ProvidersComponent implements OnInit {
 
   providerList: ProviderList = null;
 
-  sourceQuality: SourceQuality;
+  settings: Settings;
 
   isLoading = false;
 
@@ -32,31 +33,30 @@ export class ProvidersComponent implements OnInit {
     private alertController: AlertController,
     private translateService: TranslateService,
     private toastService: ToastService,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    private settingsService: SettingsService
   ) {
   }
 
-  ngOnInit() {
-    this.providerService.getSourceQualitySettings().then(sourceQuality => (this.sourceQuality = sourceQuality));
+  async ngOnInit() {
+    this.settings = await this.settingsService.get();
 
-    this.providerService.getProviderUrl().then(url => {
-      this.providersUrl = url;
-    });
+    this.providersUrl = await this.providerService.getProviderUrl();
 
-    this.providerService.getProviders().then(providers => {
-      this.providerList = providers;
-      this.providerArray = [];
+    this.providerList = await this.providerService.getProviders();
 
-      if (!providers) {
-        return;
-      }
-      Object.keys(providers).forEach(key => {
-        const provider = providers[key];
-        this.providerArray.push({
-          key: key,
-          enabled: provider.enabled,
-          name: ProviderService.getNameWithEmojiFlag(provider)
-        });
+    this.providerArray = [];
+
+    if (!this.providerList) {
+      return;
+    }
+
+    Object.keys(this.providerList).forEach(key => {
+      const provider = this.providerList[key];
+      this.providerArray.push({
+        key: key,
+        enabled: provider.enabled,
+        name: ProviderService.getNameWithEmojiFlag(provider)
       });
     });
   }
@@ -103,8 +103,8 @@ export class ProvidersComponent implements OnInit {
       });
   }
 
-  toggleSourceQuality(quality: SourceQuality) {
-    this.providerService.setSourceQualitySettings(quality);
+  toggleSourceQuality() {
+    this.settingsService.set(this.settings);
   }
 
   toggleProvider(key: string, enabled: boolean) {

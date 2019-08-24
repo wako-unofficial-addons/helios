@@ -1,5 +1,7 @@
 import { wakoLog } from '@wako-app/mobile-sdk';
-import { of } from 'rxjs';
+import { DebridSource } from '../entities/debrid-source';
+import { TorrentSource } from '../entities/torrent-source';
+import { SourceByQuality } from '../entities/source-by-quality';
 
 
 export function logData(...data: any) {
@@ -21,27 +23,6 @@ export function countryCodeToEmoji(country: string) {
   }
 
   return String.fromCodePoint(f + offset) + String.fromCodePoint(s + offset);
-}
-
-export function copyToClipboard(buttonSelector: string, textToCopy: string) {
-  // document.querySelector(buttonSelector).setAttribute('data-clipboard-text', textToCopy);
-  //
-  // const clipboard = new ClipboardJS(buttonSelector);
-  // clipboard.on('success', function(e) {
-  //   console.log('Action:', e.action);
-  //   console.log('Text:', e.text);
-  //   console.log('Trigger:', e.trigger);
-  //
-  //   e.clearSelection();
-  // });
-  //
-  // clipboard.on('error', function(e) {
-  //   console.log('Action:', e.action);
-  //   console.log('Trigger:', e.trigger);
-  // });
-  // return fromEvent(clipboard, 'success');
-
-  return of(true);
 }
 
 export function cleanFilename(filename: string) {
@@ -155,4 +136,164 @@ export function torrentCacheStrings(episodeCode: string) {
     season2,
     episode2
   };
+}
+
+
+export function cleanTitleCustom(title: string, replacements: { [key: string]: string }) {
+  Object.keys(replacements).forEach(charToReplace => {
+    title = title.split(charToReplace).join(replacements[charToReplace]);
+  });
+
+  return title.toLowerCase();
+}
+
+export function cleanTitle(title: string) {
+  title = title.toLowerCase();
+
+  const apostrophe_replacement = 's';
+
+  title = title.replace(`\\'s`, apostrophe_replacement);
+  title = title.replace(`'s`, apostrophe_replacement);
+  title = title.replace('&#039;s', apostrophe_replacement);
+  title = title.replace(' 039 s', apostrophe_replacement);
+
+  title = title.replace(/\:|\\|\/|\,|\!|\?|\(|\)|\'|\"|\\|\[|\]|\-|\_|\./g, ' ');
+  title = title.replace(/\s+/g, ' ');
+  title = title.replace('  ', ' ');
+  title = title.replace(/\&/g, 'and');
+
+  return title.trim();
+}
+
+
+export function sortTorrentsBySize(sources: DebridSource[] | TorrentSource[]) {
+  sources.sort((torrent1, torrent2) => {
+    const score1 = torrent1.size;
+    const score2 = torrent2.size;
+
+    if (score1 === score2) {
+      return 0;
+    }
+
+    return score1 > score2 ? -1 : 1;
+  });
+}
+
+export function sortTorrentsBySeeds(torrents: TorrentSource[]) {
+  torrents.sort((torrent1, torrent2) => {
+    const score1 = torrent1.seeds;
+    const score2 = torrent2.seeds;
+
+    if (score1 === score2) {
+      return 0;
+    }
+
+    return score1 > score2 ? -1 : 1;
+  });
+}
+
+function getScoreTorrent(torrent: TorrentSource) {
+  const downloadDiff = torrent.seeds - torrent.peers;
+
+  let score = 0;
+
+  if (downloadDiff >= 100) {
+    score += 150;
+  } else if (downloadDiff >= 20) {
+    score += downloadDiff;
+  } else if (downloadDiff < 20) {
+    score -= 100;
+  }
+
+  if (torrent.seeds < 20) {
+    score -= 100;
+  }
+
+  score += torrent.size / 1024 / 1024 / 1024;
+
+  return score;
+}
+
+export function sortTorrentsBalanced(torrents: TorrentSource[]) {
+  torrents.sort((torrent1, torrent2) => {
+    const score1 = getScoreTorrent(torrent1);
+    const score2 = getScoreTorrent(torrent2);
+
+    if (score1 === score2) {
+      return 0;
+    }
+
+    return score1 > score2 ? -1 : 1;
+  });
+}
+
+export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: string) {
+  const codes = torrentCacheStrings(episodeCode);
+  const ext = '.' + filename.split('.').pop();
+  const commonVideoExtensions = getSupportedMedia('video').split('|');
+
+  if (!commonVideoExtensions.includes(ext)) {
+    return false;
+  }
+
+  let match = false;
+  codes.episodeStrings.forEach(str => {
+    if (!match && cleanTitle(filename).indexOf(str) !== -1) {
+      match = true;
+    }
+  });
+
+  if (!match && filename.toLowerCase().match('s' + codes.season2) && filename.toLowerCase().match('e' + codes.episode2)) {
+    match = true;
+  }
+
+  return match;
+}
+
+
+export function getSourcesByQuality<T>(sources: DebridSource[] | TorrentSource[], sortFunction: (source) => void) {
+  const sourceByQuality: SourceByQuality<T> = {
+    sources2160p: [],
+    sources1080p: [],
+    sources720p: [],
+    sourcesOther: []
+  };
+
+  sources.forEach(source => {
+    if (source.quality === '2160p') {
+      sourceByQuality.sources2160p.push(source);
+    } else if (source.quality === '1080p') {
+      sourceByQuality.sources1080p.push(source);
+    } else if (source.quality === '720p') {
+      sourceByQuality.sources720p.push(source);
+    } else {
+      sourceByQuality.sourcesOther.push(source);
+    }
+  });
+
+  sortFunction(sourceByQuality.sources2160p);
+  sortFunction(sourceByQuality.sources1080p);
+  sortFunction(sourceByQuality.sources720p);
+  sortFunction(sourceByQuality.sourcesOther);
+
+  return sourceByQuality;
+}
+
+export function getPreviousFileNamePlayed(traktId: number) {
+  return 'helios_previousplayed_' + traktId;
+}
+
+export function getScoreMatchingName(sourceFileName: string, targetFileName: string) {
+
+  let sfs = sourceFileName.toLowerCase().split('/').pop().trim().replace(/\./g, ' ').split(' ');
+  let tfs = targetFileName.toLowerCase().trim().replace(/\./g, ' ').split(' ');
+
+  let score = 0;
+  sfs.forEach(word => {
+    if (tfs.includes(word)) {
+      score++;
+    }
+  });
+
+  return score;
 }

@@ -14,7 +14,7 @@ import { WakoHttpError } from '@wako-app/mobile-sdk';
 export const REAL_DEBRID_CLIENT_ID = 'X245A4XAIBGVM';
 
 @Injectable()
-export class CloudAccountService {
+export class DebridAccountService {
   hasAtLeastOneAccount$ = new ReplaySubject<boolean>(1);
 
   private realDebridRefreshTokenInterval;

@@ -10,19 +10,23 @@ import { SettingsComponent } from './settings/settings.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { EpisodeButtonComponent } from './episode-button/episode-button.component';
 import { FormsModule } from '@angular/forms';
-import { TorrentService } from './services/torrent.service';
+import { TorrentSourceService } from './services/sources/torrent-source.service';
 import { ProviderService } from './services/provider.service';
 import { ProvidersComponent } from './settings/providers/providers.component';
-import { CloudAccountService } from './services/cloud-account.service';
+import { DebridAccountService } from './services/debrid-account.service';
 import { CloudAccountListComponent } from './settings/cloud-account/cloud-account-list/cloud-account-list.component';
 import { OpenButtonComponent } from './open-button/open-button.component';
 import { PluginDetailComponent } from './plugin-detail/plugin-detail.component';
 import { SourceListComponent } from './components/source-list/source-list.component';
 import { OpenSourceService } from './services/open-source.service';
 import { SearchSourceComponent } from './components/search-source/search-source.component';
-import { SourceItemComponent } from './components/source-item/source-item.component';
+import { TorrentSourceItemComponent } from './components/torrent-source-item/torrent-source-item.component';
 import { FileSizePipe } from './services/file-size.pipe';
 import { ClipboardModule } from 'ngx-clipboard';
+import { SourceService } from './services/sources/source.service';
+import { SettingsService } from './services/settings.service';
+import { DebridSourceService } from './services/sources/debrid-source.service';
+import { DebridSourceItemComponent } from './components/debrid-source-item/debrid-source-item.component';
 
 
 const components = [
@@ -35,7 +39,8 @@ const components = [
   PluginDetailComponent,
   SourceListComponent,
   SearchSourceComponent,
-  SourceItemComponent,
+  TorrentSourceItemComponent,
+  DebridSourceItemComponent,
 ];
 
 @NgModule({
@@ -44,13 +49,16 @@ const components = [
   entryComponents: [...components],
   providers: [
     PluginService,
-    TorrentService,
+    TorrentSourceService,
     ToastService,
     BrowserService,
     ProviderService,
-    CloudAccountService,
+    DebridAccountService,
     OpenSourceService,
-    FileSizePipe
+    FileSizePipe,
+    SourceService,
+    SettingsService,
+    DebridSourceService
   ] // Add your services here. Do not use provideIn: 'root' in your services
 })
 export class PluginModule extends PluginBaseModule {

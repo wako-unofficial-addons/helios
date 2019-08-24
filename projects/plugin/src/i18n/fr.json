@@ -6,9 +6,13 @@
           "header": "Providers",
           "item": "Configurer les providers"
         },
-        "cloud-account": {
+        "debrid-account": {
           "header": "Cloud Accounts (beta)",
           "item": "Configure Cloud Accounts"
+        },
+        "play-button": {
+          "header": "Play Button",
+          "item": "Play button action par défaut"
         }
       }
     },
@@ -27,15 +31,19 @@
         "header": "Providers"
       }
     },
-    "cloud-account": {
+    "debrid-account": {
       "list": {
         "title": "Cloud Accounts",
         "logout": "Se déconnecter",
         "login": "Se connecter",
-        "noPremimumizeAccount": "Pas de compte Premiumize ? Cliquez ici",
-        "noRealDebridAccount": "Pas de compte Real Debrid ? Cliquez ici",
+        "realDebrid": {
+          "explain": "RealDebrid est un outils de téléchargement sans restriction qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
+          "noAccount": "Pas de compte Real Debrid ? Cliquez ici"
+        },
         "premiumize": {
-          "preferTranscoded": "Prefer transcoded files"
+          "explain": "Premiumize.me est un outils de téléchargement sans restriction (et plus encore) qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
+          "preferTranscoded": "Prefer transcoded files",
+          "noAccount": "Pas de compte Premiumize ? Cliquez ici"
         }
       }
     }
@@ -51,7 +59,7 @@
       "providerUrlAdded": "Providers ajoutés",
       "providerUrlFailedToAdd": "Impossible d'ajouter les Providers. Vérifier l'URL"
     },
-    "cloud-account": {
+    "debrid-account": {
       "needToAddProviders": "vous avez besoin d'ajouter des providers pour profiter des services debrid."
     },
     "premiumize": {
@@ -75,15 +83,15 @@
     "open-source": {
       "openTitle": "Que faire ?",
       "options": {
-        "kodi": "Ouvrir avec Kodi",
-        "browser": "Ouvrir dans votre navigateur",
-        "copy": "Copier l'URL",
-        "share": "Partager l'URL",
-        "vlc": "Ouvert avec VLC",
-        "downloadVlc": "Télécharger avec VLC",
-        "openWithElementum": "Ouvrir avec l'add-on Elementum",
-        "addToPM": "Ajouter à PM",
-        "addToRD": "Ajouter à RD"
+        "open-kodi": "Play avec Kodi",
+        "open-browser": "Play dans votre navigateur",
+        "copy-url": "Copier l'URL",
+        "share-url": "Partager l'URL",
+        "open-vlc": "Play avec VLC",
+        "download-vlc": "Télécharger avec VLC",
+        "open-elementum": "Play avec Kodi via Elementum",
+        "addToPM": "Ajouter à Premiumize.me",
+        "addToRD": "Ajouter à RealDebrid"
       },
       "selectLink": {
         "openTitle": "Cette source a plusieurs liens, lequel voulez-vous ouvrir ?"
@@ -92,7 +100,7 @@
   },
   "alerts": {
     "cancelButton": "Annuler",
-    "cloud-account": {
+    "debrid-account": {
       "real-debrid": {
         "authHeader": "Real Debrid Autentification",
         "enterCode": "Ouvrir le lient: https://real-debrid.com/device<br><br>Entrer ce code :",
@@ -115,7 +123,7 @@
     "noProviderSet": "Aucun Provider n'est défini"
   },
   "open-button": {
-    "text": "Recherche de sources"
+    "more": "More"
   },
   "sources": {
     "segments": {

@@ -5,7 +5,6 @@ import { from, of } from 'rxjs';
 import { ToastService, WakoHttpRequestService } from '@wako-app/mobile-sdk';
 import { Provider, ProviderList } from '../entities/provider';
 import { countryCodeToEmoji } from './tools';
-import { SourceQuality } from '../entities/source-quality';
 import { HeliosCacheService } from './provider-cache.service';
 
 const CACHE_KEY_PROVIDERS = 'CACHE_KEY_PROVIDERS';
@@ -22,9 +21,15 @@ export class ProviderService {
     }, 10000);
   }
 
+  async setDefaultProvidersIfEmpty() {
+    const providerUrl = await this.getProviderUrl();
+    if (!providerUrl) {
+      await this.setProviderUrl('https://bit.ly/wako-providers');
+    }
+  }
+
   private providerStorageKey = 'provider_key';
   private providerUrlStorageKey = 'provider_url';
-  private sourceQualityStorageKey = 'sq_settings_key';
 
   static getNameWithEmojiFlag(provider: Provider) {
     const emojiLanguages = [];
@@ -155,16 +160,4 @@ export class ProviderService {
     });
   }
 
-  getSourceQualitySettings(): Promise<SourceQuality> {
-    return this.storage.get(this.sourceQualityStorageKey).then(sourceQualitySettings => {
-      if (!sourceQualitySettings) {
-        sourceQualitySettings = new SourceQuality();
-      }
-      return sourceQualitySettings;
-    });
-  }
-
-  setSourceQualitySettings(sourceQualitySettings: SourceQuality) {
-    return this.storage.set(this.sourceQualityStorageKey, sourceQualitySettings);
-  }
 }

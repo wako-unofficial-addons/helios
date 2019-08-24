@@ -1,7 +1,7 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "1.1.1",
-  "id": "plugin.helios",
+  "version": "2.0.0",
+  "id": "plugin.helios-beta",
   "name": "Helios",
   "description": "Helios is a multi-source addon for wako with the added ability to install custom provider. Helios allows users to connect to multiple online/offline services at once for their viewing with a single click.",
   "author": "Davy",
@@ -15,10 +15,11 @@
     "fr": "/i18n/fr.json"
   },
   "changeLogs": {
+    "2.0.0": "- Lot of refactoring to simplify new updates.<br/>- Big play button which will find the best source for you<br/>- If you pick a source manually for an episode, Helios will try to find the equivalent source for the next episode (base on file name)<br/>- The cup icon is the best source found By Helios. The one the Big play button will use<br>- Reorder/Toggle actions <br/>- Add stats tab",
     "1.1.1": "Fix settings that couldn't be saved",
     "1.1.0": "Add share option",
     "1.0.9": "Fix: Tab could not change in select source modal",
-    "1.0.8": "Fix RD auth issue when their server is down.\nAdd all files from season pack to RD.\nRD fix issue with too many links",
+    "1.0.8": "Fix RD auth issue when their server is down.<br/>Add all files from season pack to RD.<br/>RD fix issue with too many links",
     "1.0.6": "Fix issue with too many links which return no result",
     "1.0.4": "Fix missing translations",
     "1.0.3": "Fix Elementum issue that doesn't open the stream.<br>Fix missing translations",

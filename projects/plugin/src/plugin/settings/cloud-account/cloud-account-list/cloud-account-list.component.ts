@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { CloudAccountService, REAL_DEBRID_CLIENT_ID } from '../../../services/cloud-account.service';
+import { DebridAccountService, REAL_DEBRID_CLIENT_ID } from '../../../services/debrid-account.service';
 import { BrowserService, ToastService } from '@wako-app/mobile-sdk';
 import { ProviderService } from '../../../services/provider.service';
 import { PremiumizeApiService } from '../../../services/premiumize/services/premiumize-api.service';
@@ -22,35 +22,37 @@ export class CloudAccountListComponent implements OnInit {
   preferTranscoded = false;
 
   isRealDebridLogged = false;
-  isLoadingRealDebrid = false;
 
   constructor(
-    private cloudAccountService: CloudAccountService,
+    private debridAccountService: DebridAccountService,
     private alertController: AlertController,
     private translateService: TranslateService,
     private toastService: ToastService,
     private browserService: BrowserService,
     private providerService: ProviderService,
     public modalCtrl: ModalController,
-    private clipboardService: ClipboardService
+    private clipboardService: ClipboardService,
+    private ngZone: NgZone
   ) {
   }
 
   ngOnInit() {
-    this.cloudAccountService.getPremiumizeSettings().then(settings => {
+    this.debridAccountService.getPremiumizeSettings().then(settings => {
       this.isPremiumizeLogged = !!settings;
+      console.log('this.isPremiumizeLogged', this.isPremiumizeLogged);
       this.preferTranscoded = settings ? settings.preferTranscodedFiles : false;
       PremiumizeApiService.setApiKey(settings ? settings.apiKey : null);
     });
 
-    this.cloudAccountService.getRealDebridSettings().then(settings => {
+    this.debridAccountService.getRealDebridSettings().then(settings => {
       this.isRealDebridLogged = !!settings;
       RealDebridApiService.setToken(settings ? settings.access_token : null);
     });
   }
 
+
   logoutPremiumize() {
-    this.cloudAccountService.deletePremiumizeSettings().then(() => {
+    this.debridAccountService.deletePremiumizeSettings().then(() => {
       this.ngOnInit();
     });
   }
@@ -90,7 +92,7 @@ export class CloudAccountListComponent implements OnInit {
                     }
                   });
 
-                  this.cloudAccountService.getPremiumizeSettings().then(settings => {
+                  this.debridAccountService.getPremiumizeSettings().then(settings => {
                     if (!settings) {
                       settings = {
                         apiKey: '',
@@ -99,8 +101,10 @@ export class CloudAccountListComponent implements OnInit {
                     }
                     settings.apiKey = data.apikey;
 
-                    this.cloudAccountService.setPremiumizeSettings(settings).then(() => {
-                      this.ngOnInit();
+                    this.debridAccountService.setPremiumizeSettings(settings).then(() => {
+                      this.ngZone.run(() => {
+                        this.ngOnInit();
+                      });
                     });
                   });
                 });
@@ -118,20 +122,20 @@ export class CloudAccountListComponent implements OnInit {
   }
 
   togglePreferTranscoded(enabled: boolean) {
-    this.cloudAccountService.getPremiumizeSettings().then(settings => {
+    this.debridAccountService.getPremiumizeSettings().then(settings => {
       if (!settings) {
         return;
       }
       settings.preferTranscodedFiles = enabled;
 
-      this.cloudAccountService.setPremiumizeSettings(settings).then(() => {
+      this.debridAccountService.setPremiumizeSettings(settings).then(() => {
         this.ngOnInit();
       });
     });
   }
 
   async logoutRealDebrid() {
-    await this.cloudAccountService.deleteRealDebridSettings();
+    await this.debridAccountService.deleteRealDebridSettings();
     this.ngOnInit();
   }
 
@@ -181,17 +185,19 @@ export class CloudAccountListComponent implements OnInit {
             });
           });
 
-          this.cloudAccountService.authRealDebrid(REAL_DEBRID_CLIENT_ID, data).subscribe(loggedIn => {
+          this.debridAccountService.authRealDebrid(REAL_DEBRID_CLIENT_ID, data).subscribe(loggedIn => {
             if (loggedIn) {
               alert.dismiss();
-              this.ngOnInit();
+              this.ngZone.run(() => {
+                this.ngOnInit();
+              });
             } else {
               this.toastService.simpleMessage('toasts.real-debrid.failedToLogin');
             }
           });
 
           alert.onDidDismiss().then(() => {
-            this.cloudAccountService.stopRealDebridAuthInterval();
+            this.debridAccountService.stopRealDebridAuthInterval();
           })
         });
     });

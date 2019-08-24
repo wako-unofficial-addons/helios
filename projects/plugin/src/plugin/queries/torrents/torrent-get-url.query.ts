@@ -1,19 +1,18 @@
-import { Torrent } from '../../entities/torrent';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ProviderHttpService } from '../../services/provider-http.service';
 import { getDomainFromUrl } from '@wako-app/mobile-sdk';
 
 export class TorrentGetUrlQuery {
-  static getData(torrent: Torrent): Observable<string> {
-    if (!torrent.subPageUrl) {
-      return of(torrent.url);
+  static getData(url: string, subPageUrl?: string): Observable<string> {
+    if (!subPageUrl) {
+      return of(url);
     }
 
     return ProviderHttpService.request<string>(
       {
         method: 'GET',
-        url: torrent.subPageUrl,
+        url: subPageUrl,
         responseType: 'text'
       },
       '1d',
@@ -40,9 +39,9 @@ export class TorrentGetUrlQuery {
             return torrentUrl;
           }
 
-          const domain = getDomainFromUrl(torrent.subPageUrl);
+          const domain = getDomainFromUrl(subPageUrl);
 
-          let url = (torrent.subPageUrl.match('https') !== null ? 'https://' : 'http://') + domain;
+          let url = (subPageUrl.match('https') !== null ? 'https://' : 'http://') + domain;
 
           url += torrentUrl[0] === '/' ? torrentUrl : '/' + torrentUrl;
           return url;

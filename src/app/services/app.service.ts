@@ -9,7 +9,7 @@ export class AppService {
 
     KodiAppService.currentHost = {
       name: 'MyHost',
-      host: '127.0.0.1',
+      host: '192.168.1.31',
       port: 8080
     };
   }

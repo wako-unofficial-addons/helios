@@ -1,4 +1,9 @@
-<ion-button class="open-on-kodi" color="primary" expand="block" (click)="open()">
+<ion-button *ngIf="settings" [class]="settings.defaultPlayButtonAction+ ' play-button' " color="primary" expand="block" size="large" (click)="play()">
+  <ion-icon name="play" color="light" slot="start"></ion-icon>
+  <ion-text color="light">{{ 'actionSheets.open-source.options.' + settings.defaultPlayButtonAction | translate }}</ion-text>
+</ion-button>
+
+<ion-button *ngIf="settings" class="open-on-kodi" color="light" expand="block" fill="outline" (click)="openSourceModal()">
   <ion-icon name="search" color="light" slot="start"></ion-icon>
-  <ion-text color="light">{{ 'open-button.text' | translate }}</ion-text>
+  <ion-text>{{ 'open-button.more' | translate }}</ion-text>
 </ion-button>

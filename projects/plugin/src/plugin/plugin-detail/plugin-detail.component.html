@@ -10,11 +10,13 @@
   <ion-item>
     <ion-label>{{ 'modals.search-manual.category' | translate }}</ion-label>
     <ion-select [(ngModel)]="category" [cancelText]="'alerts.cancelButton' | translate">
-      <ion-select-option value="movies">{{ 'modals.search-manual.categoryOptions.movies' | translate }}</ion-select-option>
+      <ion-select-option value="movie">{{ 'modals.search-manual.categoryOptions.movies' | translate }}</ion-select-option>
       <ion-select-option value="tv">{{ 'modals.search-manual.categoryOptions.tv' | translate }}</ion-select-option>
       <ion-select-option value="anime">{{ 'modals.search-manual.categoryOptions.anime' | translate }}</ion-select-option>
     </ion-select>
   </ion-item>
 </ion-toolbar>
 
-<wk-source-list *ngIf="searchInput.length > 0" [filter]="{ query: searchInput, category: category }"></wk-source-list>
+<ion-spinner *ngIf="searching" class="center"></ion-spinner>
+
+<wk-source-list *ngIf="sourceDetail" [sourceDetail]="sourceDetail"></wk-source-list>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActionSheetController, LoadingController, Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CloudAccountService } from './cloud-account.service';
+import { DebridAccountService } from './debrid-account.service';
 import {
   BrowserService,
   KodiApiService,
@@ -10,14 +10,18 @@ import {
   OpenMedia,
   ToastService
 } from '@wako-app/mobile-sdk';
-import { TorrentService } from './torrent.service';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { EMPTY, NEVER, of } from 'rxjs';
-import { CachedLink, Torrent } from '../entities/torrent';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { PremiumizeTransferCreateForm } from './premiumize/forms/transfer/premiumize-transfer-create.form';
 import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-cache-url.command';
 import { ClipboardService } from 'ngx-clipboard';
+import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
+import { TorrentSource } from '../entities/torrent-source';
+import { DebridSource, DebridSourceFile } from '../entities/debrid-source';
+import { HeliosCacheService } from './provider-cache.service';
+import { getPreviousFileNamePlayed } from './tools';
+import { SettingsService } from './settings.service';
 
 @Injectable()
 export class OpenSourceService {
@@ -26,16 +30,16 @@ export class OpenSourceService {
     private translateService: TranslateService,
     private platform: Platform,
     private browserService: BrowserService,
-    private cloudAccountService: CloudAccountService,
+    private debridAccountService: DebridAccountService,
     private toastService: ToastService,
-    private torrentService: TorrentService,
     private loadingController: LoadingController,
-    private clipboardService: ClipboardService
+    private clipboardService: ClipboardService,
+    private settingsService: SettingsService
   ) {
   }
 
-  open(torrent: Torrent, kodiOpenMedia?: KodiOpenMedia) {
-    this.torrentService.getTorrentUrl(torrent).subscribe(torrentUrl => {
+  openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
+    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
       if (!torrentUrl) {
         this.toastService.simpleMessage('toasts.open-source.cannotRetrieveUrl');
         return;
@@ -43,60 +47,45 @@ export class OpenSourceService {
 
       torrent.url = torrentUrl;
 
-      if (!torrent.isCachedSource) {
-        this.openSource(torrent.title, null, null, torrent, kodiOpenMedia);
-        return;
-      }
-
-      if (torrent.cachedData.link) {
-        this.openSource(
-          torrent.cachedData.link.filename,
-          torrent.cachedData.link.url,
-          torrent.cachedData.link.transcoded_url,
-          torrent,
-          kodiOpenMedia
-        );
-        return;
-      }
-
-      this.loadingController
-        .create({
-          message: 'Please wait...',
-          spinner: 'crescent'
-        })
-        .then(loader => {
-          loader.present();
-
-          torrent.cachedData.linkObs.pipe(finalize(() => loader.dismiss())).subscribe(
-            cachedLink => {
-              if (Array.isArray(cachedLink)) {
-                this.selectCachedLink(cachedLink, torrent, kodiOpenMedia);
-                return;
-              }
-
-              this.openSource(cachedLink.filename, cachedLink.url, cachedLink.transcoded_url, torrent, kodiOpenMedia);
-            },
-            err => {
-              if (err && typeof err === 'string') {
-                this.toastService.simpleMessage(err, null, 4000);
-              } else {
-                this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
-              }
-              this.openSource(torrent.title, null, null, torrent, kodiOpenMedia);
-            }
-          );
-        });
+      this._openTorrentSource(torrent, kodiOpenMedia);
     });
   }
 
-  private async selectCachedLink(cachedLinks: CachedLink[], torrent: Torrent, kodiOpenMedia?: KodiOpenMedia) {
+  openDebridSource(debridSource: DebridSource, kodiOpenMedia?: KodiOpenMedia) {
+    this.loadingController
+      .create({
+        message: 'Please wait...',
+        spinner: 'crescent'
+      })
+      .then(loader => {
+        loader.present();
+
+        debridSource.debridSourceFileObs.pipe(finalize(() => loader.dismiss())).subscribe(
+          debridSourceFiles => {
+            if (Array.isArray(debridSourceFiles)) {
+              this.selectDebridSource(debridSourceFiles, kodiOpenMedia);
+            } else {
+              this._openDebridSource(debridSourceFiles, kodiOpenMedia);
+            }
+          },
+          err => {
+            if (err && typeof err === 'string') {
+              this.toastService.simpleMessage(err, null, 4000);
+            } else {
+              this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
+            }
+          }
+        );
+      });
+  }
+
+  private async selectDebridSource(debridSourceFiles: DebridSourceFile[], kodiOpenMedia?: KodiOpenMedia) {
     const buttons = [];
-    cachedLinks.forEach(link => {
+    debridSourceFiles.forEach(link => {
       buttons.push({
         text: link.filename,
         handler: () => {
-          torrent.cachedData.link = link;
-          this.openSource(link.filename, link.url, link.transcoded_url, torrent, kodiOpenMedia);
+          this._openDebridSource(link, kodiOpenMedia);
         }
       });
     });
@@ -120,105 +109,54 @@ export class OpenSourceService {
     action.present();
   }
 
-  private async openSource(
-    filename: string,
-    cachedUrl: string,
-    cachedTranscodedUrl: string,
-    torrent: Torrent,
-    kodiOpenMedia?: KodiOpenMedia
-  ) {
-    const hasCloudAccount = await this.cloudAccountService.hasAtLeastOneAccount();
-
-    const premiumizeSettings = await this.cloudAccountService.getPremiumizeSettings();
-    const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
-
-    const realDebridSettings = await this.cloudAccountService.getRealDebridSettings();
+  private async _openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
+    const hasCloudAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
     const currentHost = KodiAppService.currentHost;
 
-    let title = '';
-    let posterUrl = '';
+    const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
 
-    if (kodiOpenMedia) {
-      title = kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title + ' ' + kodiOpenMedia.episode.code;
-      posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.images_url.poster : kodiOpenMedia.show.images_url.poster;
-    }
+    const realDebridSettings = await this.debridAccountService.getRealDebridSettings();
 
     const buttons = [];
 
-    if (torrent.isCachedSource) {
-      buttons.push({
-        text: this.translateService.instant('actionSheets.open-source.options.browser'),
-        handler: () => {
-          this.openBrowser(cachedUrl, cachedTranscodedUrl, title, posterUrl);
-        }
-      });
+    if (kodiOpenMedia && kodiOpenMedia.show) {
+      HeliosCacheService.set(getPreviousFileNamePlayed(kodiOpenMedia.show.traktId), torrent.title, '20d');
+    }
 
-      buttons.push({
-        text: this.translateService.instant('actionSheets.open-source.options.copy'),
-        role: 'copy-url',
-        handler: () => {
-          this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'Video URL'});
-        }
-      });
-      if (window['plugins'] && window['plugins'].socialsharing) {
+    if (hasCloudAccount) {
+      if (premiumizeSettings) {
         buttons.push({
-          text: this.translateService.instant('actionSheets.open-source.options.share'),
+          text: this.translateService.instant('actionSheets.open-source.options.addToPM'),
           handler: () => {
-            this.share(torrent.title, preferTranscodedFiles && cachedTranscodedUrl ? cachedTranscodedUrl : cachedUrl)
+            this.addToPM(torrent.url);
           }
         });
       }
+      if (realDebridSettings) {
+        buttons.push({
+          text: this.translateService.instant('actionSheets.open-source.options.addToRD'),
+          handler: () => {
+            this.addToRD(torrent.url);
+          }
+        });
+      }
+    }
+
+    if (window['plugins'] && window['plugins'].socialsharing) {
       buttons.push({
-        text: this.translateService.instant('actionSheets.open-source.options.vlc'),
+        text: this.translateService.instant('actionSheets.open-source.options.share-url'),
         handler: () => {
-          this.openVlc(preferTranscodedFiles && cachedTranscodedUrl ? cachedTranscodedUrl : cachedUrl);
+          this.share(torrent.title, torrent.url);
         }
       });
-
-      if (this.platform.is('ios')) {
-        buttons.push({
-          text: this.translateService.instant('actionSheets.open-source.options.downloadVlc'),
-          handler: () => {
-            this.downloadWithVlc(preferTranscodedFiles && cachedTranscodedUrl ? cachedTranscodedUrl : cachedUrl);
-          }
-        });
-      }
-
-      if (currentHost) {
-        buttons.unshift({
-          text: this.translateService.instant('actionSheets.open-source.options.kodi'),
-          handler: () => {
-            this.openKodi(preferTranscodedFiles && cachedTranscodedUrl ? cachedTranscodedUrl : cachedUrl, kodiOpenMedia);
-          }
-        });
-      }
-    } else {
-      if (hasCloudAccount) {
-        if (premiumizeSettings) {
-          buttons.push({
-            text: this.translateService.instant('actionSheets.open-source.options.addToPM'),
-            handler: () => {
-              this.addToPM(torrent.url);
-            }
-          });
-        }
-        if (realDebridSettings) {
-          buttons.push({
-            text: this.translateService.instant('actionSheets.open-source.options.addToRD'),
-            handler: () => {
-              this.addToRD(torrent.url);
-            }
-          });
-        }
-      }
     }
 
     if (currentHost) {
       buttons.push({
-        text: this.translateService.instant('actionSheets.open-source.options.openWithElementum'),
+        text: this.translateService.instant('actionSheets.open-source.options.open-elementum'),
         handler: () => {
-          this.openWithElementum(torrent, kodiOpenMedia);
+          this.openElementum(torrent, kodiOpenMedia);
         }
       });
     }
@@ -233,7 +171,95 @@ export class OpenSourceService {
       buttons: buttons
     });
 
-    console.log('Found file', filename);
+    await action.present();
+  }
+
+  private async _openDebridSource(debridSourceFile: DebridSourceFile, kodiOpenMedia?: KodiOpenMedia) {
+
+    const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
+    const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
+    const settings = await this.settingsService.get();
+
+    const currentHost = KodiAppService.currentHost;
+
+    let title = '';
+    let posterUrl = '';
+
+    if (kodiOpenMedia) {
+      title = kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title + ' ' + kodiOpenMedia.episode.code;
+      posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.images_url.poster : kodiOpenMedia.show.images_url.poster;
+
+      if (kodiOpenMedia.show) {
+        HeliosCacheService.set(getPreviousFileNamePlayed(kodiOpenMedia.show.traktId), debridSourceFile.title, '20d');
+      }
+    }
+
+    const buttons = [];
+
+    settings.availablePlayButtonActions.forEach(action => {
+      const buttonOptions = {
+        text: this.translateService.instant('actionSheets.open-source.options.' + action)
+      } as any;
+
+      switch (action) {
+        case 'open-browser':
+          buttonOptions.handler = () => {
+            this.openBrowser(debridSourceFile.url, debridSourceFile.transcodedUrl, title, posterUrl);
+          };
+          break;
+        case 'copy-url':
+          buttonOptions.role = 'copy-url';
+          buttonOptions.handler = () => {
+            this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'Video URL'});
+          };
+          break;
+
+        case 'share-url':
+          buttonOptions.handler = () => {
+            this.share(
+              debridSourceFile.filename,
+              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url
+            );
+          };
+          break;
+
+        case 'download-vlc':
+          buttonOptions.handler = () => {
+            this.downloadWithVlc(
+              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url
+            );
+          };
+          break;
+
+        case 'open-vlc':
+          buttonOptions.handler = () => {
+            this.openVlc(preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url);
+          };
+          break;
+
+        case 'open-kodi':
+          buttonOptions.handler = () => {
+            this.openKodi(
+              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url,
+              kodiOpenMedia
+            );
+          };
+          break;
+      }
+
+      buttons.push(buttonOptions);
+    });
+
+
+    if (buttons.length === 1) {
+      buttons[0].handler();
+      return;
+    }
+
+    const action = await this.actionSheetController.create({
+      header: this.translateService.instant('actionSheets.open-source.openTitle'),
+      buttons: buttons
+    });
 
     await action.present();
 
@@ -243,7 +269,7 @@ export class OpenSourceService {
     }
 
     copyEl.addEventListener('click', () => {
-      this.clipboardService.copyFromContent(cachedUrl);
+      this.clipboardService.copyFromContent(debridSourceFile.url);
     });
   }
 
@@ -300,7 +326,6 @@ export class OpenSourceService {
   }
 
   async openVlc(videoUrl: string) {
-
     if (this.platform.is('ios')) {
       const url = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(videoUrl)}`;
       this.browserService.open(url, false);
@@ -364,7 +389,7 @@ export class OpenSourceService {
       );
   }
 
-  async openWithElementum(torrent: Torrent, kodiOpenMedia?: KodiOpenMedia) {
+  async openElementum(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
     KodiAppService.checkAndConnectToCurrentHost()
       .pipe(
         catchError(err => {
@@ -398,17 +423,15 @@ export class OpenSourceService {
             episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
           };
         }
-        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(
-          () => {
-            const toastMessage = 'toasts.startOpening';
-            const toastParams = {
-              title: torrent.title.replace(/\./g, ' '),
-              hostName: KodiApiService.host.name
-            };
+        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(() => {
+          const toastMessage = 'toasts.startOpening';
+          const toastParams = {
+            title: torrent.title.replace(/\./g, ' '),
+            hostName: KodiApiService.host.name
+          };
 
-            this.toastService.simpleMessage(toastMessage, toastParams);
-          }
-        );
+          this.toastService.simpleMessage(toastMessage, toastParams);
+        });
       });
   }
 
@@ -434,17 +457,15 @@ export class OpenSourceService {
     return url + '?' + urlSearchParams.toString();
   }
 
-  share(
-    torrentTitle: string,
-    cachedUrl: string
-  ) {
-    window['plugins'].socialsharing
-      .shareWithOptions({
-        message: torrentTitle, // fi. for email
-        subject: torrentTitle, // fi. for email
+  share(torrentTitle: string, cachedUrl: string) {
+
+    if (window['plugins'] && window['plugins'].socialsharing) {
+
+      window['plugins'].socialsharing.shareWithOptions({
         url: cachedUrl,
         chooserTitle: torrentTitle
-      })
+      });
 
+    }
   }
 }
