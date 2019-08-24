@@ -10,12 +10,17 @@ import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
 import { HeliosCacheService } from '../provider-cache.service';
 import { getPreviousFileNamePlayed } from '../tools';
 import { TorrentSourceWithStats } from '../../entities/torrent-source-with-stats';
+import { TorrentsFilterOnWantedQualityQuery } from '../../queries/torrents/torrents-filter-on-wanted-quality.query';
+import { from } from 'rxjs';
+import { SettingsService } from '../settings.service';
 
 @Injectable()
 export class SourceService {
-  constructor(private debridSourceService: DebridSourceService, private torrentSourceService: TorrentSourceService) {
-  }
-
+  constructor(
+    private debridSourceService: DebridSourceService,
+    private torrentSourceService: TorrentSourceService,
+    private settingsService: SettingsService
+  ) {}
 
   private getSourceDetail(
     torrentsWithStats: TorrentSourceWithStats,
@@ -28,17 +33,24 @@ export class SourceService {
     const sourceDetail = {} as SourceDetail;
     sourceDetail.stats = torrentsWithStats.stats;
 
-    sourceDetail.torrentSources = torrents;
-    sourceDetail.bestTorrent = this.torrentSourceService.getBestSource(torrents, previousPlayedSourceName);
+    return from(this.settingsService.get()).pipe(
+      switchMap(settings => {
+        const filteredTorrents = skipUnWantedQualityDebrid
+          ? TorrentsFilterOnWantedQualityQuery.getData(torrents, settings.qualities)
+          : torrents;
+        sourceDetail.torrentSources = filteredTorrents;
+        sourceDetail.bestTorrent = this.torrentSourceService.getBestSource(filteredTorrents, previousPlayedSourceName);
 
-    return this.debridSourceService.getFromTorrents(torrents, sourceQuery, skipUnWantedQualityDebrid).pipe(
-      switchMap(debridSources => {
-        sourceDetail.debridSources = debridSources;
-        return this.debridSourceService.getBestSource(debridSources, previousPlayedSourceName);
-      }),
-      map(bestDebridSource => {
-        sourceDetail.bestDebrid = bestDebridSource;
-        return sourceDetail;
+        return this.debridSourceService.getFromTorrents(filteredTorrents, sourceQuery).pipe(
+          switchMap(debridSources => {
+            sourceDetail.debridSources = debridSources;
+            return this.debridSourceService.getBestSource(debridSources, previousPlayedSourceName);
+          }),
+          map(bestDebridSource => {
+            sourceDetail.bestDebrid = bestDebridSource;
+            return sourceDetail;
+          })
+        );
       })
     );
   }

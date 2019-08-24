@@ -3,47 +3,29 @@ import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
 import { RealDebridSourcesFromTorrentsQuery } from '../../queries/debrids/real-debrid-sources-from-torrents.query';
 import { catchError, last, map, switchMap } from 'rxjs/operators';
 import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiumize-sources-from-torrents.query';
-import { ProviderService } from '../provider.service';
-import { SettingsService } from '../settings.service';
 import { TorrentSource } from '../../entities/torrent-source';
-import { concat, from, of } from 'rxjs';
+import { concat, of } from 'rxjs';
 import { DebridSource, DebridSourceFile } from '../../entities/debrid-source';
 import { getScoreMatchingName, getSourcesByQuality, sortTorrentsBySize } from '../tools';
-import { TorrentsFilterOnWantedQualityQuery } from '../../queries/torrents/torrents-filter-on-wanted-quality.query';
 
 @Injectable()
 export class DebridSourceService {
-  constructor(private providerService: ProviderService, private settingsService: SettingsService) {
-  }
+  constructor() {}
 
   private excludedDebrided(torrents: TorrentSource[]) {
     return torrents.filter(torrent => (torrent.isOnRD || torrent.isOnPM) === false);
   }
 
-  getFromTorrents(torrents: TorrentSource[], sourceQuery: SourceQuery | SourceEpisodeQuery | string, skipUnWantedQualityDebrid = true) {
-
-    return from(this.settingsService.get())
-      .pipe(
-        map(settings => {
-          if (!skipUnWantedQualityDebrid) {
-            return torrents;
-          }
-          return TorrentsFilterOnWantedQualityQuery.getData(torrents, settings.qualities)
-        }),
-        switchMap(filteredTorrents => {
-          return PremiumizeSourcesFromTorrentsQuery.getData(filteredTorrents, sourceQuery).pipe(
-            switchMap(pmSources => {
-              return RealDebridSourcesFromTorrentsQuery.getData(this.excludedDebrided(filteredTorrents), sourceQuery).pipe(
-                map(rdSources => {
-                  return rdSources.concat(...pmSources);
-                })
-              );
-            })
-          );
-        })
-      )
-
-
+  getFromTorrents(torrents: TorrentSource[], sourceQuery: SourceQuery | SourceEpisodeQuery | string) {
+    return PremiumizeSourcesFromTorrentsQuery.getData(torrents, sourceQuery).pipe(
+      switchMap(pmSources => {
+        return RealDebridSourcesFromTorrentsQuery.getData(this.excludedDebrided(torrents), sourceQuery).pipe(
+          map(rdSources => {
+            return rdSources.concat(...pmSources);
+          })
+        );
+      })
+    );
   }
 
   getBestSource(debridSources: DebridSource[], previousPlayedSourceName?: string) {
@@ -55,8 +37,11 @@ export class DebridSourceService {
     let bestSource: DebridSource = null;
     const bestDebridSourceObss = [];
 
-
-    const allDebridSources = debridQuality.sources2160p.concat(debridQuality.sources1080p, debridQuality.sources720p, debridQuality.sourcesOther);
+    const allDebridSources = debridQuality.sources2160p.concat(
+      debridQuality.sources1080p,
+      debridQuality.sources720p,
+      debridQuality.sourcesOther
+    );
 
     if (previousPlayedSourceName) {
       let maxScore = 0;
@@ -106,5 +91,4 @@ export class DebridSourceService {
       })
     );
   }
-
 }
