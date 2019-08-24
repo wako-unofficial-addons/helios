@@ -49,9 +49,15 @@ export class RealDebridSourcesFromTorrentsQuery {
           if (sourceQuery instanceof SourceEpisodeQuery) {
             const groupWithFile = [];
 
+
+            let firstVideoFileIndex = null;
             data.rd.forEach((rd, index) => {
               Object.keys(rd).forEach(key => {
                 const file = rd[key];
+
+                if (!firstVideoFileIndex && file.filename.match(/.mkv|.mp4/)) {
+                  firstVideoFileIndex = index;
+                }
 
                 if (file.filename.match(/.mkv|.mp4/) && isEpisodeCodeMatchesFileName(sourceQuery.episodeCode, file.filename)) {
                   groupWithFile.push(index);
@@ -59,10 +65,11 @@ export class RealDebridSourcesFromTorrentsQuery {
               });
             });
 
-            if (groupWithFile.length === 0) {
-              return torrent;
+            if (groupWithFile.length > 0) {
+              groupIndex = groupWithFile.shift();
+            } else if (firstVideoFileIndex !== null) {
+              groupIndex = firstVideoFileIndex;
             }
-            groupIndex = groupWithFile.shift();
           }
 
 

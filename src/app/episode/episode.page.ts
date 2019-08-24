@@ -26,9 +26,10 @@ export class EpisodePage implements OnInit {
       `{"traktSeasonNumber":8,"traktNumber":5,"code":"S08E05","title":"The Bells","imdbId":"tt6027916","tmdbId":1551829,"tvdbId":7121404,"traktId":3465697,"overview":"Varys betrays his queen, and Daenerys brings her forces to King's Landing.","firstAired":"2019-05-13T01:00:00.000Z","rating":7.6,"votes":8097,"runtime":93,"watched":false}`
     ) as Episode;
 
-    this.pluginLoader.createComponent('episodes', this.episodeVCRef, {
-      show,
-      episode
-    });
+    const data = JSON.parse(
+      `{"show":{"title":"Cop Craft","year":2019,"imdbId":"tt10347516","tmdbId":88050,"tvdbId":361491,"traktId":145720,"slug":"cop-craft","overview":"15 years ago, an unknown hyperspace gate opened over the Pacific. Beyond this gate lies Reto Semaani, a strange alternate world where fairies and demons live.","trailer":null,"firstAired":"2019-07-08T15:00:00.000Z","runtime":25,"rating":6.1,"votes":17,"language":"ja","genres":["action","anime","adventure","fantasy","science-fiction","crime"],"certification":null,"airedEpisodes":7,"images_url":{"poster":"https://image.tmdb.org/t/p/w300/ojjpfSFz5gDosavmRVBEjHF8HFZ.jpg","backdrop":"https://image.tmdb.org/t/p/w500/oxMLKe2mlxCcKBgZPaLEXWI9Ha7.jpg","poster_original":"https://image.tmdb.org/t/p/original/ojjpfSFz5gDosavmRVBEjHF8HFZ.jpg","backdrop_original":"https://image.tmdb.org/t/p/original/oxMLKe2mlxCcKBgZPaLEXWI9Ha7.jpg"},"alternativeTitles":{"us":"COP CRAFT","cn":"全缉毒狂潮","br":"Cop Craft","es":"Cop Craft","fr":"Cop Craft","mx":"Cop Craft","ru":"Мастерство копа"},"originalTitle":"COP CRAFT [コップクラフト]"},"episode":{"traktSeasonNumber":1,"traktNumber":7,"code":"S01E07","title":"MIDNIGHT TRAIN","imdbId":"tt10494666","tmdbId":1814492,"tvdbId":7239914,"traktId":3581146,"overview":"Kei and Tilarna are hot on the trail of the fairy thief, but Tilarna gets upset at the investigation’s slow pace, and sets out on her own…","firstAired":"2019-07-22T15:00:00.000Z","rating":7.2,"votes":33,"runtime":25,"watched":false}}`
+    );
+
+    this.pluginLoader.createComponent('episodes', this.episodeVCRef, data);
   }
 }
