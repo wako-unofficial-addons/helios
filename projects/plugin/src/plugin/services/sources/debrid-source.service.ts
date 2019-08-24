@@ -1,31 +1,68 @@
 import { Injectable } from '@angular/core';
 import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
 import { RealDebridSourcesFromTorrentsQuery } from '../../queries/debrids/real-debrid-sources-from-torrents.query';
-import { catchError, last, map, switchMap } from 'rxjs/operators';
+import { catchError, last, map, mapTo, switchMap } from 'rxjs/operators';
 import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiumize-sources-from-torrents.query';
 import { TorrentSource } from '../../entities/torrent-source';
-import { concat, of } from 'rxjs';
+import { concat, forkJoin, Observable, of } from 'rxjs';
 import { DebridSource, DebridSourceFile } from '../../entities/debrid-source';
 import { getScoreMatchingName, getSourcesByQuality, sortTorrentsBySize } from '../tools';
+import { TorrentGetUrlQuery } from '../../queries/torrents/torrent-get-url.query';
+import { TorrentsFromProviderBaseQuery } from '../../queries/torrents/torrents-from-provider-base.query';
 
 @Injectable()
 export class DebridSourceService {
-  constructor() {}
+  constructor() {
+  }
 
   private excludedDebrided(torrents: TorrentSource[]) {
     return torrents.filter(torrent => (torrent.isOnRD || torrent.isOnPM) === false);
   }
 
+  private getHashFromSubPages(torrents: TorrentSource[]) {
+    if (torrents.length === 0) {
+      return of(torrents);
+    }
+    const obss: Observable<TorrentSource>[] = [];
+
+    const allTorrents: TorrentSource[] = [];
+
+    torrents.forEach(torrent => {
+      if (torrent.hash || !torrent.subPageUrl) {
+        allTorrents.push(torrent);
+        obss.push(of(torrent));
+        return;
+      }
+      const obs = TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).pipe(
+        map(url => {
+          if (url) {
+            torrent.hash = TorrentsFromProviderBaseQuery.getHashFromUrl(url);
+          }
+          allTorrents.push(torrent);
+
+          return torrent;
+        })
+      );
+      obss.push(obs);
+    });
+    return forkJoin(obss).pipe(mapTo(allTorrents));
+  }
+
   getFromTorrents(torrents: TorrentSource[], sourceQuery: SourceQuery | SourceEpisodeQuery | string) {
-    return PremiumizeSourcesFromTorrentsQuery.getData(torrents, sourceQuery).pipe(
-      switchMap(pmSources => {
-        return RealDebridSourcesFromTorrentsQuery.getData(this.excludedDebrided(torrents), sourceQuery).pipe(
-          map(rdSources => {
-            return rdSources.concat(...pmSources);
-          })
-        );
-      })
-    );
+    return this.getHashFromSubPages(torrents)
+      .pipe(
+        switchMap(newTorrents => {
+          return PremiumizeSourcesFromTorrentsQuery.getData(newTorrents, sourceQuery).pipe(
+            switchMap(pmSources => {
+              return RealDebridSourcesFromTorrentsQuery.getData(this.excludedDebrided(newTorrents), sourceQuery).pipe(
+                map(rdSources => {
+                  return rdSources.concat(...pmSources);
+                })
+              );
+            })
+          );
+        })
+      )
   }
 
   getBestSource(debridSources: DebridSource[], previousPlayedSourceName?: string) {
@@ -48,7 +85,6 @@ export class DebridSourceService {
       let debridSource;
       debridSources.forEach(d => {
         const score = getScoreMatchingName(previousPlayedSourceName, d.title);
-        console.log(d.title, score, previousPlayedSourceName);
         if (score > maxScore) {
           debridSource = d;
           maxScore = score;

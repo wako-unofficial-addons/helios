@@ -210,7 +210,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     );
   }
 
-  private static getHashFromUrl(url: string) {
+  static getHashFromUrl(url: string) {
     if (url && url.match(/btih:([a-zA-Z0-9]*)/)) {
       const match = url.match(/btih:([a-zA-Z0-9]*)/);
       return match.length > 1 ? match[1].trim().toLowerCase() : null;
