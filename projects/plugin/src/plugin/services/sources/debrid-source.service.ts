@@ -36,6 +36,7 @@ export class DebridSourceService {
       const obs = TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).pipe(
         map(url => {
           if (url) {
+            torrent.url = url;
             torrent.hash = TorrentsFromProviderBaseQuery.getHashFromUrl(url);
           }
           allTorrents.push(torrent);
