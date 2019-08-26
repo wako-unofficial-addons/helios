@@ -26,6 +26,7 @@ export class DebridSourceService {
     const obss: Observable<TorrentSource>[] = [];
 
     const allTorrents: TorrentSource[] = [];
+    const allHashes = [];
 
     torrents.forEach(torrent => {
       if (torrent.hash || !torrent.subPageUrl) {
@@ -39,7 +40,12 @@ export class DebridSourceService {
             torrent.url = url;
             torrent.hash = TorrentsFromProviderBaseQuery.getHashFromUrl(url);
           }
-          allTorrents.push(torrent);
+          if(!torrent.hash) {
+            allTorrents.push(torrent);
+          } else if(!allHashes.includes(torrent.hash)) {
+            allHashes.push(torrent.hash);
+            allTorrents.push(torrent);
+          }
 
           return torrent;
         })
