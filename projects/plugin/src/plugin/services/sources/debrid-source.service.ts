@@ -30,6 +30,9 @@ export class DebridSourceService {
 
     torrents.forEach(torrent => {
       if (torrent.hash || !torrent.subPageUrl) {
+        if (torrent.hash) {
+          allHashes.push(torrent.hash);
+        }
         allTorrents.push(torrent);
         obss.push(of(torrent));
         return;
@@ -40,13 +43,12 @@ export class DebridSourceService {
             torrent.url = url;
             torrent.hash = TorrentsFromProviderBaseQuery.getHashFromUrl(url);
           }
-          if(!torrent.hash) {
+          if (!torrent.hash) {
             allTorrents.push(torrent);
-          } else if(!allHashes.includes(torrent.hash)) {
+          } else if (!allHashes.includes(torrent.hash)) {
             allHashes.push(torrent.hash);
             allTorrents.push(torrent);
           }
-
           return torrent;
         })
       );
