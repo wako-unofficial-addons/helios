@@ -14,16 +14,24 @@ export class SearchSourceComponent implements OnInit {
   kodiOpenMedia: KodiOpenMedia;
 
   title: string;
+  manualSearchValue: string;
+  manualSearch = false;
 
-  constructor(private modalCtrl: ModalController) {
-  }
+  constructor(private modalCtrl: ModalController) {}
 
   ngOnInit(): void {
     if (!this.kodiOpenMedia) {
       return;
     }
 
-    this.title = this.kodiOpenMedia.movie ? this.kodiOpenMedia.movie.title : this.kodiOpenMedia.episode.code + ' - ' + this.kodiOpenMedia.show.title;
+    this.title = this.kodiOpenMedia.movie
+      ? this.kodiOpenMedia.movie.title
+      : this.kodiOpenMedia.episode.code + ' - ' + this.kodiOpenMedia.show.title;
+    if (this.kodiOpenMedia.movie) {
+      this.manualSearchValue = this.kodiOpenMedia.movie.title + ' ' + this.kodiOpenMedia.movie.year;
+    } else {
+      this.manualSearchValue = this.kodiOpenMedia.show.title + ' ' + this.kodiOpenMedia.episode.code;
+    }
   }
 
   dismiss() {

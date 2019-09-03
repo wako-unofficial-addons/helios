@@ -1,34 +1,54 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SourceDetail } from '../entities/source-detail';
 import { SourceService } from '../services/sources/source.service';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { KodiOpenMedia } from '../entities/kodi-open-media';
 
 @Component({
+  selector: 'helios-plugin-detail',
   templateUrl: './plugin-detail.component.html'
 })
-export class PluginDetailComponent {
+export class PluginDetailComponent implements OnInit {
+  @Input()
   searchInput = '';
+
+  @Input()
   category: 'movie' | 'tv' | 'anime' = 'movie';
 
   sourceDetail: SourceDetail;
 
   searching = false;
 
+  @Input()
+  kodiOpenMedia: KodiOpenMedia;
+
   private subscription: Subscription;
 
-  constructor(private sourceService: SourceService) {}
+  constructor(private sourceService: SourceService) {
+  }
 
-  hideKeyboard() {}
+  hideKeyboard() {
+  }
+
+  ngOnInit() {
+    if (this.searchInput.length > 0) {
+      this.search();
+    }
+  }
 
   onSearch(event: any) {
+    this.searchInput = event.target.value ? event.target.value : '';
+    this.search();
+  }
+
+  private search() {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
 
     this.sourceDetail = null;
     this.searching = true;
-    this.searchInput = event.target.value ? event.target.value : '';
 
     if (this.searchInput.length === 0) {
       this.searching = false;

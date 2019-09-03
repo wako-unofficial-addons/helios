@@ -1,6 +1,7 @@
 <ion-toolbar>
   <ion-searchbar
     (ionChange)="onSearch($event)"
+    [value]="searchInput"
     debounce="1000"
     [placeholder]="'modals.search-manual.search' | translate"
     mode="ios"
@@ -19,4 +20,4 @@
 
 <ion-spinner *ngIf="searching" class="center"></ion-spinner>
 
-<wk-source-list *ngIf="sourceDetail" [sourceDetail]="sourceDetail"></wk-source-list>
+<wk-source-list *ngIf="sourceDetail" [sourceDetail]="sourceDetail" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>

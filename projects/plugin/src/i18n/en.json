@@ -120,6 +120,9 @@
         "tv": "TV Show",
         "anime": "Anime"
       }
+    },
+    "search-source":{
+      "manual": "Search Sources Manually"
     }
   },
   "source-list": {
