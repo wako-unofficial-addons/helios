@@ -9,6 +9,7 @@ import { DebridSource, DebridSourceFile } from '../../entities/debrid-source';
 import { getScoreMatchingName, getSourcesByQuality, sortTorrentsBySize } from '../tools';
 import { TorrentGetUrlQuery } from '../../queries/torrents/torrent-get-url.query';
 import { TorrentsFromProviderBaseQuery } from '../../queries/torrents/torrents-from-provider-base.query';
+import { PremiumizeAccountInfoForm } from '../premiumize/forms/account/premiumize-account-info.form';
 
 @Injectable()
 export class DebridSourceService {
@@ -104,12 +105,22 @@ export class DebridSourceService {
       }
     }
 
+    let hasPmSource = false;
+    let hasPmPremiumAccount = true;
+
     allDebridSources.forEach(debridSource => {
+      if (debridSource.serviceName === 'PM') {
+        hasPmSource = true;
+      }
       bestDebridSourceObss.push(
         of(true).pipe(
           switchMap(() => {
             if (bestSource) {
               return of(bestSource);
+            }
+
+            if (debridSource.serviceName === 'PM' && !hasPmPremiumAccount) { // Don't check to avoid burning free account limit
+              return of(null);
             }
 
             return debridSource.debridSourceFileObs.pipe(
@@ -128,6 +139,20 @@ export class DebridSourceService {
         )
       );
     });
+
+    if (hasPmSource) {
+      bestDebridSourceObss.unshift(
+        PremiumizeAccountInfoForm.submit()
+          .pipe(
+            map(data => {
+              if (data.status === 'success' && data.premium_until === false) {
+                hasPmPremiumAccount = false;
+              }
+              return data;
+            })
+          )
+      )
+    }
 
     return concat(...bestDebridSourceObss).pipe(
       last(),
