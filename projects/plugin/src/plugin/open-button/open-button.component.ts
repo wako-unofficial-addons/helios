@@ -124,7 +124,12 @@ export class OpenButtonComponent implements OnInit {
           }
         });
       } else {
-        this.toastService.simpleMessage('shared.noResult');
+        // Errors
+        if (!sourceDetail.bestDebrid && sourceDetail.torrentSources.length > 0) {
+          // No best source found
+          this.toastService.simpleMessage('shared.noBestSource', null, 4000);
+        }
+        this.openSourceModal();
       }
     });
   }

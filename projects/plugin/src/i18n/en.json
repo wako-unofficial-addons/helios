@@ -140,7 +140,8 @@
     "statsInfo":  "Note: Duplicated torrents are removed from the torrents list"
   },
   "shared": {
-    "noResult": "No result",
+    "noSourceFound": "No source found",
+    "noBestSource": "Helios didn't find the best source for you, please choose it manually",
     "cancel": "Cancel"
   }
 }

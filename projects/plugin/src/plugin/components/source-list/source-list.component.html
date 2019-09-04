@@ -1,5 +1,5 @@
 <ion-card *ngIf="totalTorrentSource === 0">
-  <ion-card-content>{{ 'shared.noResult' | translate }}</ion-card-content>
+  <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
 </ion-card>
 
 <div *ngIf="totalTorrentSource > 0">
@@ -25,7 +25,7 @@
     <ion-list *ngSwitchCase="'debrid'">
       <ion-card *ngIf="totalDebridSource === 0">
         <ion-card-content>
-          {{ 'shared.noResult' | translate }}
+          {{ 'shared.noSourceFound' | translate }}
         </ion-card-content>
       </ion-card>
 
