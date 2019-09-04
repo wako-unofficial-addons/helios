@@ -132,7 +132,8 @@
     }
   },
   "shared": {
-    "noResult": "Aucun résultat",
+    "noSourceFound": "Aucune source trouvée",
+    "noBestSource": "Helios n'a pas trouvé la meilleure source pour vous, veuillez la choisir manuellement.",
     "cancel": "Annuler"
   }
 }
