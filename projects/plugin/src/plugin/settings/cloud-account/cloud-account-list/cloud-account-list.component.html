@@ -18,8 +18,7 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-text>
-        {{ 'pages.debrid-account.list.premiumize.explain' | translate }}
+      <ion-text [innerHTML]="'pages.debrid-account.list.premiumize.explain' | translate">
       </ion-text>
       <ion-list lines="full">
         <ion-item no-padding *ngIf="isPremiumizeLogged">
