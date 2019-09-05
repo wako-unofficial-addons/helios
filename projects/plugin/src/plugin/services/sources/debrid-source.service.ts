@@ -157,6 +157,16 @@ export class DebridSourceService {
     return concat(...bestDebridSourceObss).pipe(
       last(),
       map(() => {
+
+        if (!bestSource && hasPmSource && !hasPmPremiumAccount && allDebridSources.length > 0) {
+          // Free PM account only, since PM sources are almost all reliable, let take the first one < 5gb
+          allDebridSources.forEach(source => {
+            if (!bestSource && source.size < 5 * 1024 * 1024 * 1024) {
+              bestSource = source;
+            }
+          })
+        }
+
         return bestSource;
       })
     );
