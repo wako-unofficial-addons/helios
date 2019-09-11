@@ -11,7 +11,7 @@ export function logData(...data: any) {
 export function logEvent(eventName: string, data: {}) {
   if ('FirebasePlugin' in window) {
     const firebase = window['FirebasePlugin'] as any;
-    firebase.logEvent('nomos_open', data);
+    firebase.logEvent(eventName, data);
   }
 
 }
