@@ -11,6 +11,7 @@ import { SearchSourceComponent } from '../components/search-source/search-source
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { OpenSourceService } from '../services/open-source.service';
 import { ProviderService } from '../services/provider.service';
+import { logEvent } from '../services/tools';
 
 @Component({
   selector: 'wk-open-button',
@@ -36,8 +37,7 @@ export class OpenButtonComponent implements OnInit {
     private openSourceService: OpenSourceService,
     private providerService: ProviderService,
     private toastService: ToastService
-  ) {
-  }
+  ) {}
 
   async ngOnInit() {
     this.settings = await this.settingsService.get();
@@ -50,7 +50,6 @@ export class OpenButtonComponent implements OnInit {
   }
 
   private getSourceDetail() {
-
     this.providerService.getAll().then(providers => {
       if (providers.length === 0) {
         this.toastService.simpleMessage('source-list.noProviderSet');
@@ -85,7 +84,6 @@ export class OpenButtonComponent implements OnInit {
 
   async play() {
     this.getSourceDetail().subscribe(sourceDetail => {
-
       if (this.settings.defaultPlayButtonAction === 'open-elementum' && sourceDetail.bestTorrent) {
         this.openSourceService.openElementum(sourceDetail.bestTorrent, this.kodiOpenMedia);
       } else if (sourceDetail.bestDebrid) {
@@ -131,6 +129,7 @@ export class OpenButtonComponent implements OnInit {
         }
         this.openSourceModal();
       }
+      logEvent('helios_main_button', { action: this.settings.defaultPlayButtonAction });
     });
   }
 
@@ -146,6 +145,7 @@ export class OpenButtonComponent implements OnInit {
         })
         .then(modal => {
           modal.present();
+          logEvent('helios_more_button', null);
         });
     });
   }

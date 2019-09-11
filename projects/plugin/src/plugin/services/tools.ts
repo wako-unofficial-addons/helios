@@ -8,6 +8,14 @@ export function logData(...data: any) {
   wakoLog('plugin.helios', data);
 }
 
+export function logEvent(eventName: string, data: {}) {
+  if ('FirebasePlugin' in window) {
+    const firebase = window['FirebasePlugin'] as any;
+    firebase.logEvent('nomos_open', data);
+  }
+
+}
+
 export function countryCodeToEmoji(country: string) {
   country = country.toUpperCase();
 

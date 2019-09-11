@@ -20,7 +20,7 @@ import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
 import { TorrentSource } from '../entities/torrent-source';
 import { DebridSource, DebridSourceFile } from '../entities/debrid-source';
 import { HeliosCacheService } from './provider-cache.service';
-import { getPreviousFileNamePlayed } from './tools';
+import { getPreviousFileNamePlayed, logEvent } from './tools';
 import { SettingsService } from './settings.service';
 
 @Injectable()
@@ -274,6 +274,7 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(debridSourceFile.url);
+      logEvent('helios_action', {action: 'copy-url'});
     });
   }
 
@@ -310,6 +311,8 @@ export class OpenSourceService {
         };
 
         this.toastService.simpleMessage(toastMessage, toastParams);
+
+        logEvent('helios_action', {action: 'open-kodi'});
       });
   }
 
@@ -332,6 +335,8 @@ export class OpenSourceService {
     } else {
       window.open(url, '_system', 'location=yes');
     }
+
+    logEvent('helios_action', {action: 'open-browser'});
   }
 
   async openVlc(videoUrl: string) {
@@ -342,6 +347,8 @@ export class OpenSourceService {
       const url = `vlc://${videoUrl}`;
       this.browserService.open(url, false);
     }
+
+    logEvent('helios_action', {action: 'open-vlc'});
   }
 
   async downloadWithVlc(videoUrl: string) {
@@ -351,6 +358,8 @@ export class OpenSourceService {
       const url = `vlc-x-callback://x-callback-url/download?url=${encodeURIComponent(videoUrl)}`;
       this.browserService.open(url, false);
     }
+
+    logEvent('helios_action', {action: 'download-vlc'});
   }
 
   private async addToPM(url: string) {
@@ -369,6 +378,8 @@ export class OpenSourceService {
         } else {
           this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', {error: data.message});
         }
+
+        logEvent('helios_action', {action: 'add-pm'});
       });
   }
 
@@ -391,6 +402,8 @@ export class OpenSourceService {
       .subscribe(
         () => {
           this.toastService.simpleMessage('toasts.open-source.addedToRD');
+
+          logEvent('helios_action', {action: 'add-rd'});
         },
         err => {
           this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err.toString()});
@@ -440,6 +453,8 @@ export class OpenSourceService {
           };
 
           this.toastService.simpleMessage(toastMessage, toastParams);
+
+          logEvent('helios_action', {action: 'open-elementum'});
         });
       });
   }
@@ -475,6 +490,7 @@ export class OpenSourceService {
         chooserTitle: torrentTitle
       });
 
+      logEvent('helios_action', {action: 'share-url'});
     }
   }
 }
