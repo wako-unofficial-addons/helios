@@ -28,12 +28,12 @@
     <ion-list-header>
       <ion-label>{{ 'pages.providers.enabledSource.header' | translate }}</ion-label>
     </ion-list-header>
-    <ion-item wrap>
+    <ion-item class="ion-wrap">
       <em>{{ 'pages.providers.enabledSource.howItWorks' | translate }}</em>
     </ion-item>
     <ion-item *ngFor="let quality of settings.qualities">
       <ion-label>{{ quality.displayName }}</ion-label>
-      <ion-toggle [(ngModel)]="quality.enabled" (ngModelChange)="toggleSourceQuality(quality)"></ion-toggle>
+      <ion-toggle [(ngModel)]="quality.enabled" (ngModelChange)="toggleSourceQuality()"></ion-toggle>
     </ion-item>
   </ion-list>
 

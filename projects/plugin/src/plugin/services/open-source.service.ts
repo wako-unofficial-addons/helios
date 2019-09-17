@@ -147,7 +147,7 @@ export class OpenSourceService {
       buttons.push({
         text: this.translateService.instant('actionSheets.open-source.options.share-url'),
         handler: () => {
-          this.share(torrent.title, torrent.url);
+          this.share(torrent.url, torrent.title);
         }
       });
     }
@@ -221,8 +221,17 @@ export class OpenSourceService {
         case 'share-url':
           buttonOptions.handler = () => {
             this.share(
-              debridSourceFile.filename,
-              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url
+              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url,
+              debridSourceFile.filename
+            );
+          };
+          break;
+
+        case 'open-with':
+          buttonOptions.handler = () => {
+            this.openWith(
+              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url,
+              debridSourceFile.filename
             );
           };
           break;
@@ -481,7 +490,7 @@ export class OpenSourceService {
     return url + '?' + urlSearchParams.toString();
   }
 
-  share(torrentTitle: string, cachedUrl: string) {
+  share(cachedUrl: string, torrentTitle: string) {
 
     if (window['plugins'] && window['plugins'].socialsharing) {
 
@@ -491,6 +500,27 @@ export class OpenSourceService {
       });
 
       logEvent('helios_action', {action: 'share-url'});
+    }
+  }
+
+  openWith(url: string, title: string) {
+    if (window['plugins'] && window['plugins'].intentShim) {
+
+      const intentShim: any = window['plugins'].intentShim;
+
+      intentShim.startActivity(
+        {
+          action: window['plugins'].intentShim.ACTION_VIEW,
+          type: 'video/*',
+          url: url,
+          extras: {
+            title: title
+          }
+        },
+        () => console.log('intentShim success'),
+        (err) => console.log('intentShim err', err)
+      );
+
     }
   }
 }

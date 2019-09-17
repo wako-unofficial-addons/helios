@@ -6,22 +6,22 @@
     <br/>
   </p>
   <p>
-    <ion-grid no-margin no-padding>
+    <ion-grid class="ion-no-margin ion-no-padding">
       <ion-row>
-        <ion-col *ngIf="source.isOnPM || source.isOnRD" text-right no-margin no-padding>
+        <ion-col *ngIf="source.isOnPM || source.isOnRD" class="ion-text-right ion-no-margin ion-no-padding">
           <ion-badge> Debrid {{ source.isOnPM ? 'PM ' : '' }} {{source.isOnRD ? 'RD' : ''}} </ion-badge>
         </ion-col>
       </ion-row>
 
       <ion-row>
-        <ion-col text-left no-margin no-padding>
-          <ion-badge color="light" margin-end>{{
+        <ion-col class="ion-text-left ion-no-margin ion-no-padding">
+          <ion-badge color="light" class="ion-margin-end">{{
               source.size | bsFileSize
             }}</ion-badge>
           <ion-badge color="dark">{{ source.providerName  }}</ion-badge>
         </ion-col>
 
-        <ion-col text-right no-margin no-padding>
+        <ion-col class="ion-text-right ion-no-margin ion-no-padding">
           <ion-badge
             color="{{ source.seeds >= 20 ? (source.peers > source.seeds ? 'warning' : 'success') : 'danger' }}"
           >S: {{ source.seeds }} / L: {{ source.peers }}

@@ -117,7 +117,10 @@ export class OpenButtonComponent implements OnInit {
               this.openSourceService.downloadWithVlc(source.url);
               break;
             case 'share-url':
-              this.openSourceService.share(title, source.url);
+              this.openSourceService.share(source.url, title);
+              break;
+            case 'open-with':
+              this.openSourceService.openWith(source.url, title);
               break;
           }
         });

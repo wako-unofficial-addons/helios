@@ -1,4 +1,5 @@
 import { SourceQuality } from './source-quality';
+import { Platform } from '@ionic/angular';
 
 export declare type PlayButtonAction =
   'open-kodi'
@@ -7,7 +8,8 @@ export declare type PlayButtonAction =
   | 'open-vlc'
   | 'download-vlc'
   | 'share-url'
-  | 'open-elementum';
+  | 'open-elementum'
+  | 'open-with';
 
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
@@ -27,6 +29,7 @@ export const PlayButtonActionAndroid: PlayButtonAction[] = [
   'open-vlc',
   'open-browser',
   'open-kodi',
+  'open-with'
 ];
 
 export interface SettingsQuality {
@@ -38,15 +41,7 @@ export interface SettingsQuality {
 export class Settings {
   defaultPlayButtonAction: PlayButtonAction = 'open-kodi';
 
-  availablePlayButtonActions: PlayButtonAction[] = [
-    'open-elementum',
-    'copy-url',
-    'share-url',
-    'open-vlc',
-    'download-vlc',
-    'open-browser',
-    'open-kodi',
-  ];
+  availablePlayButtonActions: PlayButtonAction[] = [];
   qualities: SettingsQuality[] = [
     {
       quality: '2160p',
@@ -69,4 +64,8 @@ export class Settings {
       enabled: false
     }
   ];
+
+  constructor(isAndroid: boolean) {
+    this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0)
+  }
 }

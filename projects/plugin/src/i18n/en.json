@@ -93,6 +93,7 @@
         "open-vlc": "Play on VLC",
         "download-vlc": "Download with VLC",
         "open-elementum": "Play on Kodi via Elementum",
+        "open-with": "Play on...",
         "addToPM": "Add to Premiumize.me",
         "addToRD": "Add to RealDebrid"
       },

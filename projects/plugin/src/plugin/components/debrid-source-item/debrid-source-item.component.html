@@ -6,14 +6,14 @@
     <br/>
   </p>
   <p>
-    <ion-grid no-margin no-padding>
+    <ion-grid class="ion-no-margin ion-no-padding">
       <ion-row>
-        <ion-col text-left no-margin no-padding>
-          <ion-badge color="light" margin-end>{{ source.size | bsFileSize }}</ion-badge>
+        <ion-col class="ion-text-left ion-no-margin ion-no-padding">
+          <ion-badge color="light" class="ion-margin-end">{{ source.size | bsFileSize }}</ion-badge>
           <ion-badge color="dark">{{ source.torrentProviderName  }} </ion-badge>
         </ion-col>
-        <ion-col text-right no-margin no-padding>
-          <ion-icon *ngIf="source.isPackage" name="cube" margin-end></ion-icon>
+        <ion-col class="ion-text-right ion-no-margin ion-no-padding">
+          <ion-icon *ngIf="source.isPackage" name="cube" class="ion-margin-end"></ion-icon>
           <ion-badge>{{ source.serviceName }}</ion-badge>
         </ion-col>
       </ion-row>
