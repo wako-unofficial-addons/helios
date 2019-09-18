@@ -1,5 +1,4 @@
 import { SourceQuality } from './source-quality';
-import { Platform } from '@ionic/angular';
 
 export declare type PlayButtonAction =
   'open-kodi'
@@ -9,7 +8,8 @@ export declare type PlayButtonAction =
   | 'download-vlc'
   | 'share-url'
   | 'open-elementum'
-  | 'open-with';
+  | 'open-with'
+  | 'open-nplayer';
 
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
@@ -20,6 +20,7 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'download-vlc',
   'open-browser',
   'open-kodi',
+  'open-nplayer',
 ];
 
 export const PlayButtonActionAndroid: PlayButtonAction[] = [

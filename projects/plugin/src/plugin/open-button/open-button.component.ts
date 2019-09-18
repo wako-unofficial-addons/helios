@@ -122,6 +122,9 @@ export class OpenButtonComponent implements OnInit {
             case 'open-with':
               this.openSourceService.openWith(source.url, title);
               break;
+            case 'open-nplayer':
+              this.openSourceService.openNplayer(source.url);
+              break;
           }
         });
       } else {

@@ -250,6 +250,12 @@ export class OpenSourceService {
           };
           break;
 
+        case 'open-nplayer':
+          buttonOptions.handler = () => {
+            this.openNplayer(preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url);
+          };
+          break;
+
         case 'open-kodi':
           buttonOptions.handler = () => {
             this.openKodi(
@@ -358,6 +364,16 @@ export class OpenSourceService {
     }
 
     logEvent('helios_action', {action: 'open-vlc'});
+  }
+
+  async openNplayer(videoUrl: string) {
+    if (!this.platform.is('ios')) {
+      return;
+    }
+    const url = `nplayer-${(videoUrl)}`;
+    this.browserService.open(url, false);
+
+    logEvent('helios_action', {action: 'open-nplayer'});
   }
 
   async downloadWithVlc(videoUrl: string) {
