@@ -78,7 +78,8 @@
       "failedToAddToPM": "Failed to add the source to your PM account: {{error}}",
       "addedToRD": "Source has been added to you RD account",
       "failedToAddToRD": "Failed to add the source to your RD account: {{error}}",
-      "sourceNotCached": "Failed to retrieved the video URL"
+      "sourceNotCached": "Failed to retrieved the video URL",
+      "permissionDenied": "Permission Denied - Please check you account"
     },
     "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi"
   },
@@ -96,7 +97,8 @@
         "open-with": "Play on...",
         "open-nplayer": "Play on nPlayer",
         "addToPM": "Add to Premiumize.me",
-        "addToRD": "Add to RealDebrid"
+        "addToRD": "Add to RealDebrid",
+        "letMeChoose":"Let Me choose"
       },
       "selectLink": {
         "openTitle": "This source has multiple links, which one you want to open?"

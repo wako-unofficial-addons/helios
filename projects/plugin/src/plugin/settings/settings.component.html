@@ -36,6 +36,11 @@
         <ion-select-option *ngFor="let action of availablePlayButtonActions" [value]="action">{{
           'actionSheets.open-source.options.' + action | translate
         }}</ion-select-option>
+        <ion-select-option value="">
+          {{
+            'actionSheets.open-source.options.letMeChoose' | translate
+          }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
   </ion-list>

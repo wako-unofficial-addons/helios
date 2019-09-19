@@ -1,6 +1,6 @@
 <ion-button *ngIf="settings" [class]="settings.defaultPlayButtonAction+ ' play-button' " color="primary" expand="block" size="large" (click)="play()">
   <ion-icon name="play" color="light" slot="start"></ion-icon>
-  <ion-text color="light">{{ 'actionSheets.open-source.options.' + settings.defaultPlayButtonAction | translate }}</ion-text>
+  <ion-text color="light" *ngIf="settings.defaultPlayButtonAction.length > 0">{{ 'actionSheets.open-source.options.' + settings.defaultPlayButtonAction | translate }}</ion-text>
 </ion-button>
 
 <ion-button *ngIf="settings" class="open-on-kodi" color="light" expand="block" fill="outline" (click)="openSourceModal()">

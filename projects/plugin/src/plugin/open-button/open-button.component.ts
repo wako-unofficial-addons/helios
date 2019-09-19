@@ -84,6 +84,16 @@ export class OpenButtonComponent implements OnInit {
 
   async play() {
     this.getSourceDetail().subscribe(sourceDetail => {
+      if (this.settings.defaultPlayButtonAction.length === 0) {
+        if (sourceDetail.bestDebrid) {
+          this.openSourceService.openDebridSource(sourceDetail.bestDebrid, this.kodiOpenMedia);
+          return;
+        } else if (sourceDetail.bestTorrent) {
+          this.openSourceService.openTorrentSource(sourceDetail.bestTorrent, this.kodiOpenMedia);
+          return;
+        }
+      }
+
       if (this.settings.defaultPlayButtonAction === 'open-elementum' && sourceDetail.bestTorrent) {
         this.openSourceService.openElementum(sourceDetail.bestTorrent, this.kodiOpenMedia);
       } else if (sourceDetail.bestDebrid) {

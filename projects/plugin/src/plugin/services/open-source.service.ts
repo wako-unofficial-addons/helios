@@ -8,7 +8,8 @@ import {
   KodiAppService,
   KodiGetAddonDetailsForm,
   OpenMedia,
-  ToastService
+  ToastService,
+  WakoHttpError
 } from '@wako-app/mobile-sdk';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { EMPTY, NEVER, of } from 'rxjs';
@@ -35,8 +36,7 @@ export class OpenSourceService {
     private loadingController: LoadingController,
     private clipboardService: ClipboardService,
     private settingsService: SettingsService
-  ) {
-  }
+  ) {}
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
     TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
@@ -69,7 +69,13 @@ export class OpenSourceService {
             }
           },
           err => {
-            if (err && typeof err === 'string') {
+            if (err && err instanceof WakoHttpError) {
+              if (err.status === 403) {
+                this.toastService.simpleMessage('toasts.open-source.permissionDenied', null, 4000);
+              } else {
+                this.toastService.simpleMessage(JSON.stringify(err.response), null, 4000);
+              }
+            } else if (err && typeof err === 'string') {
               this.toastService.simpleMessage(err, null, 4000);
             } else {
               this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
@@ -175,12 +181,9 @@ export class OpenSourceService {
   }
 
   private async _openDebridSource(debridSourceFile: DebridSourceFile, kodiOpenMedia?: KodiOpenMedia) {
-
     const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
     const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
     const settings = await this.settingsService.get();
-
-    const currentHost = KodiAppService.currentHost;
 
     let title = '';
     let posterUrl = '';
@@ -204,7 +207,8 @@ export class OpenSourceService {
       switch (action) {
         case 'open-browser':
           buttonOptions.handler = () => {
-            if (debridSourceFile.servicePlayerUrl) { // They have their own player
+            if (debridSourceFile.servicePlayerUrl) {
+              // They have their own player
               this.openBrowserUrl(debridSourceFile.servicePlayerUrl);
             } else {
               this.openBrowser(debridSourceFile.url, debridSourceFile.transcodedUrl, title, posterUrl);
@@ -214,7 +218,7 @@ export class OpenSourceService {
         case 'copy-url':
           buttonOptions.role = 'copy-url';
           buttonOptions.handler = () => {
-            this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'Video URL'});
+            this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
           };
           break;
 
@@ -252,7 +256,9 @@ export class OpenSourceService {
 
         case 'open-nplayer':
           buttonOptions.handler = () => {
-            this.openNplayer(preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url);
+            this.openNplayer(
+              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url
+            );
           };
           break;
 
@@ -268,7 +274,6 @@ export class OpenSourceService {
 
       buttons.push(buttonOptions);
     });
-
 
     if (buttons.length === 1) {
       buttons[0].handler();
@@ -289,7 +294,7 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(debridSourceFile.url);
-      logEvent('helios_action', {action: 'copy-url'});
+      logEvent('helios_action', { action: 'copy-url' });
     });
   }
 
@@ -298,7 +303,7 @@ export class OpenSourceService {
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
+            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -327,7 +332,7 @@ export class OpenSourceService {
 
         this.toastService.simpleMessage(toastMessage, toastParams);
 
-        logEvent('helios_action', {action: 'open-kodi'});
+        logEvent('helios_action', { action: 'open-kodi' });
       });
   }
 
@@ -341,7 +346,6 @@ export class OpenSourceService {
     const wakoUrl = `https://wako.app/player?${decodeURIComponent(urlSearchParams.toString())}`;
 
     this.openBrowserUrl(wakoUrl);
-
   }
 
   private openBrowserUrl(url: string) {
@@ -351,7 +355,7 @@ export class OpenSourceService {
       window.open(url, '_system', 'location=yes');
     }
 
-    logEvent('helios_action', {action: 'open-browser'});
+    logEvent('helios_action', { action: 'open-browser' });
   }
 
   async openVlc(videoUrl: string) {
@@ -363,17 +367,17 @@ export class OpenSourceService {
       this.browserService.open(url, false);
     }
 
-    logEvent('helios_action', {action: 'open-vlc'});
+    logEvent('helios_action', { action: 'open-vlc' });
   }
 
   async openNplayer(videoUrl: string) {
     if (!this.platform.is('ios')) {
       return;
     }
-    const url = `nplayer-${(videoUrl)}`;
+    const url = `nplayer-${videoUrl}`;
     this.browserService.open(url, false);
 
-    logEvent('helios_action', {action: 'open-nplayer'});
+    logEvent('helios_action', { action: 'open-nplayer' });
   }
 
   async downloadWithVlc(videoUrl: string) {
@@ -384,7 +388,7 @@ export class OpenSourceService {
       this.browserService.open(url, false);
     }
 
-    logEvent('helios_action', {action: 'download-vlc'});
+    logEvent('helios_action', { action: 'download-vlc' });
   }
 
   private async addToPM(url: string) {
@@ -401,10 +405,10 @@ export class OpenSourceService {
         if (data.status === 'success') {
           this.toastService.simpleMessage('toasts.open-source.addedToPM');
         } else {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', {error: data.message});
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', { error: data.message });
         }
 
-        logEvent('helios_action', {action: 'add-pm'});
+        logEvent('helios_action', { action: 'add-pm' });
       });
   }
 
@@ -419,7 +423,7 @@ export class OpenSourceService {
     RealDebridCacheUrlCommand.handle(url)
       .pipe(
         catchError(err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err});
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err });
           return EMPTY;
         }),
         finalize(() => loader.dismiss())
@@ -428,10 +432,10 @@ export class OpenSourceService {
         () => {
           this.toastService.simpleMessage('toasts.open-source.addedToRD');
 
-          logEvent('helios_action', {action: 'add-rd'});
+          logEvent('helios_action', { action: 'add-rd' });
         },
         err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err.toString()});
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err.toString() });
         }
       );
   }
@@ -441,7 +445,7 @@ export class OpenSourceService {
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
+            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -479,7 +483,7 @@ export class OpenSourceService {
 
           this.toastService.simpleMessage(toastMessage, toastParams);
 
-          logEvent('helios_action', {action: 'open-elementum'});
+          logEvent('helios_action', { action: 'open-elementum' });
         });
       });
   }
@@ -507,21 +511,18 @@ export class OpenSourceService {
   }
 
   share(cachedUrl: string, torrentTitle: string) {
-
     if (window['plugins'] && window['plugins'].socialsharing) {
-
       window['plugins'].socialsharing.shareWithOptions({
         url: cachedUrl,
         chooserTitle: torrentTitle
       });
 
-      logEvent('helios_action', {action: 'share-url'});
+      logEvent('helios_action', { action: 'share-url' });
     }
   }
 
   openWith(url: string, title: string) {
     if (window['plugins'] && window['plugins'].intentShim) {
-
       const intentShim: any = window['plugins'].intentShim;
 
       intentShim.startActivity(
@@ -534,9 +535,8 @@ export class OpenSourceService {
           }
         },
         () => console.log('intentShim success'),
-        (err) => console.log('intentShim err', err)
+        err => console.log('intentShim err', err)
       );
-
     }
   }
 }
