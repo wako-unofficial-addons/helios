@@ -101,6 +101,7 @@ export class PremiumizeSourcesFromTorrentsQuery {
                       if (sourceQuery.title) {
                         const filterTitle = cleanTitle(sourceQuery.title);
 
+                        const year = sourceQuery.year;
                         files.forEach(_file => {
                           const names = _file.path.split('/');
                           if (names.length > 1) {
@@ -109,7 +110,7 @@ export class PremiumizeSourcesFromTorrentsQuery {
 
                           const title = cleanTitle(names.join('/'));
 
-                          if (!file && title.indexOf(filterTitle) !== -1 && title.indexOf(sourceQuery.year.toString()) !== -1) {
+                          if (!file && title.indexOf(filterTitle) !== -1 && ( (year && title.indexOf(year.toString()) !== -1) || !year)) {
                             file = _file;
                           }
                         });
