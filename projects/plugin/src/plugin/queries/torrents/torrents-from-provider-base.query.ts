@@ -33,9 +33,6 @@ export abstract class TorrentsFromProviderBaseQuery {
     sourceQuery: SourceQuery | SourceEpisodeQuery | string,
     providerInfo: ProviderQueryInfo
   ): Observable<TorrentSource[]> {
-    if (provider.base_url === 'https://thepiratebay.org') {
-      provider.base_url = 'https://thepiratebayAE.org';
-    }
     return this.getToken(provider).pipe(
       switchMap(token => {
         return this._getTorrents(token, provider, sourceQuery, providerInfo).pipe(
