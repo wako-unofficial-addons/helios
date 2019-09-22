@@ -51,7 +51,7 @@ export class TorrentsEpisodesFromProvidersQuery extends TorrentsFromProviderBase
                 // get only filename with SXX no episode
 
                 return packTorrents.filter(torrent => {
-                  if (torrent.title.match(/(S[0-9]+)/i) && !torrent.title.match(/(E[^0-9]?[0-9]+)/i)) {
+                  if (torrent.title.match(/(S[0-9]+)/i) && !torrent.title.match(/([0-9]E[^0-9]?[0-9]+)/i)) {
                     torrent.isPackage = true;
                   }
                   return torrent.isPackage;
