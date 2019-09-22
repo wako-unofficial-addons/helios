@@ -31,7 +31,7 @@ export class TorrentGetUrlQuery {
           return _html.match(/(magnet[^"]+)/).shift();
         }
         if (_html.match(/http(.*?).torrent["\']/)) {
-          return 'http' + _html.match(/http(.*?).torrent["\']/).shift() + '.torrent';
+          return _html.match(/http(.*?).torrent["\']/).shift();
         }
         if (_html.match(/href="(.*?).torrent["\']/)) {
           const torrentUrl = _html.match(/href="(.*?).torrent["\']/).pop() + '.torrent';
