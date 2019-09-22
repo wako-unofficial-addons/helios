@@ -782,7 +782,7 @@
   },
   "btdb": {
     "name": "btdb",
-    "enabled": false,
+    "enabled": true,
     "languages": [
       "en"
     ],
