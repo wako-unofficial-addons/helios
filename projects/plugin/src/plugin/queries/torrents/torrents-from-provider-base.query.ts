@@ -1,6 +1,6 @@
 import { concat, Observable, of, throwError } from 'rxjs';
 import { ProviderHttpService } from '../../services/provider-http.service';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, last, map, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
 import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
 import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
@@ -201,6 +201,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     });
 
     return concat(...torrentsObs).pipe(
+      last(),
       map(() => {
         return allTorrents;
       })
@@ -340,6 +341,10 @@ export abstract class TorrentsFromProviderBaseQuery {
   }
 
   private static getSize(size: number | string) {
+    if (size === null) {
+      return null;
+    }
+
     if (Number(size)) {
       return +size;
     } else {
@@ -352,6 +357,13 @@ export abstract class TorrentsFromProviderBaseQuery {
     }
 
     return 0;
+  }
+
+  private static getFormatIntIfNotNull(value: number | string) {
+    if(value === null) {
+      return null;
+    }
+    return +value;
   }
 
   private static getTorrentsFromJsonResponse(provider: Provider, response: any): ProviderTorrentResult[] {
@@ -385,13 +397,14 @@ export abstract class TorrentsFromProviderBaseQuery {
                   torrentUrl = null;
                 }
 
+
                 const torrent: ProviderTorrentResult = {
                   providerName: provider.name,
                   title: title,
                   url: torrentUrl,
                   subPageUrl: subPageUrl,
-                  seeds: +this.getObjectFromKey(subResult, provider.json_format.seeds),
-                  peers: +this.getObjectFromKey(subResult, provider.json_format.peers),
+                  seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.seeds)),
+                  peers: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.peers)),
                   quality: quality,
                   size: 0
                 };
@@ -428,8 +441,8 @@ export abstract class TorrentsFromProviderBaseQuery {
             title: title,
             url: torrentUrl,
             subPageUrl: subPageUrl,
-            seeds: +this.getObjectFromKey(result, provider.json_format.seeds),
-            peers: +this.getObjectFromKey(result, provider.json_format.peers),
+            seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.seeds)),
+            peers: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.peers)),
             size: this.getObjectFromKey(result, provider.json_format.size),
             quality: quality
           };
@@ -479,8 +492,8 @@ export abstract class TorrentsFromProviderBaseQuery {
             title: title,
             url: torrentUrl,
             subPageUrl: subPageUrl,
-            seeds: +this.evalCode(row, providerUrl, provider, 'seeds'),
-            peers: +this.evalCode(row, providerUrl, provider, 'peers'),
+            seeds: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'seeds')),
+            peers: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'peers')),
             quality: TorrentQualityTitleQuery.getData(title || ''),
             size: 0
           };
