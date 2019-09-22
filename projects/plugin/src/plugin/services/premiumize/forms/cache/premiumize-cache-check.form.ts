@@ -1,10 +1,11 @@
 import { PremiumizeApiService } from '../../services/premiumize-api.service';
 import { PremiumizeCacheCheckDto } from '../../dtos/cache/premiumize-cache-check.dto';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export class PremiumizeCacheCheckForm {
   static submit(hash: string[]) {
+
     const allGroups = [];
     let hashGroup = [];
     hash.forEach(h => {
@@ -39,6 +40,10 @@ export class PremiumizeCacheCheckForm {
       response: [],
       transcoed: []
     };
+
+    if (obss.length === 0) {
+      return of(dto);
+    }
 
     return forkJoin(...obss)
       .pipe(map((dtos: PremiumizeCacheCheckDto[]) => {
