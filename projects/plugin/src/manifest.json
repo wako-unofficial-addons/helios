@@ -1,9 +1,9 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "id": "plugin.helios",
   "name": "Helios",
-  "description": "Helios is a multi-source addon for wako with the added ability to install custom provider. Helios allows users to connect to multiple online/offline services at once for their viewing with a single click.",
+  "description": "Helios is the streaming add-on for wako",
   "author": "Davy",
   "actions": [
     "movies",
@@ -15,6 +15,7 @@
     "fr": "/i18n/fr.json"
   },
   "changeLogs": {
+    "2.1.8": "Fix issue when trying to open video on browser",
     "2.1.7": "Fix issue with season pack",
     "2.1.6": "Handle Cloudflare",
     "2.1.5": "Bug fixes",
