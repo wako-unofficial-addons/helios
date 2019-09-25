@@ -343,7 +343,7 @@ export class OpenSourceService {
     urlSearchParams.set('videoUrl', videoUrl);
     urlSearchParams.set('transcodedUrl', transcodedUrl ? transcodedUrl : videoUrl);
 
-    const wakoUrl = `https://wako.app/player?${decodeURIComponent(urlSearchParams.toString())}`;
+    const wakoUrl = `https://wako.app/player?${urlSearchParams.toString()}`;
 
     this.openBrowserUrl(wakoUrl);
   }
