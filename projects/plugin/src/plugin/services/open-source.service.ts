@@ -319,7 +319,10 @@ export class OpenSourceService {
               seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktSeasonNumber : null,
               episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
             };
+
+            videoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
           }
+
           return KodiAppService.openUrl(videoUrl, openMedia, true);
         })
       )
