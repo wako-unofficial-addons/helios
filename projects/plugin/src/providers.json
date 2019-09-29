@@ -468,8 +468,14 @@
     ],
     "base_url": "https://pirateproxy.live",
     "fallback_urls": [
-      "https://thepiratebay.org", "https://thepiratebay.fun", "https://thepiratebay.asia", "https://tpb.party",
-      "https://thepiratebay3.org", "https://thepiratebayz.org", "https://thehiddenbay.com", "https://piratebay.live",
+      "https://thepiratebay.org",
+      "https://thepiratebay.fun",
+      "https://thepiratebay.asia",
+      "https://tpb.party",
+      "https://thepiratebay3.org",
+      "https://thepiratebayz.org",
+      "https://thehiddenbay.com",
+      "https://piratebay.live",
       "https://thepiratebay.zone"
     ],
     "response_type": "text",
@@ -990,6 +996,56 @@
       ":": "",
       "'": "",
       "&": ""
+    }
+  },
+  "yohoho": {
+    "name": "YOHOHO",
+    "enabled": false,
+    "languages": [
+      "ru"
+    ],
+    "base_url": "https://4h0y.yohoho.cc/?title=",
+    "response_type": "text",
+    "movie": {
+      "query": "{query}",
+      "keywords": "{title} {year}"
+    },
+    "episode": {
+      "query": "{query}",
+      "keywords": "{title} {episodeCode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('tbody > tr')",
+      "title": "row.querySelector('td:nth-child(3) span').innerText",
+      "peers": "2",
+      "seeds": "2",
+      "size": "row.querySelector('td:nth-child(4) div').innerText",
+      "url": "row.querySelector('td:nth-child(5) a').getAttribute('href')"
+    }
+  },
+  "rutor": {
+    "name": "RuTor",
+    "enabled": false,
+    "languages": [
+      "ru"
+    ],
+    "base_url": "http://rutor.info/search/{query}",
+    "response_type": "text",
+    "movie": {
+      "query": "",
+      "keywords": "{title} {year}"
+    },
+    "episode": {
+      "query": "",
+      "keywords": "{title} {season}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('tr.gai, tr.tum')",
+      "title": "row.querySelector('td:nth-child(2)').innerText",
+      "peers": "row.querySelector('td:nth-child(5) span.green').innerText",
+      "seeds": "row.querySelector('td:nth-child(5) span.red').innerText",
+      "size": "row.querySelector('td:nth-child(4)').innerText",
+      "url": "row.querySelector('td:nth-child(2) a:nth-child(1)').getAttribute('href')"
     }
   }
 }
