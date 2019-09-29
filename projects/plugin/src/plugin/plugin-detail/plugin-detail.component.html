@@ -1,10 +1,12 @@
 <ion-toolbar>
   <ion-searchbar
+    wkHideKeyboardEnter
     (ionChange)="onSearch($event)"
     [value]="searchInput"
     debounce="1000"
     [placeholder]="'modals.search-manual.search' | translate"
     mode="ios"
+    [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
   ></ion-searchbar>
 </ion-toolbar>
 <ion-toolbar>

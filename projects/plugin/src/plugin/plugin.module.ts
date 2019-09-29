@@ -27,6 +27,7 @@ import { SourceService } from './services/sources/source.service';
 import { SettingsService } from './services/settings.service';
 import { DebridSourceService } from './services/sources/debrid-source.service';
 import { DebridSourceItemComponent } from './components/debrid-source-item/debrid-source-item.component';
+import { HideKeyboardEnterDirective } from './directives/hide-keyboard-enter.directive';
 
 
 const components = [
@@ -43,9 +44,12 @@ const components = [
   DebridSourceItemComponent,
 ];
 
+const directives = [HideKeyboardEnterDirective];
+
+
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule.forRoot(), TranslateModule.forRoot(), ClipboardModule],
-  declarations: [...components, FileSizePipe],
+  declarations: [...components, FileSizePipe, ...directives],
   entryComponents: [...components],
   providers: [
     PluginService,
