@@ -1,7 +1,7 @@
 import { ComponentFactoryResolver, Injectable, Injector, ViewContainerRef } from '@angular/core';
 
 import {
-  EpisodeDetailBaseComponent,
+  EpisodeDetailBaseComponent, EpisodeItemOptionBaseComponent,
   MovieDetailBaseComponent,
   PluginAction,
   PluginBaseService,
@@ -173,6 +173,17 @@ export class PluginLoaderFakeService {
       } else if (action === 'plugin-detail' && moduleType.pluginDetailComponent) {
         const compFactory = this.componentFactoryResolver.resolveComponentFactory<any>(moduleType.pluginDetailComponent);
         viewContainerRef.createComponent<any>(compFactory);
+      } else if (
+        action === 'episodes-item-option' &&
+        pluginMap.pluginDetail.manifest.actions.includes(action) &&
+        moduleType.episodeItemOptionComponent
+      ) {
+        const compFactory = this.componentFactoryResolver.resolveComponentFactory<EpisodeItemOptionBaseComponent>(
+          moduleType.episodeItemOptionComponent
+        );
+        const episodeComponent = viewContainerRef.createComponent<EpisodeItemOptionBaseComponent>(compFactory);
+
+        episodeComponent.instance.setShowEpisode(data.show, data.episode);
       }
     });
   }

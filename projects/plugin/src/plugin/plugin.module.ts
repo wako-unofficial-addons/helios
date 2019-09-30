@@ -28,11 +28,13 @@ import { SettingsService } from './services/settings.service';
 import { DebridSourceService } from './services/sources/debrid-source.service';
 import { DebridSourceItemComponent } from './components/debrid-source-item/debrid-source-item.component';
 import { HideKeyboardEnterDirective } from './directives/hide-keyboard-enter.directive';
+import { EpisodeItemOptionComponent } from './episode-item-option/episode-item-option.component';
 
 
 const components = [
   MovieButtonComponent,
   EpisodeButtonComponent,
+  EpisodeItemOptionComponent,
   SettingsComponent,
   ProvidersComponent,
   CloudAccountListComponent,
@@ -70,5 +72,6 @@ export class PluginModule extends PluginBaseModule {
   static settingsComponent = SettingsComponent;
   static movieComponent = MovieButtonComponent;
   static episodeComponent = EpisodeButtonComponent;
+  static episodeItemOptionComponent = EpisodeItemOptionComponent;
   static pluginDetailComponent = PluginDetailComponent;
 }

@@ -13,6 +13,10 @@
         "play-button": {
           "header": "Play Button",
           "item": "Play button action par défaut"
+        },
+        "openRemoteList": {
+          "header": "Télécommande",
+          "item": "Ouvrir la télécommande après avoir cliqué"
         }
       }
     },
@@ -125,7 +129,7 @@
     "noProviderSet": "Aucun Provider n'est défini"
   },
   "open-button": {
-    "more": "More"
+    "more": "Sources"
   },
   "sources": {
     "segments": {

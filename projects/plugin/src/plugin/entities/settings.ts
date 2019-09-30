@@ -66,6 +66,8 @@ export class Settings {
     }
   ];
 
+  openRemoteAfterClickOnPlay = true;
+
   constructor(isAndroid: boolean) {
     this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0)
   }

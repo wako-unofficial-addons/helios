@@ -23,6 +23,19 @@
 </ion-list>
 
 <div *ngIf="settings">
+
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        {{ 'pages.settings.list.openRemoteList.header' | translate }}
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label> {{ 'pages.settings.list.openRemoteList.item' | translate }}</ion-label>
+      <ion-toggle [ngModel]="settings.openRemoteAfterClickOnPlay" (ionChange)="setOpenRemoteAfterClickOnPlaySetting($event.detail.checked)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
   <ion-list lines="full">
     <ion-list-header>
       <ion-label>

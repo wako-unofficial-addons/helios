@@ -94,4 +94,11 @@ export class SettingsComponent implements OnInit {
 
     this.settingsService.set(this.settings);
   }
+
+
+  setOpenRemoteAfterClickOnPlaySetting(openRemoteAfterClickOnPlay) {
+    this.settings.openRemoteAfterClickOnPlay = openRemoteAfterClickOnPlay;
+
+    this.settingsService.set(this.settings);
+  }
 }

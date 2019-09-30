@@ -12,7 +12,7 @@ import {
   WakoHttpError
 } from '@wako-app/mobile-sdk';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
-import { EMPTY, NEVER, of } from 'rxjs';
+import { EMPTY, from, NEVER, of } from 'rxjs';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { PremiumizeTransferCreateForm } from './premiumize/forms/transfer/premiumize-transfer-create.form';
 import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-cache-url.command';
@@ -36,7 +36,8 @@ export class OpenSourceService {
     private loadingController: LoadingController,
     private clipboardService: ClipboardService,
     private settingsService: SettingsService
-  ) {}
+  ) {
+  }
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
     TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
@@ -218,7 +219,7 @@ export class OpenSourceService {
         case 'copy-url':
           buttonOptions.role = 'copy-url';
           buttonOptions.handler = () => {
-            this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
+            this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'Video URL'});
           };
           break;
 
@@ -294,16 +295,17 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(debridSourceFile.url);
-      logEvent('helios_action', { action: 'copy-url' });
+      logEvent('helios_action', {action: 'copy-url'});
     });
   }
 
   async openKodi(videoUrl: string, kodiOpenMedia?: KodiOpenMedia) {
+
     KodiAppService.checkAndConnectToCurrentHost()
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
+            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -323,10 +325,16 @@ export class OpenSourceService {
             videoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
           }
 
-          return KodiAppService.openUrl(videoUrl, openMedia, true);
+          return from(this.settingsService.get())
+            .pipe(
+              switchMap(settings => {
+                return KodiAppService.openUrl(videoUrl, openMedia, settings.openRemoteAfterClickOnPlay);
+              })
+            )
         })
       )
       .subscribe(() => {
+        debugger;
         const toastMessage = 'toasts.startOpening';
         const toastParams = {
           title: !kodiOpenMedia ? '' : (kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title).replace(/\./g, ' '),
@@ -335,7 +343,7 @@ export class OpenSourceService {
 
         this.toastService.simpleMessage(toastMessage, toastParams);
 
-        logEvent('helios_action', { action: 'open-kodi' });
+        logEvent('helios_action', {action: 'open-kodi'});
       });
   }
 
@@ -358,7 +366,7 @@ export class OpenSourceService {
       window.open(url, '_system', 'location=yes');
     }
 
-    logEvent('helios_action', { action: 'open-browser' });
+    logEvent('helios_action', {action: 'open-browser'});
   }
 
   async openVlc(videoUrl: string) {
@@ -370,7 +378,7 @@ export class OpenSourceService {
       this.browserService.open(url, false);
     }
 
-    logEvent('helios_action', { action: 'open-vlc' });
+    logEvent('helios_action', {action: 'open-vlc'});
   }
 
   async openNplayer(videoUrl: string) {
@@ -380,7 +388,7 @@ export class OpenSourceService {
     const url = `nplayer-${videoUrl}`;
     this.browserService.open(url, false);
 
-    logEvent('helios_action', { action: 'open-nplayer' });
+    logEvent('helios_action', {action: 'open-nplayer'});
   }
 
   async downloadWithVlc(videoUrl: string) {
@@ -391,7 +399,7 @@ export class OpenSourceService {
       this.browserService.open(url, false);
     }
 
-    logEvent('helios_action', { action: 'download-vlc' });
+    logEvent('helios_action', {action: 'download-vlc'});
   }
 
   private async addToPM(url: string) {
@@ -408,10 +416,10 @@ export class OpenSourceService {
         if (data.status === 'success') {
           this.toastService.simpleMessage('toasts.open-source.addedToPM');
         } else {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', { error: data.message });
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', {error: data.message});
         }
 
-        logEvent('helios_action', { action: 'add-pm' });
+        logEvent('helios_action', {action: 'add-pm'});
       });
   }
 
@@ -426,7 +434,7 @@ export class OpenSourceService {
     RealDebridCacheUrlCommand.handle(url)
       .pipe(
         catchError(err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err });
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err});
           return EMPTY;
         }),
         finalize(() => loader.dismiss())
@@ -435,10 +443,10 @@ export class OpenSourceService {
         () => {
           this.toastService.simpleMessage('toasts.open-source.addedToRD');
 
-          logEvent('helios_action', { action: 'add-rd' });
+          logEvent('helios_action', {action: 'add-rd'});
         },
         err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err.toString() });
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err.toString()});
         }
       );
   }
@@ -448,7 +456,7 @@ export class OpenSourceService {
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
+            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -466,7 +474,9 @@ export class OpenSourceService {
           return of(true);
         })
       )
-      .subscribe(() => {
+      .subscribe(async () => {
+        const settings = await this.settingsService.get();
+
         let openMedia: OpenMedia = {};
 
         if (kodiOpenMedia) {
@@ -477,7 +487,7 @@ export class OpenSourceService {
             episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
           };
         }
-        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, true).subscribe(() => {
+        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, settings.openRemoteAfterClickOnPlay).subscribe(() => {
           const toastMessage = 'toasts.startOpening';
           const toastParams = {
             title: torrent.title.replace(/\./g, ' '),
@@ -486,7 +496,7 @@ export class OpenSourceService {
 
           this.toastService.simpleMessage(toastMessage, toastParams);
 
-          logEvent('helios_action', { action: 'open-elementum' });
+          logEvent('helios_action', {action: 'open-elementum'});
         });
       });
   }
@@ -520,7 +530,7 @@ export class OpenSourceService {
         chooserTitle: torrentTitle
       });
 
-      logEvent('helios_action', { action: 'share-url' });
+      logEvent('helios_action', {action: 'share-url'});
     }
   }
 

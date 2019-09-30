@@ -16,6 +16,10 @@
         },
         "actions": {
           "header": "Reorder/Toggle Actions"
+        },
+        "openRemoteList": {
+          "header": "Remote",
+          "item": "Open remote after clicking"
         }
       }
     },
@@ -133,7 +137,7 @@
     "noProviderSet": "No providers set"
   },
   "open-button": {
-    "more": "More"
+    "more": "Sources List"
   },
   "sources": {
     "segments": {

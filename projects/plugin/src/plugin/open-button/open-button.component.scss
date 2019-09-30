@@ -1,3 +1,23 @@
 .play-button {
   margin-bottom: 25px;
 }
+
+.ion-item-options {
+  display: flex;
+  height: 100%;
+
+  .ion-item-detail {
+    display: grid;
+
+    ion-icon {
+      font-size: 2em;
+      width: 100%;
+    }
+
+    ion-text {
+      margin-top: 3px;
+      font-size: 8px;
+      text-transform: none;
+    }
+  }
+}

@@ -1,13 +1,14 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is the streaming add-on for wako",
   "author": "Davy",
   "actions": [
     "movies",
-    "episodes"
+    "episodes",
+    "episodes-item-option"
   ],
   "entryPoint": "/plugin.js",
   "languages": {
@@ -15,6 +16,7 @@
     "fr": "/i18n/fr.json"
   },
   "changeLogs": {
+    "2.1.9": "Add option to enable/disable automatic open remote\nAbility to hide keyboard via enter key\nHandle episodes-item-option action",
     "2.1.8": "Fix issue when trying to open video on browser",
     "2.1.7": "Fix issue with season pack",
     "2.1.6": "Handle Cloudflare",

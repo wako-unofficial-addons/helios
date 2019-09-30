@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Settings } from '../entities/settings';
-import {  Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 
 @Injectable()
 export class SettingsService {
@@ -18,6 +18,11 @@ export class SettingsService {
 
     if (!settings) {
       settings = new Settings(this.platform.is('android'));
+    }
+
+    // Patches
+    if (settings.openRemoteAfterClickOnPlay === undefined) {
+      settings.openRemoteAfterClickOnPlay = true;
     }
 
     return settings;

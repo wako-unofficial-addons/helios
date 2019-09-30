@@ -16,12 +16,13 @@ import { logEvent } from '../services/tools';
 @Component({
   selector: 'wk-open-button',
   templateUrl: './open-button.component.html',
-  styleUrls: ['./open-button.component.scss']
+  styleUrls: ['./open-button.component.scss'],
 })
 export class OpenButtonComponent implements OnInit {
   @Input() movie: Movie;
   @Input() show: Show;
   @Input() episode: Episode;
+  @Input() type: 'button' | 'item-option' = 'button';
 
   settings: Settings;
 
@@ -37,7 +38,8 @@ export class OpenButtonComponent implements OnInit {
     private openSourceService: OpenSourceService,
     private providerService: ProviderService,
     private toastService: ToastService
-  ) {}
+  ) {
+  }
 
   async ngOnInit() {
     this.settings = await this.settingsService.get();
@@ -145,7 +147,7 @@ export class OpenButtonComponent implements OnInit {
         }
         this.openSourceModal();
       }
-      logEvent('helios_main_button', { action: this.settings.defaultPlayButtonAction });
+      logEvent('helios_main_button', {action: this.settings.defaultPlayButtonAction});
     });
   }
 
