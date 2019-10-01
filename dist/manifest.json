@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "2.1.9",
+  "version": "2.2.0",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is the streaming add-on for wako",
