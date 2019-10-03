@@ -1047,5 +1047,47 @@
       "size": "row.querySelector('td:nth-child(4)').innerText",
       "url": "row.querySelector('td:nth-child(2) a:nth-child(1)').getAttribute('href')"
     }
+  },
+  "yourbittorrent": {
+    "name": "YourBittorent",
+    "enabled": true,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://yourbittorrent.com",
+    "fallback_urls": [
+      "https://yourbittorrent2.com"
+    ],
+    "response_type": "text",
+    "movie": {
+      "query": "/?v=&c=1&q={query}",
+      "keywords": "{title} {year}"
+    },
+    "episode": {
+      "query": "/?v=&c=3&q={query}",
+      "keywords": "{title} {episodeCode}"
+    },
+    "season": {
+      "query": "/?v=&c=3&q={query}",
+      "keywords": "{title} {seasonCode}"
+    },
+    "anime": {
+      "query": "/?v=&c=&q={query}",
+      "keywords": "{title} {episode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('tr.table-default')",
+      "title": "row.querySelector('td:nth-child(2)').textContent",
+      "peers": "row.querySelector('td:nth-child(6)').textContent",
+      "seeds": "row.querySelector('td:nth-child(7)').textContent",
+      "size": "row.querySelector('td:nth-child(4)').textContent",
+      "url": "row.querySelector('td:nth-child(3) a:nth-child(3)').getAttribute('href')"
+    },
+    "title_replacement": {
+      ".": "",
+      ":": "",
+      "'": "",
+      "&": ""
+    }
   }
 }
