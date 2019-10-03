@@ -10,10 +10,10 @@
     "episodes",
     "episodes-item-option"
   ],
-  "entryPoint": "/plugin.js",
+  "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
   "languages": {
-    "en": "/i18n/en.json",
-    "fr": "/i18n/fr.json"
+    "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
+    "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json"
   },
   "changeLogs": {
     "2.1.9": "Add option to enable/disable automatic open remote\nAbility to hide keyboard via enter key\nHandle episodes-item-option action",

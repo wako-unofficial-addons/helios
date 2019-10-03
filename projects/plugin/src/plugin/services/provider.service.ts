@@ -24,7 +24,7 @@ export class ProviderService {
   async setDefaultProvidersIfEmpty() {
     const providerUrl = await this.getProviderUrl();
     if (!providerUrl) {
-      await this.setProviderUrl('https://bit.ly/wako-providers');
+      await this.setProviderUrl('https://bit.ly/helios-provider');
     }
   }
 
