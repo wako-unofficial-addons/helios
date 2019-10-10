@@ -1089,5 +1089,167 @@
       "'": "",
       "&": ""
     }
+  },
+  "extratorrent": {
+    "name": "ExtraTorrent",
+    "enabled": false,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://extratorrent.ag",
+    "response_type": "text",
+    "movie": {
+      "query": "/search/?search={query}&new=1&x=0&y=0",
+      "keywords": "{title} {year}"
+    },
+    "episode": {
+      "query": "/search/?search={query}&new=1&x=0&y=0",
+      "keywords": "{title} {episodeCode}"
+    },
+    "season": {
+      "query": "/search/?search={query}&new=1&x=0&y=0",
+      "keywords": "{title} {seasonCode}"
+    },
+    "anime": {
+      "query": "/search/?search={query}&new=1&x=0&y=0",
+      "keywords": "{title} {episode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('table.tl tbody tr')",
+      "title": "row.querySelector('td.tli > a').textContent",
+      "peers": "row.querySelector('td:nth-child(7)').textContent",
+      "seeds": "row.querySelector('td:nth-child(6)').textContent",
+      "size": "row.querySelector('td:nth-child(5)').textContent",
+      "url": "row.querySelector('table.tl td:nth-child(1) > a').getAttribute('href')"
+    },
+    "title_replacement": {
+      ".": "",
+      ":": "",
+      "'": "",
+      "&": ""
+    }
+  },
+  "anirena": {
+    "name": "AniRena",
+    "enabled": true,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://www.anirena.com",
+    "response_type": "text",
+    "anime": {
+      "query": "/index.php?t=2&s={query}",
+      "keywords": "{title} {episode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('div.full2 table tbody tr')",
+      "title": "row.querySelector('td.torrents_small_info_data1').textContent",
+      "peers": "row.querySelector('td.torrents_small_leechers_data1').textContent",
+      "seeds": "row.querySelector('td.torrents_small_seeders_data1').textContent",
+      "size": "row.querySelector('td.torrents_small_size_data1').textContent",
+      "url": "row.querySelector('td.torrents_small_info_data2 > div > a:nth-child(2)').getAttribute('href')"
+    },
+    "title_replacement": {
+      ".": "",
+      ":": "",
+      "'": "",
+      "&": ""
+    }
+  },
+  "anidex": {
+    "name": "AniDex",
+    "enabled": true,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://anidex.info",
+    "response_type": "text",
+    "anime": {
+      "query": "/?q={query}",
+      "keywords": "{title} {episode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('div tbody tr')",
+      "title": "row.querySelector('span.span-not-1440').textContent",
+      "peers": "row.querySelector('td.text-danger.text-right').textContent",
+      "seeds": "row.querySelector('td.text-success.text-right').textContent",
+      "size": "row.querySelector('td.text-center.td-992').textContent",
+      "url": "row.querySelector('td:nth-child(6) > a').getAttribute('href')"
+    },
+    "title_replacement": {
+      ".": "",
+      ":": "",
+      "'": "",
+      "&": ""
+    }
+  },
+  "animetosho": {
+    "name": "Anime Tosho",
+    "enabled": true,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://animetosho.org",
+    "response_type": "text",
+    "anime": {
+      "query": "/search?q={query}",
+      "keywords": "{title} {episode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('div.home_list_entry')",
+      "title": "row.querySelector('div.link > a').textContent",
+      "peers": "row.querySelectorAll('.links > span').length > 1 && row.querySelectorAll('.links > span')[1].getAttribute('title') ? row.querySelectorAll('.links > span')[1].getAttribute('title').match(/Leechers:\\s?([0-9])*/)[1] : null",
+      "seeds": "row.querySelectorAll('.links > span').length > 1 && row.querySelectorAll('.links > span')[1].getAttribute('title') ? row.querySelectorAll('.links > span')[1].getAttribute('title').match(/Seeders:\\s?([0-9])*/)[1] : null",
+      "size": "row.querySelector('div.size').textContent",
+      "url": "row.querySelector('.links a:nth-child(3)').getAttribute('href')"
+    },
+    "title_replacement": {
+      ".": "",
+      ":": "",
+      "'": "",
+      "&": ""
+    }
+  },
+  "digbt": {
+    "name": "DIGBT",
+    "enabled": false,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://digbt.unblocked.nz",
+    "fallback_urls": [
+      "https://www.digbt.org"
+    ],
+    "response_type": "text",
+    "movie": {
+      "query": "/search/{query}-length-1/",
+      "keywords": "{title} {year}"
+    },
+    "episode": {
+      "query": "/search/{query}-length-1/?c=video&s=length&u=None",
+      "keywords": "{title} {episodeCode}"
+    },
+    "season": {
+      "query": "/search/{query}-length-1/",
+      "keywords": "{title} {seasonCode}"
+    },
+    "anime": {
+      "query": "/search/{query}-length-1/?c=video&s=length&u=None",
+      "keywords": "{title} {episode}"
+    },
+    "html_parser": {
+      "row": "doc.querySelectorAll('.x-item')",
+      "title": "row.querySelector('a.title').textContent",
+      "peers": null,
+      "seeds": null,
+      "size": "row.querySelector('.tail').textContent.match(/Size: (.*) D/)[1]",
+      "url": "row.querySelector('div.tail > a').getAttribute('href')"
+    },
+    "title_replacement": {
+      ".": "",
+      ":": "",
+      "'": "",
+      "&": ""
+    }
   }
 }
