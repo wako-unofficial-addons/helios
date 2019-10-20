@@ -65,9 +65,10 @@ export abstract class TorrentsFromProviderBaseQuery {
     }
 
     logData(`Retrieving token for ${provider.name}`);
+
     return ProviderHttpService.request(
       {
-        method: provider.http_method || 'GET',
+        method: 'GET',
         url: provider.base_url + provider.token.query,
         responseType: provider.response_type
       },
@@ -108,7 +109,6 @@ export abstract class TorrentsFromProviderBaseQuery {
     let allTorrents: TorrentSource[] = [];
 
     keywords.forEach(_keywords => {
-      let providerUrl = provider.base_url + providerInfo.query;
 
       let query = '';
       let originalQuery = '';
@@ -135,12 +135,38 @@ export abstract class TorrentsFromProviderBaseQuery {
         query = encodeURIComponent(query);
       }
 
-      if (query.trim().length === 0) {
-        console.log('EMPTY QUERY');
-        return;
+
+      const replacerObj = Object.assign({query: query}, data ? data.cleanedReplacement : {});
+
+      let isAccurate = false;
+      if (provider.base_url.match('imdbId') !== null || _keywords.match('imdbId') !== null) {
+        isAccurate = true;
+
+        if (data && data.rawReplacement.imdbId === '') {
+          console.log('EMPTY QUERY');
+          return;
+        }
+      }
+      let providerBody = null;
+
+      function replacer3(tpl: string, data: { [key: string]: any }) {
+        return tpl.replace(/{([a-z0-9]+)?}/g, ($1, $2) => {
+          return data[$2];
+        });
       }
 
-      providerUrl = replacer(providerUrl, Object.assign({query: query}, data ? data.cleanedReplacement : {}));
+      let providerUrl = provider.base_url;
+      if (provider.http_method === 'POST') {
+        providerBody = replacer3(providerInfo.query, replacerObj);
+        try {
+          providerBody = JSON.parse(providerBody);
+        } catch (e) {
+
+        }
+      } else {
+        providerUrl = replacer(provider.base_url + providerInfo.query, replacerObj);
+      }
+
 
       if (providerUrls.includes(providerUrl)) {
         return;
@@ -150,13 +176,9 @@ export abstract class TorrentsFromProviderBaseQuery {
 
       let torrents = [];
 
-      let isAccurate = false;
-      if (provider.base_url.match('imdbId') !== null || _keywords.match('imdbId') !== null) {
-        isAccurate = true;
-      }
 
       torrentsObs.push(
-        this.doProviderHttpRequest(providerUrl, provider).pipe(
+        this.doProviderHttpRequest(providerUrl, provider, providerBody).pipe(
           catchError(err => {
             if (err.status && err.status !== 404) {
               // if (err.status === -3) { // ServerNotFound
@@ -299,7 +321,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     return {rawReplacement, cleanedReplacement};
   }
 
-  private static doProviderHttpRequest(providerUrl: string, provider: Provider) {
+  private static doProviderHttpRequest(providerUrl: string, provider: Provider, providerBody = null) {
     logData(`Getting "${providerUrl}" from ${provider.name} provider`);
 
     const headers = {
@@ -315,7 +337,8 @@ export abstract class TorrentsFromProviderBaseQuery {
         method: provider.http_method || 'GET',
         headers: headers,
         url: providerUrl,
-        responseType: provider.response_type === 'json' ? 'json' : 'text'
+        responseType: provider.response_type === 'json' ? 'json' : 'text',
+        body: providerBody
       },
       null,
       provider.timeout_ms || 15000,
