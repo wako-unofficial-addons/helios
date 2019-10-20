@@ -31,7 +31,7 @@
     "@ionic/angular": "^4.10.0",
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.1",
-    "@wako-app/mobile-sdk": "^2.0.8",
+    "@wako-app/mobile-sdk": "^2.0.9",
     "concurrently": "^4.1.1",
     "core-js": "^2.5.4",
     "ngx-clipboard": "^12.2.0",
