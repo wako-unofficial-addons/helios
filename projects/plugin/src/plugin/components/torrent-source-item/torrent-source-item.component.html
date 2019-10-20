@@ -3,30 +3,31 @@
   <p class="title">
     {{ source.title }}
     <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy"></ion-icon>
-    <br />
+    <br/>
   </p>
   <p>
     <ion-grid class="ion-no-margin ion-no-padding">
       <ion-row>
         <ion-col *ngIf="source.isOnPM || source.isOnRD" class="ion-text-right ion-no-margin ion-no-padding">
-          <ion-badge> Debrid {{ source.isOnPM ? 'PM ' : '' }} {{ source.isOnRD ? 'RD' : '' }} </ion-badge>
+          <ion-badge> Cached {{ source.isOnPM ? 'PM ' : '' }} {{ source.isOnRD ? 'RD' : '' }} </ion-badge>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col class="ion-text-left ion-no-margin ion-no-padding">
-          <ion-badge *ngIf="source.size !== null" color="light" class="ion-margin-end"> {{ source.size | bsFileSize }}</ion-badge>
+          <ion-badge *ngIf="source.size !== null" color="light"
+                     class="ion-margin-end"> {{ source.size | bsFileSize }}</ion-badge>
           <ion-badge *ngIf="source.size === null" color="warning" class="ion-margin-end"> ? MB</ion-badge>
-          <ion-badge color="dark">{{ source.providerName }}</ion-badge>
+          <ion-badge color="dark">{{ source.provider }}</ion-badge>
         </ion-col>
 
         <ion-col class="ion-text-right ion-no-margin ion-no-padding">
           <ion-badge
             *ngIf="source.seeds !== null"
             color="{{ source.seeds >= 20 ? (source.peers > source.seeds ? 'warning' : 'success') : 'danger' }}"
-            >S: {{ source.seeds }} / L: {{ source.peers }}
+          >S: {{ source.seeds }} / L: {{ source.peers }}
           </ion-badge>
-          <ion-badge *ngIf="source.seeds === null" color="warning">S: ? / L: ? </ion-badge>
+          <ion-badge *ngIf="source.seeds === null" color="warning">S: ? / L: ?</ion-badge>
         </ion-col>
       </ion-row>
     </ion-grid>

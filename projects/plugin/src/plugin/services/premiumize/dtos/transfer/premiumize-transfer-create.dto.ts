@@ -1,4 +1,4 @@
-export interface PreimumizeTransferCreateDto {
+export interface PremiumizeTransferCreateDto {
   status: 'success' | 'error';
   id?: string;
   name?: string;

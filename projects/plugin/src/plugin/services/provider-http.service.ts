@@ -33,7 +33,7 @@ export class ProviderHttpService extends WakoBaseHttpService {
   }
 
   private static cfBypasser(err: WakoHttpError) {
-    if (!cordova['InAppBrowser']) {
+    if (typeof cordova === 'undefined' || !cordova['InAppBrowser']) {
       return throwError(err);
     }
 

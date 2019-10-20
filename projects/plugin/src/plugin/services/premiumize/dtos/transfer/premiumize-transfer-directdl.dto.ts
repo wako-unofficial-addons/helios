@@ -6,7 +6,7 @@ export interface PreimumizeTransferDirectdlContentDto {
   transcode_status: string;
 }
 
-export interface PreimumizeTransferDirectdlDto {
+export interface PremiumizeTransferDirectdlDto {
   status: 'success' | 'error';
   message?: string;
   content?: PreimumizeTransferDirectdlContentDto[];

@@ -1,0 +1,16 @@
+ion-slides {
+  height: 100%;
+
+  ion-slide {
+    text-align: inherit;
+    overflow: auto;
+  }
+}
+
+.swiper-slide {
+  display: block;
+}
+
+.declaimer {
+  font-style: italic;
+}

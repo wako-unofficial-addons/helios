@@ -1,9 +1,9 @@
 import { PremiumizeApiService } from '../../services/premiumize-api.service';
-import { PreimumizeTransferDirectdlDto } from '../../dtos/transfer/preimumize-transfer-directdl.dto';
+import { PremiumizeTransferDirectdlDto } from '../../dtos/transfer/premiumize-transfer-directdl.dto';
 
 export class PremiumizeTransferDirectdlForm {
   static submit(torrentUrl: string) {
-    return PremiumizeApiService.get<PreimumizeTransferDirectdlDto>(
+    return PremiumizeApiService.get<PremiumizeTransferDirectdlDto>(
       '/transfer/directdl',
       {
         src: encodeURIComponent(torrentUrl)

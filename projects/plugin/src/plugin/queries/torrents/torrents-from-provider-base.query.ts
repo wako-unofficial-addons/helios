@@ -1,13 +1,14 @@
-import { concat, Observable, of, throwError } from 'rxjs';
+import { concat, forkJoin, Observable, of, throwError } from 'rxjs';
 import { ProviderHttpService } from '../../services/provider-http.service';
-import { catchError, last, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
 import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
-import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
-import { cleanTitleCustom, convertSizeStrToBytes, logData, sortTorrentsBySeeds } from '../../services/tools';
+import { SourceQuery } from '../../entities/source-query';
+import { cleanTitleCustom, convertSizeStrToBytes, logData } from '../../services/tools';
 import { TorrentQualityTitleQuery } from './torrent-quality-title.query';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceQuality } from '../../entities/source-quality';
+import { TorrentGetUrlQuery } from './torrent-get-url.query';
 
 interface ProviderToken {
   token: string;
@@ -30,7 +31,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
   protected static getTorrents(
     provider: Provider,
-    sourceQuery: SourceQuery | SourceEpisodeQuery | string,
+    sourceQuery: SourceQuery,
     providerInfo: ProviderQueryInfo
   ): Observable<TorrentSource[]> {
     return this.getToken(provider).pipe(
@@ -39,7 +40,7 @@ export abstract class TorrentsFromProviderBaseQuery {
           catchError(err => {
             if (err instanceof WakoHttpError && err.status > 0) {
               // Something goes wrong
-              return of([]);
+              return throwError(err);
             }
 
             // maybe block
@@ -51,7 +52,7 @@ export abstract class TorrentsFromProviderBaseQuery {
                 return this.getTorrents(provider, sourceQuery, providerInfo);
               }
             }
-            return of([]);
+            return throwError(err);
           })
         );
       })
@@ -66,12 +67,12 @@ export abstract class TorrentsFromProviderBaseQuery {
     logData(`Retrieving token for ${provider.name}`);
     return ProviderHttpService.request(
       {
-        method: 'GET',
+        method: provider.http_method || 'GET',
         url: provider.base_url + provider.token.query,
         responseType: provider.response_type
       },
       provider.token.token_validity_time_ms || null,
-      provider.timeout_ms || 5000,
+      provider.timeout_ms || 15000,
       true,
       provider.time_to_wait_on_too_many_request_ms,
       provider.time_to_wait_between_each_request_ms
@@ -91,32 +92,11 @@ export abstract class TorrentsFromProviderBaseQuery {
     );
   }
 
-  static excludeDuplicateTorrentsByHash(torrents: TorrentSource[]) {
-    // First sort all torrents by seeds
-    sortTorrentsBySeeds(torrents);
-
-    const allHash = [];
-    const newTorrents = [];
-    torrents.forEach(torrent => {
-      if (!torrent.hash) {
-        newTorrents.push(torrent);
-        return;
-      }
-
-      if (!allHash.includes(torrent.hash)) {
-        allHash.push(torrent.hash);
-        newTorrents.push(torrent);
-        return;
-      }
-    });
-
-    return newTorrents;
-  }
 
   private static _getTorrents(
     token: string,
     provider: Provider,
-    sourceQuery: SourceQuery | SourceEpisodeQuery | string,
+    sourceQuery: SourceQuery,
     providerInfo: ProviderQueryInfo
   ) {
     const keywords = typeof providerInfo.keywords === 'string' ? [providerInfo.keywords] : providerInfo.keywords;
@@ -140,8 +120,8 @@ export abstract class TorrentsFromProviderBaseQuery {
       }
 
       let data;
-      if (typeof sourceQuery === 'string') {
-        query = sourceQuery.trim();
+      if (sourceQuery.query) {
+        query = sourceQuery.query.trim();
         originalQuery = query;
       } else {
         data = this.getProviderQueryReplacement(provider, sourceQuery, _keywords, token);
@@ -153,6 +133,11 @@ export abstract class TorrentsFromProviderBaseQuery {
         query = query.replace(/\s/g, provider.separator);
       } else {
         query = encodeURIComponent(query);
+      }
+
+      if (query.trim().length === 0) {
+        console.log('EMPTY QUERY');
+        return;
       }
 
       providerUrl = replacer(providerUrl, Object.assign({query: query}, data ? data.cleanedReplacement : {}));
@@ -174,8 +159,10 @@ export abstract class TorrentsFromProviderBaseQuery {
         this.doProviderHttpRequest(providerUrl, provider).pipe(
           catchError(err => {
             if (err.status && err.status !== 404) {
+              // if (err.status === -3) { // ServerNotFound
+              //   return throwError(err);
+              // }
               console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
-              return of(null);
             }
             return throwError(err);
           }),
@@ -184,6 +171,9 @@ export abstract class TorrentsFromProviderBaseQuery {
               return [];
             }
             return this.getTorrentsFromProviderHttpResponse(response, provider, providerUrl);
+          }),
+          switchMap(_torrents => {
+            return this.getHashFromSubPages(_torrents);
           }),
           map(_torrents => {
             if (isAccurate) {
@@ -199,6 +189,10 @@ export abstract class TorrentsFromProviderBaseQuery {
         )
       );
     });
+
+    if (torrentsObs.length === 0) {
+      return of([]);
+    }
 
     return concat(...torrentsObs).pipe(
       last(),
@@ -238,7 +232,7 @@ export abstract class TorrentsFromProviderBaseQuery {
       const keepIt = match !== null && match.length >= words.length;
 
       if (!keepIt) {
-        logData('Exclude', torrent.title, 'cause no match', regexStr);
+        logData('Exclude from provider', torrent.provider, torrent.title, 'cause no match', regexStr);
       }
       return keepIt;
     });
@@ -246,7 +240,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
   private static getProviderQueryReplacement(
     provider: Provider,
-    sourceQuery: SourceQuery | SourceEpisodeQuery,
+    sourceQuery: SourceQuery,
     keywords: string,
     token?: string
   ): { rawReplacement: ProviderQueryReplacement; cleanedReplacement: ProviderQueryReplacement } {
@@ -258,33 +252,37 @@ export abstract class TorrentsFromProviderBaseQuery {
       };
     }
 
+    const query = sourceQuery.movie ? sourceQuery.movie : sourceQuery.episode;
+
     const rawReplacement: ProviderQueryReplacement = {
-      title: sourceQuery.title,
-      titleFirstLetter: sourceQuery.title[0],
+      title: query.title,
+      titleFirstLetter: query.title[0],
       token: token,
-      year: sourceQuery.year ? sourceQuery.year.toString() : '',
-      imdbId: sourceQuery instanceof SourceQuery ? sourceQuery.imdbId : '',
-      episodeCode: sourceQuery instanceof SourceEpisodeQuery ? sourceQuery.episodeCode.toLowerCase() : '',
-      seasonCode: sourceQuery instanceof SourceEpisodeQuery ? sourceQuery.seasonCode.toLowerCase() : '',
-      season: sourceQuery instanceof SourceEpisodeQuery ? sourceQuery.seasonNumber.toString() : '',
-      episode: sourceQuery instanceof SourceEpisodeQuery ? sourceQuery.episodeNumber.toString() : '',
+      year: typeof query.year === 'number' ? query.year.toString() : '',
+      imdbId: query.imdbId ? query.imdbId : '',
+      episodeCode: sourceQuery.episode ? sourceQuery.episode.episodeCode.toLowerCase() : '',
+      seasonCode: sourceQuery.episode ? sourceQuery.episode.seasonCode.toLowerCase() : '',
+      season: sourceQuery.episode ? sourceQuery.episode.seasonNumber.toString() : '',
+      episode: sourceQuery.episode ? sourceQuery.episode.episodeNumber.toString() : '',
+      absoluteNumber: sourceQuery.episode && sourceQuery.episode.absoluteNumber ? sourceQuery.episode.absoluteNumber.toString() : '',
+
       query: ''
     };
 
     const cleanedReplacement: ProviderQueryReplacement = Object.assign({}, rawReplacement);
 
-    cleanedReplacement.title = cleanTitleCustom(sourceQuery.title, provider.title_replacement);
+    cleanedReplacement.title = cleanTitleCustom(query.title, provider.title_replacement);
     cleanedReplacement.titleFirstLetter = cleanedReplacement.title[0];
 
-    if (sourceQuery.alternativeTitles) {
-      Object.keys(sourceQuery.alternativeTitles).forEach(language => {
-        rawReplacement['title.' + language] = sourceQuery.alternativeTitles[language];
-        cleanedReplacement['title.' + language] = cleanTitleCustom(sourceQuery.alternativeTitles[language], provider.title_replacement);
+    if (query.alternativeTitles) {
+      Object.keys(query.alternativeTitles).forEach(language => {
+        rawReplacement['title.' + language] = query.alternativeTitles[language];
+        cleanedReplacement['title.' + language] = cleanTitleCustom(query.alternativeTitles[language], provider.title_replacement);
       });
     }
-    if (sourceQuery.originalTitle) {
-      rawReplacement['title.original'] = sourceQuery.originalTitle;
-      cleanedReplacement['title.original'] = cleanTitleCustom(sourceQuery.originalTitle, provider.title_replacement);
+    if (query.originalTitle) {
+      rawReplacement['title.original'] = query.originalTitle;
+      cleanedReplacement['title.original'] = cleanTitleCustom(query.originalTitle, provider.title_replacement);
     }
 
     rawReplacement.query = replacer(keywords, rawReplacement).trim();
@@ -314,13 +312,13 @@ export abstract class TorrentsFromProviderBaseQuery {
 
     return ProviderHttpService.request<any>(
       {
-        method: 'GET',
+        method: provider.http_method || 'GET',
         headers: headers,
         url: providerUrl,
         responseType: provider.response_type === 'json' ? 'json' : 'text'
       },
       null,
-      5000,
+      provider.timeout_ms || 15000,
       true,
       provider.time_to_wait_on_too_many_request_ms,
       provider.time_to_wait_between_each_request_ms
@@ -360,10 +358,17 @@ export abstract class TorrentsFromProviderBaseQuery {
   }
 
   private static getFormatIntIfNotNull(value: number | string) {
-    if(value === null) {
+    if (value === null) {
       return null;
     }
     return +value;
+  }
+
+  private static addBaseUrlIfNeeded(baseUrl: string, torrentUrl: string) {
+    if (torrentUrl[0] === '/') {
+      return baseUrl + torrentUrl;
+    }
+    return torrentUrl;
   }
 
   private static getTorrentsFromJsonResponse(provider: Provider, response: any): ProviderTorrentResult[] {
@@ -389,7 +394,7 @@ export abstract class TorrentsFromProviderBaseQuery {
                   ? this.getObjectFromKey(subResult, provider.json_format.quality)
                   : TorrentQualityTitleQuery.getData(title || '');
 
-                let torrentUrl = this.getObjectFromKey(subResult, provider.json_format.url);
+                let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(subResult, provider.json_format.url));
                 let subPageUrl = null;
 
                 if (provider.source_is_in_sub_page) {
@@ -428,7 +433,7 @@ export abstract class TorrentsFromProviderBaseQuery {
             ? this.getObjectFromKey(result, provider.json_format.quality)
             : TorrentQualityTitleQuery.getData(title || '');
 
-          let torrentUrl = this.getObjectFromKey(result, provider.json_format.url);
+          let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(result, provider.json_format.url));
           let subPageUrl = null;
 
           if (provider.source_is_in_sub_page) {
@@ -459,7 +464,7 @@ export abstract class TorrentsFromProviderBaseQuery {
         }
       });
     } catch (e) {
-      console.error(`Error on provider ${provider.name}`, e, response);
+      //  console.error(`Error on provider ${provider.name}`, e, response);
     }
 
     return torrents;
@@ -478,7 +483,7 @@ export abstract class TorrentsFromProviderBaseQuery {
         try {
           const title = this.evalCode(row, providerUrl, provider, 'title');
 
-          let torrentUrl = this.evalCode(row, providerUrl, provider, 'url');
+          let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.evalCode(row, providerUrl, provider, 'url'));
 
           let subPageUrl = null;
 
@@ -508,7 +513,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
           torrents.push(torrent);
         } catch (e) {
-          console.error(`Error on provider ${provider.name}`, e, response);
+          // console.error(`Error on provider ${provider.name}`, e, response);
         }
       });
     }
@@ -537,8 +542,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
     const torrent: TorrentSource = {
       id: id,
-      providerName: providerTorrentResult.providerName,
-      fileName: providerTorrentResult.title,
+      provider: providerTorrentResult.providerName,
       title: providerTorrentResult.title,
       seeds: providerTorrentResult.seeds,
       peers: providerTorrentResult.peers,
@@ -549,7 +553,8 @@ export abstract class TorrentsFromProviderBaseQuery {
       isPackage: false,
       hash: hash,
       isOnPM: false,
-      isOnRD: false
+      isOnRD: false,
+      type: 'torrent'
     };
 
     return torrent;
@@ -572,5 +577,43 @@ export abstract class TorrentsFromProviderBaseQuery {
     });
 
     return torrentSources;
+  }
+
+  private static getHashFromSubPages(torrents: TorrentSource[]) {
+    if (torrents.length === 0) {
+      return of(torrents);
+    }
+    const obss: Observable<TorrentSource>[] = [];
+
+    const allTorrents: TorrentSource[] = [];
+    const allHashes = [];
+
+    torrents.forEach(torrent => {
+      if (torrent.hash || !torrent.subPageUrl) {
+        if (torrent.hash) {
+          allHashes.push(torrent.hash);
+        }
+        allTorrents.push(torrent);
+        obss.push(of(torrent));
+        return;
+      }
+      const obs = TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).pipe(
+        map(url => {
+          if (url) {
+            torrent.url = url;
+            torrent.hash = TorrentsFromProviderBaseQuery.getHashFromUrl(url);
+          }
+          if (!torrent.hash) {
+            allTorrents.push(torrent);
+          } else if (!allHashes.includes(torrent.hash)) {
+            allHashes.push(torrent.hash);
+            allTorrents.push(torrent);
+          }
+          return torrent;
+        })
+      );
+      obss.push(obs);
+    });
+    return forkJoin(obss).pipe(mapTo(allTorrents));
   }
 }

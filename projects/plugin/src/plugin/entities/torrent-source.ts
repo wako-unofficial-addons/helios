@@ -1,9 +1,9 @@
 import { SourceQuality } from './source-quality';
+import { BaseSource } from './base-source';
 
-export class TorrentSource {
+export class TorrentSource extends BaseSource {
   id: string;
-  providerName: string;
-  fileName: string;
+  provider: string;
   title: string;
   seeds: number;
   peers: number;

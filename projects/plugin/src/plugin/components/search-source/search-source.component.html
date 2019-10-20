@@ -15,11 +15,11 @@
 </ion-header>
 
 <ion-content>
-  <wk-source-list *ngIf="!manualSearch" [sourceDetail]="sourceDetail" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
+  <wk-source-list *ngIf="!manualSearch" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
   <helios-plugin-detail
     *ngIf="manualSearch"
     [searchInput]="manualSearchValue"
-    [category]="kodiOpenMedia.movie ? 'movie' : 'tv'"
+    [category]="sourceQuery.category"
     [kodiOpenMedia]="kodiOpenMedia"
   ></helios-plugin-detail>
 </ion-content>

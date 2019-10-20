@@ -5,7 +5,8 @@ export class PremiumizeAccountInfoForm {
   static submit(apikey?: string) {
     return PremiumizeApiService.post<PremiumizeAccountInfoDto>(
       `/account/info${apikey ? '?apikey=' + apikey : ''}`,
-      null
+      null,
+      '15min'
     );
   }
 }

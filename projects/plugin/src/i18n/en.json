@@ -1,7 +1,41 @@
 {
   "pages": {
+    "tuto": {
+      "title": "Setup Wizard",
+      "skip": "Skip",
+      "slide1": {
+        "title": "What is Helios",
+        "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are <strong>publicly available</strong> on the internet.",
+        "declaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them."
+      },
+      "slide2": {
+        "title": "Add some providers",
+        "description": "As said earlier, Helios relies on providers to find sources, so let's add some"
+      },
+      "slide3": {
+        "title": "Choose quality",
+        "description": "Select the highest quality you want to play"
+      },
+      "slide4": {
+        "title": "Debrid Account",
+        "description": "If you want to play sources without any buffering issue, it's recommended to connect Helios to a debrid service"
+      },
+      "slide5": {
+        "title": "Where to play?",
+        "description": "Helios can play the source on different player, select your default player"
+      },
+      "slide6": {
+        "title": "All done",
+        "description": "You're all done, if you want to change these settings, go into Wako > Settings > Addons > Helios > Settings page",
+        "button": "Close"
+      }
+    },
     "settings": {
       "list": {
+        "wizard": {
+          "header": "Setup wizard",
+          "item": "Run setup wizard"
+        },
         "provider": {
           "header": "Providers",
           "item": "Configure Providers"
@@ -27,8 +61,9 @@
       "title": "Providers",
       "list": {
         "header": "Setup",
-        "providersUrl": "Providers URL:",
-        "noUrl": "Click here to add one"
+        "providersUrl": "Providers URLs",
+        "noUrl": "Click here to add one",
+        "addProvider": "Add providers"
       },
       "enabledSource": {
         "header": "Enabled Source",
@@ -102,7 +137,7 @@
         "open-nplayer": "Play on nPlayer",
         "addToPM": "Add to Premiumize.me",
         "addToRD": "Add to RealDebrid",
-        "letMeChoose":"Let Me choose"
+        "letMeChoose": "Let Me choose"
       },
       "selectLink": {
         "openTitle": "This source has multiple links, which one you want to open?"
@@ -129,7 +164,7 @@
         "anime": "Anime"
       }
     },
-    "search-source":{
+    "search-source": {
       "manual": "Search Sources Manually"
     }
   },
@@ -141,13 +176,17 @@
   },
   "sources": {
     "segments": {
-      "debrid": "Debrid",
+      "debrid": "Streams",
       "torrents": "Torrents",
       "stats": "Stats"
     },
-    "statsInfo":  "Note: Duplicated torrents are removed from the torrents list"
+    "statsInfo": "Note: Duplicated torrents are removed from the torrents list",
+    "addToQueue": "{{totalEpisode}} next episodes have been queued"
   },
   "shared": {
+    "noDebridAccountSet": "No Debrid Account",
+    "clickToAddDebridAccount": "Click here to add a debrid service",
+    "clickToAddProvider": "Click here to add some provider",
     "noSourceFound": "No source found",
     "noBestSource": "Helios didn't find the best source for you, please choose it manually",
     "cancel": "Cancel"

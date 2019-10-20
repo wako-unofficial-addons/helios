@@ -1,7 +1,9 @@
-import { wakoLog } from '@wako-app/mobile-sdk';
-import { DebridSource } from '../entities/debrid-source';
+import { Episode, KodiApiService, Movie, Show, wakoLog } from '@wako-app/mobile-sdk';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceByQuality } from '../entities/source-by-quality';
+import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
+import { StreamLinkSource } from '../entities/stream-link-source';
+import { KodiOpenMedia } from '../entities/kodi-open-media';
 
 
 export function logData(...data: any) {
@@ -174,7 +176,20 @@ export function cleanTitle(title: string) {
 }
 
 
-export function sortTorrentsBySize(sources: DebridSource[] | TorrentSource[]) {
+export function sortTorrentsByPackage(sources: StreamLinkSource[] | TorrentSource[]) {
+  sources.sort((torrent1, torrent2) => {
+    const score1 = torrent1.isPackage;
+    const score2 = torrent2.isPackage;
+
+    if (score1 === score2) {
+      return 0;
+    }
+
+    return score1 > score2 ? -1 : 1;
+  });
+}
+
+export function sortTorrentsBySize(sources: StreamLinkSource[] | TorrentSource[]) {
   sources.sort((torrent1, torrent2) => {
     const score1 = torrent1.size;
     const score2 = torrent2.size;
@@ -259,7 +274,7 @@ export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: stri
 }
 
 
-export function getSourcesByQuality<T>(sources: DebridSource[] | TorrentSource[], sortFunction: (source) => void) {
+export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSource[], sortFunction: (source) => void) {
   const sourceByQuality: SourceByQuality<T> = {
     sources2160p: [],
     sources1080p: [],
@@ -304,4 +319,80 @@ export function getScoreMatchingName(sourceFileName: string, targetFileName: str
   });
 
   return score;
+}
+
+
+export function getSourceQueryMovie(movie: Movie) {
+  const sourceMovieQuery = new SourceMovieQuery();
+
+  sourceMovieQuery.imdbId = movie.imdbId;
+  sourceMovieQuery.title = movie.title;
+  sourceMovieQuery.alternativeTitles = movie.alternativeTitles;
+  sourceMovieQuery.originalTitle = movie.originalTitle;
+  sourceMovieQuery.year = movie.year;
+
+  return {movie: sourceMovieQuery, category: 'movie'} as SourceQuery;
+}
+
+export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumber?: number) {
+  const sourceEpisodeQuery = new SourceEpisodeQuery();
+
+  sourceEpisodeQuery.episodeNumber = episode.traktNumber;
+  sourceEpisodeQuery.seasonNumber = episode.traktSeasonNumber;
+  sourceEpisodeQuery.episodeCode = episode.code;
+  sourceEpisodeQuery.seasonCode = 'S' + add0(episode.traktSeasonNumber).toString();
+  sourceEpisodeQuery.imdbId = episode.imdbId;
+  sourceEpisodeQuery.tvdbId = episode.tvdbId;
+  sourceEpisodeQuery.showTvdbId = show.tvdbId;
+  sourceEpisodeQuery.showTraktId = show.traktId;
+  sourceEpisodeQuery.title = show.title;
+  sourceEpisodeQuery.alternativeTitles = show.alternativeTitles;
+  sourceEpisodeQuery.originalTitle = show.originalTitle;
+  sourceEpisodeQuery.year = show.year;
+  sourceEpisodeQuery.absoluteNumber = absoluteNumber;
+  sourceEpisodeQuery.isAnime = show.genres.includes('anime');
+
+  return {episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv'} as SourceQuery;
+}
+
+export function getEpisodeCode(seasonNumber: number, episodeNumber: number) {
+  return 'S' + add0(seasonNumber) + 'E' + add0(episodeNumber);
+}
+
+export function incrementEpisodeCode(episodeCode: string) {
+  const matches = episodeCode.match(/s([0-9]*)e([0-9]*)/i);
+  if (matches) {
+    return getEpisodeCode(+matches[1], +matches[2] + 1);
+  }
+  throw 'Invalid episode code';
+}
+
+export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia) {
+  const items = [];
+  let startEpisode = kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null;
+  videoUrls.forEach(videoUrl => {
+    if (startEpisode) {
+      startEpisode++;
+    }
+
+    if (kodiOpenMedia) {
+      const openMedia = {
+        movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.traktId : null,
+        showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.traktId : null,
+        seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktSeasonNumber : null,
+        episodeNumber: startEpisode ? startEpisode : null
+      };
+
+      items.push({
+        file:
+          videoUrl +
+          `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`
+      });
+    }
+  });
+
+  return KodiApiService.doHttpAction('Playlist.Add', {
+    playlistid: 1,
+    item: items
+  });
 }

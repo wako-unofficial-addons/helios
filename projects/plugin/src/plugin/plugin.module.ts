@@ -25,10 +25,16 @@ import { FileSizePipe } from './services/file-size.pipe';
 import { ClipboardModule } from 'ngx-clipboard';
 import { SourceService } from './services/sources/source.service';
 import { SettingsService } from './services/settings.service';
-import { DebridSourceService } from './services/sources/debrid-source.service';
+import { CachedTorrentSourceService } from './services/sources/cached-torrent-source.service';
 import { DebridSourceItemComponent } from './components/debrid-source-item/debrid-source-item.component';
 import { HideKeyboardEnterDirective } from './directives/hide-keyboard-enter.directive';
 import { EpisodeItemOptionComponent } from './episode-item-option/episode-item-option.component';
+import { TvdbService } from './services/tvdb.service';
+import { SetupWizardComponent } from './components/wizard/setup-wizard.component';
+import { ProviderComponent } from './components/provider/provider.component';
+import { QualityComponent } from './components/quality/quality.component';
+import { DebridAccountComponent } from './components/debrid-account/debrid-account.component';
+import { PlayButtonComponent } from './components/play-button/play-button.component';
 
 
 const components = [
@@ -44,6 +50,11 @@ const components = [
   SearchSourceComponent,
   TorrentSourceItemComponent,
   DebridSourceItemComponent,
+  SetupWizardComponent,
+  ProviderComponent,
+  QualityComponent,
+  DebridAccountComponent,
+  PlayButtonComponent
 ];
 
 const directives = [HideKeyboardEnterDirective];
@@ -64,7 +75,8 @@ const directives = [HideKeyboardEnterDirective];
     FileSizePipe,
     SourceService,
     SettingsService,
-    DebridSourceService
+    CachedTorrentSourceService,
+    TvdbService
   ] // Add your services here. Do not use provideIn: 'root' in your services
 })
 export class PluginModule extends PluginBaseModule {

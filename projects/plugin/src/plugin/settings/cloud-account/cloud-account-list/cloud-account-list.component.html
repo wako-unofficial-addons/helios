@@ -9,58 +9,5 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        <img src="https://www.premiumize.me/icon.svg" class="pm-icon" alt=""/>
-        Premiumize.me
-        <ion-spinner *ngIf="isLoadingPremiumize"></ion-spinner>
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-text [innerHTML]="'pages.debrid-account.list.premiumize.explain' | translate">
-      </ion-text>
-      <ion-list lines="full">
-        <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
-          <ion-label>{{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}</ion-label>
-          <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)"></ion-toggle>
-        </ion-item>
-        <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged" button (click)="logoutPremiumize()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
-        </ion-item>
-        <ion-item class="ion-no-padding" *ngIf="!isPremiumizeLogged" button (click)="loginPremiumize()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
-        </ion-item>
-        <ion-item class="ion-no-padding" *ngIf="!isPremiumizeLogged" button (click)="openPremiumize()">
-          <ion-label>{{ 'pages.debrid-account.list.premiumize.noAccount' | translate }}</ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        <img src="https://fcdn.real-debrid.com/0762/images/logo.png" class="rd-icon" alt="RealDebrid"/>
-        <ion-spinner *ngIf="isLoadingPremiumize"></ion-spinner>
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-text>
-        {{ 'pages.debrid-account.list.realDebrid.explain' | translate }}
-      </ion-text>
-
-      <ion-list lines="full">
-        <ion-item class="ion-no-padding" *ngIf="isRealDebridLogged" button (click)="logoutRealDebrid()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
-        </ion-item>
-        <ion-item class="ion-no-padding" *ngIf="!isRealDebridLogged" button (click)="loginRealDebrid()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
-        </ion-item>
-        <ion-item class="ion-no-padding" *ngIf="!isRealDebridLogged" button (click)="openRealDebrid()">
-          <ion-label>{{ 'pages.debrid-account.list.realDebrid.noAccount' | translate }}</ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+  <wk-debrid-account></wk-debrid-account>
 </ion-content>

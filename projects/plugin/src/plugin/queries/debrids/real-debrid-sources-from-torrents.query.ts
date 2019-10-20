@@ -2,12 +2,11 @@ import { of } from 'rxjs';
 import { RealDebridTorrentsInstantAvailabilityForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
 import { catchError, map } from 'rxjs/operators';
 import { RealDebridGetCachedUrlQuery } from '../../services/real-debrid/queries/real-debrid-get-cached-url.query';
-import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
+import { SourceQuery } from '../../entities/source-query';
 import { isEpisodeCodeMatchesFileName } from '../../services/tools';
 import { RealDebridApiService } from '../../services/real-debrid/services/real-debrid-api.service';
 import { TorrentSource } from '../../entities/torrent-source';
-import { DebridSource, DebridSourceFile } from '../../entities/debrid-source';
-import { RealDebridUnrestrictLinkDto } from '../../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
+import { StreamLinkSource } from '../../entities/stream-link-source';
 
 export class RealDebridSourcesFromTorrentsQuery {
   private static hasRealDebrid() {
@@ -24,11 +23,11 @@ export class RealDebridSourcesFromTorrentsQuery {
     return allHashes;
   }
 
-  static getData(torrents: TorrentSource[], sourceQuery: SourceQuery | SourceEpisodeQuery | string) {
-    const debridSources: DebridSource[] = [];
+  static getData(torrents: TorrentSource[], sourceQuery: SourceQuery) {
+    const streamLinkSources: StreamLinkSource[] = [];
 
     if (torrents.length === 0 || !this.hasRealDebrid()) {
-      return of(debridSources);
+      return of(streamLinkSources);
     }
     const allHashes = this.getAllHash(torrents);
 
@@ -47,11 +46,15 @@ export class RealDebridSourcesFromTorrentsQuery {
           // Take the group with the most video files
           let groupIndex = 0;
 
-          if (sourceQuery instanceof SourceEpisodeQuery) {
+
+          if (sourceQuery.episode) {
             const groupWithFile = [];
 
 
             let firstVideoFileIndex = null;
+
+            const episodeCode = sourceQuery.episode.episodeCode;
+
             data.rd.forEach((rd, index) => {
               Object.keys(rd).forEach(key => {
                 const file = rd[key];
@@ -60,7 +63,7 @@ export class RealDebridSourcesFromTorrentsQuery {
                   firstVideoFileIndex = index;
                 }
 
-                if (file.filename.match(/.mkv|.mp4/) && isEpisodeCodeMatchesFileName(sourceQuery.episodeCode, file.filename)) {
+                if (file.filename.match(/.mkv|.mp4/) && isEpisodeCodeMatchesFileName(episodeCode, file.filename)) {
                   groupWithFile.push(index);
                 }
               });
@@ -76,81 +79,35 @@ export class RealDebridSourcesFromTorrentsQuery {
 
           torrent.isOnRD = true;
 
-          const debridSource = new DebridSource(
+          const debridSource = new StreamLinkSource(
             'RD-' + torrent.hash,
             torrent.title,
             torrent.size,
             torrent.quality,
-            true,
-            torrent.hash,
+            'cached_torrent',
             torrent.isPackage,
             'RD',
-            torrent.providerName
+            torrent.provider
           );
 
-          debridSource.fromTorrent = true;
 
           const fileIds = Object.getOwnPropertyNames(data.rd[groupIndex]);
 
-          debridSource.debridSourceFileObs = RealDebridGetCachedUrlQuery.getData(
+          debridSource.realDebridLinks = RealDebridGetCachedUrlQuery.getData(
             torrent.url,
             fileIds.join(','),
             torrent.isPackage
-          ).pipe(
-            map(links => {
-              let debridSourceFile: DebridSourceFile = null;
-              let foundLink: RealDebridUnrestrictLinkDto = null;
-
-              if (sourceQuery instanceof SourceEpisodeQuery) {
-                links.forEach(link => {
-                  if (!foundLink && isEpisodeCodeMatchesFileName(sourceQuery.episodeCode, link.filename)) {
-                    foundLink = link;
-                  }
-                });
-              } else if (sourceQuery instanceof SourceQuery) {
-                foundLink = links.shift();
-              }
-
-              if (foundLink) {
-
-                debridSourceFile = new DebridSourceFile(
-                  torrent.title,
-                  foundLink.download,
-                  foundLink.filename,
-                  !!foundLink.streamable,
-                  null,
-                  `https://real-debrid.com/streaming-${foundLink.id}`
-                );
-                return debridSourceFile;
-              }
-
-              const debridSourceFiles: DebridSourceFile[] = [];
-
-              links.forEach(link => {
-                const debridSourceFile = new DebridSourceFile(
-                  torrent.title,
-                  link.download,
-                  link.filename,
-                  !!link.streamable,
-                  null,
-                  `https://real-debrid.com/streaming-${link.id}`
-                );
-                debridSourceFiles.push(debridSourceFile);
-              });
-
-              return debridSourceFiles.length === 1 ? debridSourceFiles.pop() : debridSourceFiles;
-            })
           );
 
-          debridSources.push(debridSource);
+          streamLinkSources.push(debridSource);
 
         });
 
-        return debridSources;
+        return streamLinkSources;
       }),
       catchError(err => {
         console.log('RD err', err);
-        return of(debridSources);
+        return of(streamLinkSources);
       })
     );
   }

@@ -20,11 +20,11 @@ export interface ProviderQueryReplacement {
 export interface Provider {
   name: string;
   enabled: boolean;
-  enabled_in_list: boolean; // If true will be enabled in list mode
   languages: string[];
   base_url: string;
   fallback_urls?: string[];
   response_type: 'json' | 'text';
+  http_method?: 'GET' | 'POST';
   time_to_wait_between_each_request_ms?: number; // In list mode we're gonna do request on all visible media
   time_to_wait_on_too_many_request_ms?: number;
   timeout_ms?: number

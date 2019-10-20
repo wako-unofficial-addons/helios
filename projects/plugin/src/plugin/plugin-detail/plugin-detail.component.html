@@ -20,6 +20,4 @@
   </ion-item>
 </ion-toolbar>
 
-<ion-spinner *ngIf="searching" class="center"></ion-spinner>
-
-<wk-source-list *ngIf="sourceDetail" [sourceDetail]="sourceDetail" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
+<wk-source-list [manualSearchCategory]="category" [manualSearchValue]="searchInput" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>

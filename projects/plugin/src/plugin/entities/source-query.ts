@@ -1,4 +1,5 @@
-export class SourceQuery {
+
+export class SourceMovieQuery {
   imdbId: string;
   year: number;
   title: string;
@@ -6,9 +7,23 @@ export class SourceQuery {
   originalTitle?: string;
 }
 
-export class SourceEpisodeQuery extends SourceQuery {
+
+
+export class SourceEpisodeQuery extends SourceMovieQuery {
   episodeNumber: number;
   seasonNumber: number;
   episodeCode: string;
   seasonCode: string;
+  absoluteNumber?: number;
+  isAnime: boolean;
+  tvdbId: number;
+  showTvdbId: number;
+  showTraktId: number;
+}
+
+export interface SourceQuery {
+  query?: string; // Manual search
+  movie?: SourceMovieQuery;
+  episode?: SourceEpisodeQuery;
+  category: 'movie' | 'tv' | 'anime';
 }

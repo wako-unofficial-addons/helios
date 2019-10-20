@@ -4,19 +4,21 @@ import { LoadingController, ModalController } from '@ionic/angular';
 import { SourceService } from '../services/sources/source.service';
 import { SettingsService } from '../services/settings.service';
 import { Settings } from '../entities/settings';
-import { SourceDetail } from '../entities/source-detail';
-import { from, of } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
 import { SearchSourceComponent } from '../components/search-source/search-source.component';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { OpenSourceService } from '../services/open-source.service';
 import { ProviderService } from '../services/provider.service';
-import { logEvent } from '../services/tools';
+import { logData, logEvent } from '../services/tools';
+import { NEVER } from 'rxjs';
+import { StreamLinkSource } from '../entities/stream-link-source';
+import { TorrentSource } from '../entities/torrent-source';
+import { finalize } from 'rxjs/operators';
+import { ProvidersComponent } from '../settings/providers/providers.component';
 
 @Component({
   selector: 'wk-open-button',
   templateUrl: './open-button.component.html',
-  styleUrls: ['./open-button.component.scss'],
+  styleUrls: ['./open-button.component.scss']
 })
 export class OpenButtonComponent implements OnInit {
   @Input() movie: Movie;
@@ -26,9 +28,11 @@ export class OpenButtonComponent implements OnInit {
 
   settings: Settings;
 
-  private kodiOpenMedia: KodiOpenMedia;
+  bestSource: TorrentSource | StreamLinkSource;
 
-  private sourceDetail: SourceDetail;
+  elapsedTime = 0;
+
+  private kodiOpenMedia: KodiOpenMedia;
 
   constructor(
     private modalCtrl: ModalController,
@@ -37,7 +41,8 @@ export class OpenButtonComponent implements OnInit {
     private loadingCtrl: LoadingController,
     private openSourceService: OpenSourceService,
     private providerService: ProviderService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private modalController: ModalController
   ) {
   }
 
@@ -49,65 +54,71 @@ export class OpenButtonComponent implements OnInit {
       show: this.show,
       episode: this.episode
     };
+
   }
 
-  private getSourceDetail() {
-    this.providerService.getAll().then(providers => {
-      if (providers.length === 0) {
-        this.toastService.simpleMessage('source-list.noProviderSet');
-      }
+  private getBestSource() {
+    if (this.movie) {
+      return this.sourceService.getBestMovieSource(this.movie);
+    }
+    return this.sourceService.getBestEpisodeSource(this.show, this.episode);
+  }
+
+
+  private async openProviderModal() {
+    const modal = await this.modalController.create({
+      component: ProvidersComponent
     });
 
-    if (this.sourceDetail) {
-      return of(this.sourceDetail);
-    }
+    await modal.present();
 
-    let loading;
-    return from(
-      this.loadingCtrl.create({
-        message: 'Searching for sources'
-      })
-    ).pipe(
-      switchMap(_loading => {
-        loading = _loading;
-        loading.present();
-
-        if (this.movie) {
-          return this.sourceService.getMovie(this.movie);
-        }
-        return this.sourceService.getEpisode(this.show, this.episode);
-      }),
-      tap(sourceDetail => {
-        this.sourceDetail = sourceDetail;
-        loading.dismiss();
-      })
-    );
+    modal.onDidDismiss().then(() => this.play());
   }
 
   async play() {
-    this.getSourceDetail().subscribe(sourceDetail => {
-      if (this.settings.defaultPlayButtonAction.length === 0) {
-        if (sourceDetail.bestDebrid) {
-          this.openSourceService.openDebridSource(sourceDetail.bestDebrid, this.kodiOpenMedia);
-          return;
-        } else if (sourceDetail.bestTorrent) {
-          this.openSourceService.openTorrentSource(sourceDetail.bestTorrent, this.kodiOpenMedia);
+    const providers = await this.providerService.getAll(true);
+
+    if (providers.length === 0) {
+      this.toastService.simpleMessage('source-list.noProviderSet');
+
+      this.openProviderModal();
+      return NEVER;
+    }
+
+    const loader = await this.loadingCtrl.create({
+      message: 'Searching for sources'
+    });
+
+    loader.present();
+
+    const startTime = Date.now();
+
+
+    this.getBestSource()
+      .pipe(
+        finalize(() => {
+          loader.dismiss();
+        }))
+      .subscribe(bestSource => {
+
+        const endTime = Date.now();
+
+        this.elapsedTime = endTime - startTime;
+
+        logData(`Get bestSource ${bestSource} in ${this.elapsedTime} ms`);
+
+        if (!bestSource) {
+          this.toastService.simpleMessage('shared.noBestSource', null, 4000);
+          this.openSourceModal();
           return;
         }
-      }
 
-      if (this.settings.defaultPlayButtonAction === 'open-elementum' && sourceDetail.bestTorrent) {
-        this.openSourceService.openElementum(sourceDetail.bestTorrent, this.kodiOpenMedia);
-      } else if (sourceDetail.bestDebrid) {
-        sourceDetail.bestDebrid.debridSourceFileObs.subscribe(source => {
-          if (!source) {
-            // TODO
-            return;
-          }
-          if (Array.isArray(source)) {
-            // TODO
-            return;
-          }
+        this.bestSource = bestSource;
+
+        if (bestSource.type === 'torrent') {
+          this.openSourceService.openElementum(bestSource as TorrentSource, this.kodiOpenMedia);
+          return;
+        } else if (bestSource instanceof StreamLinkSource) {
 
           const title = this.kodiOpenMedia.movie
             ? this.kodiOpenMedia.movie.title
@@ -115,56 +126,52 @@ export class OpenButtonComponent implements OnInit {
 
           const images = this.kodiOpenMedia.movie ? this.kodiOpenMedia.movie.images_url : this.kodiOpenMedia.show.images_url;
 
+          const streamLink = bestSource.streamLinks[0];
+
           switch (this.settings.defaultPlayButtonAction) {
             case 'open-kodi':
-              this.openSourceService.openKodi(source.url, this.kodiOpenMedia);
+              const urls = [];
+              bestSource.streamLinks.forEach(streamLink => {
+                urls.push(streamLink.url);
+              });
+              this.openSourceService.openKodi(urls, this.kodiOpenMedia);
               break;
             case 'open-browser':
-              this.openSourceService.openBrowser(source.url, source.transcodedUrl, title, images ? images.poster_original : null);
+              this.openSourceService.openBrowser(streamLink.url, streamLink.transcodedUrl, title, images ? images.poster_original : null);
               break;
             case 'open-vlc':
-              this.openSourceService.openVlc(source.url);
+              this.openSourceService.openVlc(streamLink.url);
               break;
             case 'download-vlc':
-              this.openSourceService.downloadWithVlc(source.url);
+              this.openSourceService.downloadWithVlc(streamLink.url);
               break;
             case 'share-url':
-              this.openSourceService.share(source.url, title);
+              this.openSourceService.share(streamLink.url, title);
               break;
             case 'open-with':
-              this.openSourceService.openWith(source.url, title);
+              this.openSourceService.openWith(streamLink.url, title);
               break;
             case 'open-nplayer':
-              this.openSourceService.openNplayer(source.url);
+              this.openSourceService.openNplayer(streamLink.url);
               break;
           }
-        });
-      } else {
-        // Errors
-        if (!sourceDetail.bestDebrid && sourceDetail.torrentSources.length > 0) {
-          // No best source found
-          this.toastService.simpleMessage('shared.noBestSource', null, 4000);
+
         }
-        this.openSourceModal();
-      }
-      logEvent('helios_main_button', {action: this.settings.defaultPlayButtonAction});
-    });
+      });
+
+    logEvent('helios_main_button', {action: this.settings.defaultPlayButtonAction});
   }
 
   async openSourceModal() {
-    this.getSourceDetail().subscribe(sourceDetail => {
-      this.modalCtrl
-        .create({
-          component: SearchSourceComponent,
-          componentProps: {
-            kodiOpenMedia: this.kodiOpenMedia,
-            sourceDetail: sourceDetail
-          }
-        })
-        .then(modal => {
-          modal.present();
-          logEvent('helios_more_button', null);
-        });
+    const modal = await this.modalCtrl.create({
+      component: SearchSourceComponent,
+      componentProps: {
+        kodiOpenMedia: this.kodiOpenMedia
+      }
     });
+
+    modal.present();
+
+    logEvent('helios_more_button', null);
   }
 }

@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { DebridAccountService } from './debrid-account.service';
 import {
   BrowserService,
+  EventCategory,
+  EventService,
   KodiApiService,
   KodiAppService,
   KodiGetAddonDetailsForm,
@@ -11,7 +13,7 @@ import {
   ToastService,
   WakoHttpError
 } from '@wako-app/mobile-sdk';
-import { catchError, finalize, map, switchMap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { EMPTY, from, NEVER, of } from 'rxjs';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { PremiumizeTransferCreateForm } from './premiumize/forms/transfer/premiumize-transfer-create.form';
@@ -19,10 +21,13 @@ import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-ca
 import { ClipboardService } from 'ngx-clipboard';
 import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
 import { TorrentSource } from '../entities/torrent-source';
-import { DebridSource, DebridSourceFile } from '../entities/debrid-source';
 import { HeliosCacheService } from './provider-cache.service';
-import { getPreviousFileNamePlayed, logEvent } from './tools';
+import { addToKodiPlaylist, getPreviousFileNamePlayed, logEvent } from './tools';
 import { SettingsService } from './settings.service';
+import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
+import { CachedTorrentSourceService } from './sources/cached-torrent-source.service';
+import { SourceQuery } from '../entities/source-query';
+import { SourceService } from './sources/source.service';
 
 @Injectable()
 export class OpenSourceService {
@@ -35,7 +40,9 @@ export class OpenSourceService {
     private toastService: ToastService,
     private loadingController: LoadingController,
     private clipboardService: ClipboardService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private cachedTorrentService: CachedTorrentSourceService,
+    private sourceService: SourceService,
   ) {
   }
 
@@ -52,47 +59,50 @@ export class OpenSourceService {
     });
   }
 
-  openDebridSource(debridSource: DebridSource, kodiOpenMedia?: KodiOpenMedia) {
-    this.loadingController
-      .create({
-        message: 'Please wait...',
-        spinner: 'crescent'
-      })
-      .then(loader => {
-        loader.present();
+  async openStreamLinkSource(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, kodiOpenMedia: KodiOpenMedia) {
+    const loader = await this.loadingController.create({
+      message: 'Please wait...',
+      spinner: 'crescent'
+    });
 
-        debridSource.debridSourceFileObs.pipe(finalize(() => loader.dismiss())).subscribe(
-          debridSourceFiles => {
-            if (Array.isArray(debridSourceFiles)) {
-              this.selectDebridSource(debridSourceFiles, kodiOpenMedia);
-            } else {
-              this._openDebridSource(debridSourceFiles, kodiOpenMedia);
-            }
-          },
-          err => {
-            if (err && err instanceof WakoHttpError) {
-              if (err.status === 403) {
-                this.toastService.simpleMessage('toasts.open-source.permissionDenied', null, 4000);
-              } else {
-                this.toastService.simpleMessage(JSON.stringify(err.response), null, 4000);
-              }
-            } else if (err && typeof err === 'string') {
-              this.toastService.simpleMessage(err, null, 4000);
-            } else {
-              this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
-            }
+    loader.present();
+
+    this.cachedTorrentService
+      .getStreamLink(streamLinkSource, sourceQuery)
+      .pipe(finalize(() => loader.dismiss()))
+      .subscribe(
+        streamLinks => {
+          streamLinkSource.streamLinks = streamLinks;
+
+          if (sourceQuery.query && streamLinks.length > 1) {
+            this.selectStreamLink(streamLinkSource, kodiOpenMedia);
+          } else {
+            this.openStreamLinks(streamLinks, streamLinkSource, kodiOpenMedia);
           }
-        );
-      });
+        },
+        err => {
+          if (err && err instanceof WakoHttpError) {
+            if (err.status === 403) {
+              this.toastService.simpleMessage('toasts.open-source.permissionDenied', null, 4000);
+            } else {
+              this.toastService.simpleMessage(JSON.stringify(err.response), null, 4000);
+            }
+          } else if (err && typeof err === 'string') {
+            this.toastService.simpleMessage(err, null, 4000);
+          } else {
+            this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
+          }
+        }
+      );
   }
 
-  private async selectDebridSource(debridSourceFiles: DebridSourceFile[], kodiOpenMedia?: KodiOpenMedia) {
+  private async selectStreamLink(streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
     const buttons = [];
-    debridSourceFiles.forEach(link => {
+    streamLinkSource.streamLinks.forEach(link => {
       buttons.push({
         text: link.filename,
         handler: () => {
-          this._openDebridSource(link, kodiOpenMedia);
+          this.openStreamLinks([link], streamLinkSource, kodiOpenMedia);
         }
       });
     });
@@ -181,7 +191,7 @@ export class OpenSourceService {
     await action.present();
   }
 
-  private async _openDebridSource(debridSourceFile: DebridSourceFile, kodiOpenMedia?: KodiOpenMedia) {
+  private async openStreamLinks(streamLinks: StreamLink[], streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
     const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
     const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
     const settings = await this.settingsService.get();
@@ -194,11 +204,15 @@ export class OpenSourceService {
       posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.images_url.poster : kodiOpenMedia.show.images_url.poster;
 
       if (kodiOpenMedia.show) {
-        HeliosCacheService.set(getPreviousFileNamePlayed(kodiOpenMedia.show.traktId), debridSourceFile.title, '20d');
+        this.sourceService.setLastEpisodePlayedSource(streamLinkSource.id, streamLinkSource.title, streamLinkSource.provider, kodiOpenMedia.show.traktId);
+      } else if (kodiOpenMedia.movie) {
+        this.sourceService.setLastMoviePlayedSource(streamLinkSource.id, streamLinkSource.title, streamLinkSource.provider);
       }
     }
 
     const buttons = [];
+
+    const streamLink = streamLinks[0];
 
     settings.availablePlayButtonActions.forEach(action => {
       const buttonOptions = {
@@ -208,11 +222,11 @@ export class OpenSourceService {
       switch (action) {
         case 'open-browser':
           buttonOptions.handler = () => {
-            if (debridSourceFile.servicePlayerUrl) {
+            if (streamLink.servicePlayerUrl) {
               // They have their own player
-              this.openBrowserUrl(debridSourceFile.servicePlayerUrl);
+              this.openBrowserUrl(streamLink.servicePlayerUrl);
             } else {
-              this.openBrowser(debridSourceFile.url, debridSourceFile.transcodedUrl, title, posterUrl);
+              this.openBrowser(streamLink.url, streamLink.transcodedUrl, title, posterUrl);
             }
           };
           break;
@@ -226,8 +240,8 @@ export class OpenSourceService {
         case 'share-url':
           buttonOptions.handler = () => {
             this.share(
-              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url,
-              debridSourceFile.filename
+              preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url,
+              streamLink.filename
             );
           };
           break;
@@ -235,8 +249,8 @@ export class OpenSourceService {
         case 'open-with':
           buttonOptions.handler = () => {
             this.openWith(
-              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url,
-              debridSourceFile.filename
+              preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url,
+              streamLink.filename
             );
           };
           break;
@@ -244,29 +258,33 @@ export class OpenSourceService {
         case 'download-vlc':
           buttonOptions.handler = () => {
             this.downloadWithVlc(
-              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url
+              preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url
             );
           };
           break;
 
         case 'open-vlc':
           buttonOptions.handler = () => {
-            this.openVlc(preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url);
+            this.openVlc(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
           };
           break;
 
         case 'open-nplayer':
           buttonOptions.handler = () => {
             this.openNplayer(
-              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url
+              preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url
             );
           };
           break;
 
         case 'open-kodi':
           buttonOptions.handler = () => {
+            const videoUrls = [];
+            streamLinks.forEach(_streamLink => {
+              videoUrls.push(preferTranscodedFiles && _streamLink.transcodedUrl ? _streamLink.transcodedUrl : _streamLink.url)
+            });
             this.openKodi(
-              preferTranscodedFiles && debridSourceFile.transcodedUrl ? debridSourceFile.transcodedUrl : debridSourceFile.url,
+              videoUrls,
               kodiOpenMedia
             );
           };
@@ -294,13 +312,13 @@ export class OpenSourceService {
     }
 
     copyEl.addEventListener('click', () => {
-      this.clipboardService.copyFromContent(debridSourceFile.url);
+      this.clipboardService.copyFromContent(streamLink.url);
       logEvent('helios_action', {action: 'copy-url'});
     });
   }
 
-  async openKodi(videoUrl: string, kodiOpenMedia?: KodiOpenMedia) {
-
+  async openKodi(videoUrls: string[], kodiOpenMedia?: KodiOpenMedia) {
+    let totalNextUpVideo = 0;
     KodiAppService.checkAndConnectToCurrentHost()
       .pipe(
         catchError(err => {
@@ -314,6 +332,7 @@ export class OpenSourceService {
         switchMap(() => {
           let openMedia: OpenMedia = {};
 
+          let firstVideoUrl = videoUrls.shift();
           if (kodiOpenMedia) {
             openMedia = {
               movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.traktId : null,
@@ -322,28 +341,41 @@ export class OpenSourceService {
               episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
             };
 
-            videoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
+            firstVideoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
           }
 
-          return from(this.settingsService.get())
-            .pipe(
-              switchMap(settings => {
-                return KodiAppService.openUrl(videoUrl, openMedia, settings.openRemoteAfterClickOnPlay);
-              })
-            )
+          return from(this.settingsService.get()).pipe(
+            switchMap(settings => {
+              return KodiAppService.openUrl(firstVideoUrl, openMedia, settings.openRemoteAfterClickOnPlay);
+            }),
+            tap(done => {
+              if (kodiOpenMedia.show && videoUrls.length === 0) {
+                EventService.emit(EventCategory.kodi, 'playEpisode', kodiOpenMedia);
+              }
+              totalNextUpVideo = videoUrls.length;
+            })
+          );
         })
       )
       .subscribe(() => {
-        debugger;
         const toastMessage = 'toasts.startOpening';
         const toastParams = {
           title: !kodiOpenMedia ? '' : (kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title).replace(/\./g, ' '),
           hostName: KodiApiService.host.name
         };
 
-        this.toastService.simpleMessage(toastMessage, toastParams);
+        let message = this.translateService.instant(toastMessage, toastParams);
+
+        if (totalNextUpVideo > 0) {
+          message += '<br/>' + this.translateService.instant('sources.addToQueue', {totalEpisode: totalNextUpVideo})
+        }
+
+        this.toastService.simpleMessage(message);
 
         logEvent('helios_action', {action: 'open-kodi'});
+        if (videoUrls.length > 0) {
+          addToKodiPlaylist(videoUrls, kodiOpenMedia).subscribe();
+        }
       });
   }
 
@@ -487,17 +519,19 @@ export class OpenSourceService {
             episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
           };
         }
-        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, settings.openRemoteAfterClickOnPlay).subscribe(() => {
-          const toastMessage = 'toasts.startOpening';
-          const toastParams = {
-            title: torrent.title.replace(/\./g, ' '),
-            hostName: KodiApiService.host.name
-          };
+        KodiAppService.openUrl(this.getElementumUrlBySourceUrl(torrent.url), openMedia, settings.openRemoteAfterClickOnPlay).subscribe(
+          () => {
+            const toastMessage = 'toasts.startOpening';
+            const toastParams = {
+              title: torrent.title.replace(/\./g, ' '),
+              hostName: KodiApiService.host.name
+            };
 
-          this.toastService.simpleMessage(toastMessage, toastParams);
+            this.toastService.simpleMessage(toastMessage, toastParams);
 
-          logEvent('helios_action', {action: 'open-elementum'});
-        });
+            logEvent('helios_action', {action: 'open-elementum'});
+          }
+        );
       });
   }
 

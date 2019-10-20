@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { from, of } from 'rxjs';
+import { catchError, last, map, switchMap } from 'rxjs/operators';
+import { concat, EMPTY, from, of } from 'rxjs';
 import { ToastService, WakoHttpRequestService } from '@wako-app/mobile-sdk';
 import { Provider, ProviderList } from '../entities/provider';
 import { countryCodeToEmoji } from './tools';
@@ -12,24 +12,30 @@ const CACHE_TIMEOUT_PROVIDERS = '1d';
 
 @Injectable()
 export class ProviderService {
+
+  private providerStorageKey = 'provider_key';
+  private providerUrlStorageKey = 'provider_url';
+  private providerUrlsStorageKey = 'provider_urls';
+
   constructor(
     private storage: Storage,
     private toastService: ToastService
   ) {
+
+  }
+
+  async initialize() {
     setTimeout(() => {
       this.refreshProviders();
     }, 10000);
-  }
 
-  async setDefaultProvidersIfEmpty() {
-    const providerUrl = await this.getProviderUrl();
-    if (!providerUrl) {
-      await this.setProviderUrl('https://bit.ly/helios-provider');
+    // Patch
+    const oldUrl = await this.getProviderUrl();
+    if (oldUrl) {
+      await this.addProviderUrlToStorage(oldUrl);
+      await this.storage.remove(this.providerUrlStorageKey);
     }
   }
-
-  private providerStorageKey = 'provider_key';
-  private providerUrlStorageKey = 'provider_url';
 
   static getNameWithEmojiFlag(provider: Provider) {
     const emojiLanguages = [];
@@ -44,7 +50,7 @@ export class ProviderService {
     return provider.name + ' ' + emojiLanguages.join(' ');
   }
 
-  getAll(enabledOnly = true) {
+  getAll(enabledOnly = true, category?: 'movie' | 'tv' | 'anime') {
     return this.getProviders().then(providers => {
       if (!providers) {
         return [];
@@ -60,101 +66,197 @@ export class ProviderService {
         _providers = _providers.filter(provider => provider.enabled === true);
       }
 
+      if (category) {
+        _providers = _providers.filter(provider => {
+          if (category === 'movie' && provider.movie) {
+            return true;
+          }
+          if (category === 'tv' && (provider.episode || provider.season)) {
+            return true;
+          }
+          if (category === 'anime' && provider.anime) {
+            return true;
+          }
+          return false;
+        });
+      }
+
       return _providers;
     });
   }
 
-  getProviderUrl(): Promise<string> {
-    return this.storage.get(this.providerUrlStorageKey);
+
+  async getProviderUrls(): Promise<string[]> {
+    return await this.storage.get(this.providerUrlsStorageKey)
+      .then(urls => {
+        if (!urls) {
+          return [];
+        }
+        return urls;
+      });
   }
 
-  private setProviderUrl(url: string): Promise<boolean> {
-    return this.storage.set(this.providerUrlStorageKey, url);
+  private async setProviderUrls(urls: string[]): Promise<boolean> {
+    return await this.storage.set(this.providerUrlsStorageKey, urls);
+  }
+
+
+  private async addProviderUrlToStorage(url: string): Promise<boolean> {
+    const urls = await this.getProviderUrls();
+    if (!urls.includes(url)) {
+      urls.push(url);
+    }
+    return await this.setProviderUrls(urls);
+  }
+
+  addProviderUrl(url: string) {
+    return from(this.addProviderUrlToStorage(url))
+      .pipe(
+        switchMap(() => {
+          return from(this.getProviderUrls())
+        }),
+        switchMap(urls => {
+          return this.setProvidersFromUrls(urls, false)
+        })
+      )
+  }
+
+  deleteProviderUrl(url: string) {
+    return from(this.getProviderUrls())
+      .pipe(
+        switchMap((urls) => {
+          const newUrls = [];
+          urls.forEach(_url => {
+            if (_url === url) {
+              return;
+            }
+            newUrls.push(_url);
+          });
+          return from(this.setProviderUrls(newUrls))
+            .pipe(
+              switchMap(() => {
+                return this.setProvidersFromUrls(newUrls, false)
+              })
+            )
+        })
+      )
+  }
+
+
+  /**
+   * @deprecated
+   */
+  getProviderUrl(): Promise<string> {
+    return this.storage.get(this.providerUrlStorageKey);
   }
 
   getProviders(): Promise<ProviderList> {
     return this.storage.get(this.providerStorageKey);
   }
 
-  setProviders(providers: ProviderList, isAutomatic = false) {
-    return this.getProviders().then(oldProviders => {
-      if (oldProviders && isAutomatic) {
-        let areEquals = Object.keys(oldProviders).length === Object.keys(providers).length;
+  async setProviders(providers: ProviderList, isAutomatic = false) {
+    const oldProviders = await this.getProviders();
 
-        if (areEquals) {
-          Object.keys(oldProviders).forEach(key => {
-            const _old = Object.assign({}, oldProviders[key]);
-            const _new = Object.assign({}, providers[key]);
-            _old.enabled = true;
-            _new.enabled = true;
+    if (oldProviders && isAutomatic) {
+      let areEquals = Object.keys(oldProviders).length === Object.keys(providers).length;
 
-            if (JSON.stringify(_old) !== JSON.stringify(_new)) {
-              areEquals = false;
-            }
-          });
-        }
-
-        if (!areEquals) {
-          this.toastService.simpleMessage('toasts.providersUpdated');
-        } else {
-          console.log('no changes');
-        }
-
+      if (areEquals) {
         Object.keys(oldProviders).forEach(key => {
-          if (providers.hasOwnProperty(key)) {
-            providers[key].enabled = oldProviders[key].enabled;
+          const _old = Object.assign({}, oldProviders[key]);
+          const _new = Object.assign({}, providers[key]);
+          _old.enabled = true;
+          _new.enabled = true;
+
+          if (JSON.stringify(_old) !== JSON.stringify(_new)) {
+            areEquals = false;
           }
         });
       }
-      return this.storage.set(this.providerStorageKey, providers).then(() => {
-        if (!isAutomatic) {
-          HeliosCacheService.clear();
+
+      if (!areEquals) {
+        this.toastService.simpleMessage('toasts.providersUpdated');
+      } else {
+        console.log('no changes');
+      }
+
+      Object.keys(oldProviders).forEach(key => {
+        if (providers.hasOwnProperty(key)) {
+          providers[key].enabled = oldProviders[key].enabled;
         }
       });
+    }
+
+    return this.storage.set(this.providerStorageKey, providers).then(() => {
+      if (!isAutomatic) {
+        HeliosCacheService.clear();
+      }
     });
   }
 
-  setProvidersFromUrl(url: string, isAutomatic = false) {
-    return WakoHttpRequestService.request<ProviderList>(
-      {
-        url: url,
-        method: 'GET'
-      },
-      null,
-      10000,
-      true
-    ).pipe(
-      switchMap(providerList => {
-        if (typeof providerList === 'string' || Object.keys(providerList).length === 0) {
-          return of(false);
-        }
+  private setProvidersFromUrls(urls: string[], isAutomatic = false) {
 
-        return from(this.setProviders(providerList, isAutomatic)).pipe(
-          switchMap(() => {
-            return from(this.setProviderUrl(url));
-          }),
-          map(() => {
-            return true;
-          })
-        );
-      }),
-      catchError(() => {
-        return of(false);
-      })
-    );
+
+    const obss = [];
+    urls.forEach(url => {
+      obss.push(WakoHttpRequestService.request<ProviderList>(
+        {
+          url: url,
+          method: 'GET'
+        },
+        null,
+        20000,
+        true
+      ));
+    });
+
+    if (urls.length === 0) {
+      obss.push(of({}));
+    }
+
+    const list: ProviderList = {};
+    return concat(...obss)
+      .pipe(
+        catchError(() => {
+          return EMPTY;
+        }),
+        map(data => {
+          Object.keys(data).forEach(key => {
+            if (!list.hasOwnProperty(key)) {
+              list[key] = data[key];
+            }
+          });
+          return list;
+        }),
+        last(),
+        switchMap(providerList => {
+          if (typeof providerList === 'string') {
+            return of(false);
+          }
+
+          return from(this.setProviders(providerList, isAutomatic)).pipe(
+            switchMap(() => {
+              return from(this.setProviderUrls(urls));
+            }),
+            map(() => {
+              return true;
+            })
+          );
+        }),
+        catchError(() => {
+          return of(false);
+        })
+      );
   }
 
   private refreshProviders() {
-    HeliosCacheService.get<boolean>(CACHE_KEY_PROVIDERS).subscribe(cache => {
+    HeliosCacheService.get<boolean>(CACHE_KEY_PROVIDERS).subscribe(async cache => {
       if (cache) {
         console.log('check providers later');
         return;
       }
-      this.getProviderUrl().then(url => {
-        if (url) {
-          this.setProvidersFromUrl(url, true).subscribe();
-        }
-      });
+      const urls = await this.getProviderUrls();
+
+      this.setProvidersFromUrls(urls, true);
 
       HeliosCacheService.set(CACHE_KEY_PROVIDERS, true, CACHE_TIMEOUT_PROVIDERS);
     });

@@ -5,6 +5,7 @@ import { ProvidersComponent } from './providers/providers.component';
 import { CloudAccountListComponent } from './cloud-account/cloud-account-list/cloud-account-list.component';
 import { SettingsService } from '../services/settings.service';
 import { PlayButtonAction, PlayButtonActionAndroid, PlayButtonActionIos, Settings } from '../entities/settings';
+import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
 
 @Component({
   templateUrl: './settings.component.html',
@@ -52,6 +53,14 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+
+  async openSetupWizard() {
+    const modal = await this.modalCtrl.create({
+      component: SetupWizardComponent
+    });
+
+    modal.present();
+  }
   async openProviders() {
     const modal = await this.modalCtrl.create({
       component: ProvidersComponent
@@ -66,12 +75,6 @@ export class SettingsComponent implements OnInit {
     });
 
     modal.present();
-  }
-
-  changeDefaultPlayButtonAction(value) {
-    this.settings.defaultPlayButtonAction = value;
-
-    this.settingsService.set(this.settings);
   }
 
   doReorder(ev: CustomEvent) {
