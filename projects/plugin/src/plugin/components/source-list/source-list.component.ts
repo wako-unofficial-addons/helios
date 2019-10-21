@@ -6,19 +6,13 @@ import { SourceByQuality } from '../../entities/source-by-quality';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceByProvider } from '../../entities/source-by-provider';
 import { StreamLinkSource } from '../../entities/stream-link-source';
-import {
-  getSourceQueryEpisode,
-  getSourceQueryMovie,
-  getSourcesByQuality,
-  sortTorrentsBalanced,
-  sortTorrentsBySize
-} from '../../services/tools';
+import { getSourcesByQuality, sortTorrentsBalanced, sortTorrentsBySize } from '../../services/tools';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SourceQuery } from '../../entities/source-query';
 import { ProviderService } from '../../services/provider.service';
 import { Provider } from '../../entities/provider';
 import { LastPlayedSource } from '../../entities/last-played-source';
-import { Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { CloudAccountListComponent } from '../../settings/cloud-account/cloud-account-list/cloud-account-list.component';
 import { ProvidersComponent } from '../../settings/providers/providers.component';
@@ -77,7 +71,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   stopSearch$ = new Subject<boolean>();
 
-
   constructor(
     private sourceService: SourceService,
     private debridAccountService: DebridAccountService,
@@ -125,64 +118,68 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     this.sourceByProviders = [];
+
     this.providerIsLoading = {};
 
-    let sourceQuery: SourceQuery;
+    this.providers = await this.providerService.getAll(true);
 
+    this.stopSearch$.next(true);
+
+    let obsSourceQuery: Observable<SourceQuery>;
     if (!this.kodiOpenMedia || this.manualSearchValue) {
       if (this.manualSearchValue.length === 0) {
         return;
       }
-      sourceQuery = {
+
+      obsSourceQuery = of({
         query: this.manualSearchValue,
         category: this.manualSearchCategory
-      };
+      });
     } else if (this.kodiOpenMedia.movie) {
-      sourceQuery = getSourceQueryMovie(this.kodiOpenMedia.movie);
+      obsSourceQuery = this.sourceService.getSourceQueryFromKodiOpenMedia(this.kodiOpenMedia);
+
       this.lastPlayedSource = await this.sourceService.getLastMoviePlayedSource().toPromise();
     } else if (this.kodiOpenMedia.show && this.kodiOpenMedia.episode) {
-      sourceQuery = getSourceQueryEpisode(this.kodiOpenMedia.show, this.kodiOpenMedia.episode);
-      this.lastPlayedSource = await this.sourceService.getLastEpisodePlayedSource(this.kodiOpenMedia.show.traktId).toPromise();
+      obsSourceQuery = this.sourceService.getSourceQueryFromKodiOpenMedia(this.kodiOpenMedia);
 
+      this.lastPlayedSource = await this.sourceService.getLastEpisodePlayedSource(this.kodiOpenMedia.show.traktId).toPromise();
     }
 
-
-    this.stopSearch$.next(true);
-
     this.searching = true;
-
-    this.sourceQuery = sourceQuery;
-
-
-    this.providers = await this.providerService.getAll(true, sourceQuery.category);
-
-    this.providers.forEach(provider => {
-      this.providerIsLoading[provider.name] = provider;
-    });
 
     const startTime = Date.now();
 
     let total = 0;
-    this.sourceService
-      .getAll(sourceQuery)
-      .pipe(
-        takeUntil(this.stopSearch$),
-        finalize(() => {
-          this.searching = false;
+    obsSourceQuery.subscribe(async sourceQuery => {
+      this.sourceQuery = sourceQuery;
 
-          const endTime = Date.now();
-          this.totalTimeElapsed = endTime - startTime;
-        })
-      )
-      .subscribe(sourceByProvider => {
-        total++;
+      this.providers = await this.providerService.getAll(true, sourceQuery.category);
 
-        delete this.providerIsLoading[sourceByProvider.provider];
-
-        this.setSources(sourceByProvider);
-
-        this.progressBarValue = total / this.providers.length;
+      this.providers.forEach(provider => {
+        this.providerIsLoading[provider.name] = provider;
       });
+
+      this.sourceService
+        .getAll(sourceQuery)
+        .pipe(
+          takeUntil(this.stopSearch$),
+          finalize(() => {
+            this.searching = false;
+
+            const endTime = Date.now();
+            this.totalTimeElapsed = endTime - startTime;
+          })
+        )
+        .subscribe(sourceByProvider => {
+          total++;
+
+          delete this.providerIsLoading[sourceByProvider.provider];
+
+          this.setSources(sourceByProvider);
+
+          this.progressBarValue = total / this.providers.length;
+        });
+    });
   }
 
   private setSources(sourceByProvider: SourceByProvider) {
@@ -211,7 +208,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
           torrentSources.push(source);
         }
       });
-
     });
 
     this.streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, sortTorrentsBySize);
@@ -226,11 +222,10 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async toggleProvider(name: string, enabled: boolean) {
-
     const providerList = await this.providerService.getProviders();
     Object.keys(providerList).forEach(key => {
       if (providerList[key].name === name) {
-        providerList[key].enabled = enabled
+        providerList[key].enabled = enabled;
       }
     });
 

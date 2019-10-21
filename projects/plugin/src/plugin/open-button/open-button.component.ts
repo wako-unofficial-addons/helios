@@ -57,13 +57,6 @@ export class OpenButtonComponent implements OnInit {
 
   }
 
-  private getBestSource() {
-    if (this.movie) {
-      return this.sourceService.getBestMovieSource(this.movie);
-    }
-    return this.sourceService.getBestEpisodeSource(this.show, this.episode);
-  }
-
 
   private async openProviderModal() {
     const modal = await this.modalController.create({
@@ -94,7 +87,7 @@ export class OpenButtonComponent implements OnInit {
     const startTime = Date.now();
 
 
-    this.getBestSource()
+    this.sourceService.getBestSourceFromKodiOpenMedia(this.kodiOpenMedia)
       .pipe(
         finalize(() => {
           loader.dismiss();
@@ -154,6 +147,10 @@ export class OpenButtonComponent implements OnInit {
             case 'open-nplayer':
               this.openSourceService.openNplayer(streamLink.url);
               break;
+            default:
+              this.sourceService.getSourceQueryFromKodiOpenMedia(this.kodiOpenMedia).subscribe(sourceQuery => {
+                this.openSourceService.openStreamLinkSource(bestSource, sourceQuery, this.kodiOpenMedia);
+              })
           }
 
         }

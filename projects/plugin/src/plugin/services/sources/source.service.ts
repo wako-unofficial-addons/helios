@@ -34,11 +34,7 @@ export class SourceService {
     private toastService: ToastService
   ) {
     EventService.subscribe<KodiOpenMedia>(EventCategory.kodi, 'playEpisode').subscribe((data: EventAction<KodiOpenMedia>) => {
-      const sourceQuery = getSourceQueryEpisode(data.data.show, data.data.episode);
-      this.getEpisodeAbsoluteNumberIfAnime(sourceQuery).subscribe(absoluteNumber => {
-        if (absoluteNumber) {
-          sourceQuery.episode.absoluteNumber = absoluteNumber;
-        }
+      this.getSourceQueryFromKodiOpenMedia(data.data).subscribe(sourceQuery => {
 
         const limit = 3;
 
@@ -77,7 +73,6 @@ export class SourceService {
               }
             }),
             switchMap((source: StreamLinkSource) => {
-
               if (source === null) {
                 return EMPTY;
               }
@@ -289,14 +284,8 @@ export class SourceService {
     return new Observable<TorrentSource | StreamLinkSource>(observer => {
       let bestSourceReturned$ = new Subject();
 
-      this.getEpisodeAbsoluteNumberIfAnime(sourceQuery)
+      from(this.settingsService.get())
         .pipe(
-          switchMap(absoluteNumber => {
-            if (absoluteNumber) {
-              sourceQuery.episode.absoluteNumber = absoluteNumber;
-            }
-            return from(this.settingsService.get());
-          }),
           switchMap(d => {
             settings = d;
             return from(this.providerService.getAll(true, sourceQuery.category));
@@ -345,16 +334,14 @@ export class SourceService {
     });
   }
 
-  getBestMovieSource(movie: Movie) {
-    const sourceQuery = getSourceQueryMovie(movie);
 
-    return this.getBestSource(sourceQuery);
-  }
-
-  getBestEpisodeSource(show: Show, episode: Episode) {
-    const sourceQuery = getSourceQueryEpisode(show, episode);
-
-    return this.getBestSource(sourceQuery);
+  getBestSourceFromKodiOpenMedia(kodiOpenMedia: KodiOpenMedia) {
+    return this.getSourceQueryFromKodiOpenMedia(kodiOpenMedia)
+      .pipe(
+        switchMap(sourceQuery => {
+          return this.getBestSource(sourceQuery);
+        })
+      )
   }
 
   getAll(sourceQuery: SourceQuery) {
@@ -363,8 +350,6 @@ export class SourceService {
     }
 
     let providers: Provider[];
-
-    // this.tvdbService.getEpisodes(sourceQuery.episode.showTvdbId).subscribe();
 
     return this.getEpisodeAbsoluteNumberIfAnime(sourceQuery).pipe(
       switchMap(absoluteNumber => {
@@ -380,6 +365,24 @@ export class SourceService {
           obss.push(this.getByProvider(sourceQuery, provider));
         });
         return merge(...obss);
+      })
+    );
+  }
+
+  getSourceQueryFromKodiOpenMedia(kodiOpenMedia: KodiOpenMedia) {
+    if (kodiOpenMedia.movie) {
+      return of(getSourceQueryMovie(kodiOpenMedia.movie));
+    }
+
+    const sourceQuery = getSourceQueryEpisode(kodiOpenMedia.show, kodiOpenMedia.episode);
+
+    return this.getEpisodeAbsoluteNumberIfAnime(sourceQuery).pipe(
+      map(absoluteNumber => {
+        if (absoluteNumber) {
+          sourceQuery.episode.absoluteNumber = absoluteNumber;
+        }
+
+        return sourceQuery;
       })
     );
   }

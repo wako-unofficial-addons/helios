@@ -215,6 +215,9 @@ export class OpenSourceService {
     const streamLink = streamLinks[0];
 
     settings.availablePlayButtonActions.forEach(action => {
+      if (action.match('elementum')) {
+        return;
+      }
       const buttonOptions = {
         text: this.translateService.instant('actionSheets.open-source.options.' + action)
       } as any;
