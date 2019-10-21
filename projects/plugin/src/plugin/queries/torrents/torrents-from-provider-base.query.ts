@@ -124,6 +124,8 @@ export abstract class TorrentsFromProviderBaseQuery {
       let query = '';
       let originalQuery = '';
 
+      let isPost = provider.http_method === 'POST';
+
       if (provider.separator) {
         query = query.replace(/\s/g, provider.separator);
       } else {
@@ -135,14 +137,14 @@ export abstract class TorrentsFromProviderBaseQuery {
         query = sourceQuery.query.trim();
         originalQuery = query;
       } else {
-        data = this.getProviderQueryReplacement(provider, sourceQuery, _keywords, token);
+        data = this.getProviderQueryReplacement(provider, sourceQuery, _keywords, token, isPost);
         query = replacer(_keywords, data.cleanedReplacement).trim();
         originalQuery = replacer(_keywords, data.rawReplacement).trim();
       }
 
       if (provider.separator) {
         query = query.replace(/\s/g, provider.separator);
-      } else {
+      } else if (!isPost) {
         query = encodeURIComponent(query);
       }
 
@@ -267,7 +269,8 @@ export abstract class TorrentsFromProviderBaseQuery {
     provider: Provider,
     sourceQuery: SourceQuery,
     keywords: string,
-    token?: string
+    token?: string,
+    isPost = false
   ): { rawReplacement: ProviderQueryReplacement; cleanedReplacement: ProviderQueryReplacement } {
     if (!provider.title_replacement) {
       // Backward compatibility
@@ -316,7 +319,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     if (provider.separator) {
       rawReplacement.query = rawReplacement.query.replace(/\s/g, provider.separator);
       cleanedReplacement.query = cleanedReplacement.query.replace(/\s/g, provider.separator);
-    } else {
+    } else if (!isPost) {
       rawReplacement.query = encodeURIComponent(rawReplacement.query);
       cleanedReplacement.query = encodeURIComponent(cleanedReplacement.query);
     }
@@ -333,6 +336,10 @@ export abstract class TorrentsFromProviderBaseQuery {
     };
     if (provider.response_type === 'text') {
       headers['accept'] = 'text/html';
+    }
+
+    if (providerBody) {
+      headers['Content-Type'] = 'application/json';
     }
 
     return ProviderHttpService.request<any>(
