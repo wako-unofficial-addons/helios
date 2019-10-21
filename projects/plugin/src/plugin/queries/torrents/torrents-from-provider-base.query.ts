@@ -2,7 +2,7 @@ import { concat, forkJoin, Observable, of, throwError } from 'rxjs';
 import { ProviderHttpService } from '../../services/provider-http.service';
 import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
-import { WakoHttpError } from '@wako-app/mobile-sdk';
+import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
 import { SourceQuery } from '../../entities/source-query';
 import { cleanTitleCustom, convertSizeStrToBytes, logData } from '../../services/tools';
 import { TorrentQualityTitleQuery } from './torrent-quality-title.query';
@@ -11,7 +11,7 @@ import { SourceQuality } from '../../entities/source-quality';
 import { TorrentGetUrlQuery } from './torrent-get-url.query';
 
 
-function replacer(tpl: string, data: { [key: string]: any }) {
+function bodyReplacer(tpl: string, data: { [key: string]: any }) {
   return tpl.replace(/{([a-z0-9\.]*)}/g, ($1, $2) => {
     if (!$1.match('{') || !$1.match('}')) {
       return $1;
@@ -164,7 +164,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
       let providerUrl = provider.base_url;
       if (provider.http_method === 'POST') {
-        providerBody = replacer(providerInfo.query, replacerObj);
+        providerBody = bodyReplacer(providerInfo.query, replacerObj);
         try {
           providerBody = JSON.parse(providerBody);
         } catch (e) {
