@@ -2,13 +2,24 @@ import { concat, forkJoin, Observable, of, throwError } from 'rxjs';
 import { ProviderHttpService } from '../../services/provider-http.service';
 import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
-import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
+import { WakoHttpError } from '@wako-app/mobile-sdk';
 import { SourceQuery } from '../../entities/source-query';
 import { cleanTitleCustom, convertSizeStrToBytes, logData } from '../../services/tools';
 import { TorrentQualityTitleQuery } from './torrent-quality-title.query';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceQuality } from '../../entities/source-quality';
 import { TorrentGetUrlQuery } from './torrent-get-url.query';
+
+
+function replacer(tpl: string, data: { [key: string]: any }) {
+  return tpl.replace(/{([a-z0-9\.]*)}/g, ($1, $2) => {
+    if (!$1.match('{') || !$1.match('}')) {
+      return $1;
+    }
+    return data[$2];
+  });
+}
+
 
 interface ProviderToken {
   token: string;
@@ -149,15 +160,9 @@ export abstract class TorrentsFromProviderBaseQuery {
       }
       let providerBody = null;
 
-      function replacer3(tpl: string, data: { [key: string]: any }) {
-        return tpl.replace(/{([a-z0-9]+)?}/g, ($1, $2) => {
-          return data[$2];
-        });
-      }
-
       let providerUrl = provider.base_url;
       if (provider.http_method === 'POST') {
-        providerBody = replacer3(providerInfo.query, replacerObj);
+        providerBody = replacer(providerInfo.query, replacerObj);
         try {
           providerBody = JSON.parse(providerBody);
         } catch (e) {
@@ -180,12 +185,10 @@ export abstract class TorrentsFromProviderBaseQuery {
       torrentsObs.push(
         this.doProviderHttpRequest(providerUrl, provider, providerBody).pipe(
           catchError(err => {
-            if (err.status && err.status !== 404) {
-              // if (err.status === -3) { // ServerNotFound
-              //   return throwError(err);
-              // }
-              console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
+            if (err.status && err.status === 404) {
+              return of([]);
             }
+            console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
             return throwError(err);
           }),
           map(response => {
