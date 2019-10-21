@@ -57,6 +57,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   segment = 'debrid';
 
+  hasProvider = true;
   providers: Provider[] = [];
 
   searching = true;
@@ -92,6 +93,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async ngOnChanges() {
+
     this.search();
   }
 
@@ -121,7 +123,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.providerIsLoading = {};
 
-    this.providers = await this.providerService.getAll(true);
+    this.hasProvider = (await this.providerService.getAll(true)).length > 0;
 
     this.stopSearch$.next(true);
 

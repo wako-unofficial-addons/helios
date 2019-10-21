@@ -1,8 +1,11 @@
 <ion-progress-bar [style.visibility]="searching ? '' : 'hidden'" [value]="progressBarValue"></ion-progress-bar>
 
-<ion-card *ngIf="providers.length === 0" (click)="openProviderModal()">
+<ion-card *ngIf="providers.length === 0 || !hasProvider" (click)="openProviderModal()">
   <ion-card-header>
-    <ion-card-title>
+    <ion-card-title *ngIf="providers.length === 0 && hasProvider">
+      {{ 'source-list.noProviderSetCategory' | translate: {category: sourceQuery.category} }}
+    </ion-card-title>
+    <ion-card-title *ngIf="providers.length === 0 && !hasProvider">
       {{ 'source-list.noProviderSet' | translate }}
     </ion-card-title>
   </ion-card-header>
