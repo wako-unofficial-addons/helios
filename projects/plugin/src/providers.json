@@ -1241,6 +1241,53 @@
       "url": "row.querySelector('a.imagnet.icon16').getAttribute('href')"
     },
     "source_is_in_sub_page": false
-  }
+  },
+  "corsarored": {
+		"name": "Corsaro.red",
+		"enabled": false,
+		"languages": [
+			"it"
+		],
+		"base_url": "https://corsaro.red/api/search",
+		"response_type": "json",
+		"http_method": "POST",
+		"movie": {
+			"query": "{\"term\":\"{query}\",\"category\":\"2\"}",
+			"keywords": [
+				"{title.it} {year}",
+				"{title.original} {year}"
+			]
+		},
+		"episode": {
+			"query": "{\"term\":\"{query}\",\"category\":\"1\"}",
+			"keywords": [
+				"{title.it} {episodeCode}",
+				"{title.original} {episodeCode}"
+			]
+		},
+		"season": {
+			"query": "{\"term\":\"{query}\",\"category\":\"1\"}",
+			"keywords": [
+				"{title.it} {seasonCode}",
+				"{title.original} {seasonCode}"
+			]
+		},
+		"anime": {
+			"query": "{\"term\":\"{query}\",\"category\":\"7\"}",
+			"keywords": [
+				"{title.it} {episodeCode}",
+				"{title.original} {episodeCode}"
+			]
+		},
+		"json_format": {
+			"results": "results",
+			"url": "magnet",
+			"title": "title",
+			"seeds": "seeders",
+			"peers": "leechers",
+			"size": "size",
+			"quality": "description"
+		}
+	}
 }
 
