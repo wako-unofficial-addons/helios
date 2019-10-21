@@ -169,7 +169,8 @@
     }
   },
   "source-list": {
-    "noProviderSet": "No providers set"
+    "noProviderSet": "No providers set",
+    "noProviderSetCategory": "No providers set for category: {{category}}"
   },
   "open-button": {
     "more": "Sources List"
