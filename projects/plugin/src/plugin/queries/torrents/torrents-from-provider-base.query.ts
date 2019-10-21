@@ -443,7 +443,7 @@ export abstract class TorrentsFromProviderBaseQuery {
                   subPageUrl: subPageUrl,
                   seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.seeds)),
                   peers: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.peers)),
-                  quality: quality,
+                  quality: TorrentQualityTitleQuery.getData(quality),
                   size: 0
                 };
 
@@ -482,7 +482,7 @@ export abstract class TorrentsFromProviderBaseQuery {
             seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.seeds)),
             peers: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.peers)),
             size: this.getObjectFromKey(result, provider.json_format.size),
-            quality: quality
+            quality: TorrentQualityTitleQuery.getData(quality)
           };
 
           if (!torrent.url && !torrent.subPageUrl) {
