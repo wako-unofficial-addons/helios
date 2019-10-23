@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { catchError, last, map, switchMap } from 'rxjs/operators';
-import { concat, EMPTY, from, of } from 'rxjs';
+import { concat, EMPTY, from, of, throwError } from 'rxjs';
 import { ToastService, WakoHttpRequestService } from '@wako-app/mobile-sdk';
 import { Provider, ProviderList } from '../entities/provider';
 import { countryCodeToEmoji } from './tools';
@@ -12,16 +12,11 @@ const CACHE_TIMEOUT_PROVIDERS = '1d';
 
 @Injectable()
 export class ProviderService {
-
   private providerStorageKey = 'provider_key';
   private providerUrlStorageKey = 'provider_url';
   private providerUrlsStorageKey = 'provider_urls';
 
-  constructor(
-    private storage: Storage,
-    private toastService: ToastService
-  ) {
-
+  constructor(private storage: Storage, private toastService: ToastService) {
   }
 
   async initialize() {
@@ -85,21 +80,18 @@ export class ProviderService {
     });
   }
 
-
   async getProviderUrls(): Promise<string[]> {
-    return await this.storage.get(this.providerUrlsStorageKey)
-      .then(urls => {
-        if (!urls) {
-          return [];
-        }
-        return urls;
-      });
+    return await this.storage.get(this.providerUrlsStorageKey).then(urls => {
+      if (!urls) {
+        return [];
+      }
+      return urls;
+    });
   }
 
   private async setProviderUrls(urls: string[]): Promise<boolean> {
     return await this.storage.set(this.providerUrlsStorageKey, urls);
   }
-
 
   private async addProviderUrlToStorage(url: string): Promise<boolean> {
     const urls = await this.getProviderUrls();
@@ -110,38 +102,42 @@ export class ProviderService {
   }
 
   addProviderUrl(url: string) {
-    return from(this.addProviderUrlToStorage(url))
-      .pipe(
-        switchMap(() => {
-          return from(this.getProviderUrls())
-        }),
-        switchMap(urls => {
-          return this.setProvidersFromUrls(urls, false)
-        })
-      )
+    return this.isValidUrlProvider(url).pipe(
+      switchMap(isValid => {
+        if (!isValid) {
+          return throwError('Invalid URL');
+        }
+        return from(this.addProviderUrlToStorage(url)).pipe(
+          switchMap(() => {
+            return from(this.getProviderUrls());
+          }),
+          switchMap(urls => {
+            return this.setProvidersFromUrls(urls, false);
+          })
+        );
+      })
+    )
+
   }
 
   deleteProviderUrl(url: string) {
-    return from(this.getProviderUrls())
-      .pipe(
-        switchMap((urls) => {
-          const newUrls = [];
-          urls.forEach(_url => {
-            if (_url === url) {
-              return;
-            }
-            newUrls.push(_url);
-          });
-          return from(this.setProviderUrls(newUrls))
-            .pipe(
-              switchMap(() => {
-                return this.setProvidersFromUrls(newUrls, false)
-              })
-            )
-        })
-      )
+    return from(this.getProviderUrls()).pipe(
+      switchMap(urls => {
+        const newUrls = [];
+        urls.forEach(_url => {
+          if (_url === url) {
+            return;
+          }
+          newUrls.push(_url);
+        });
+        return from(this.setProviderUrls(newUrls)).pipe(
+          switchMap(() => {
+            return this.setProvidersFromUrls(newUrls, false);
+          })
+        );
+      })
+    );
   }
-
 
   /**
    * @deprecated
@@ -158,6 +154,7 @@ export class ProviderService {
     const oldProviders = await this.getProviders();
 
     if (oldProviders && isAutomatic) {
+
       let areEquals = Object.keys(oldProviders).length === Object.keys(providers).length;
 
       if (areEquals) {
@@ -194,19 +191,25 @@ export class ProviderService {
   }
 
   private setProvidersFromUrls(urls: string[], isAutomatic = false) {
-
-
+    const invalidUrls = [];
     const obss = [];
     urls.forEach(url => {
-      obss.push(WakoHttpRequestService.request<ProviderList>(
-        {
-          url: url,
-          method: 'GET'
-        },
-        null,
-        20000,
-        true
-      ));
+      obss.push(
+        WakoHttpRequestService.request<ProviderList>(
+          {
+            url: url,
+            method: 'GET'
+          },
+          null,
+          20000,
+          true
+        ).pipe(
+          catchError(() => {
+            invalidUrls.push(url);
+            return EMPTY;
+          })
+        )
+      );
     });
 
     if (urls.length === 0) {
@@ -214,38 +217,40 @@ export class ProviderService {
     }
 
     const list: ProviderList = {};
-    return concat(...obss)
-      .pipe(
-        catchError(() => {
-          return EMPTY;
-        }),
-        map(data => {
-          Object.keys(data).forEach(key => {
-            if (!list.hasOwnProperty(key)) {
-              list[key] = data[key];
-            }
-          });
-          return list;
-        }),
-        last(),
-        switchMap(providerList => {
-          if (typeof providerList === 'string') {
-            return of(false);
+    return concat(...obss).pipe(
+      map(data => {
+        Object.keys(data).forEach(key => {
+          if (!list.hasOwnProperty(key)) {
+            list[key] = data[key];
           }
-
-          return from(this.setProviders(providerList, isAutomatic)).pipe(
-            switchMap(() => {
-              return from(this.setProviderUrls(urls));
-            }),
-            map(() => {
-              return true;
-            })
-          );
-        }),
-        catchError(() => {
+        });
+        return list;
+      }),
+      last(),
+      switchMap(providerList => {
+        if (typeof providerList === 'string') {
           return of(false);
-        })
-      );
+        }
+
+        return from(this.setProviders(providerList, isAutomatic)).pipe(
+          switchMap(() => {
+            const newUrls = [];
+            urls.forEach(url => {
+              if (!invalidUrls.includes(url)) {
+                newUrls.push(url);
+              }
+            });
+            return from(this.setProviderUrls(newUrls));
+          }),
+          map(() => {
+            return true;
+          })
+        );
+      }),
+      catchError(() => {
+        return of(false);
+      })
+    );
   }
 
   private refreshProviders() {
@@ -256,10 +261,36 @@ export class ProviderService {
       }
       const urls = await this.getProviderUrls();
 
-      this.setProvidersFromUrls(urls, true);
+      this.setProvidersFromUrls(urls, true).subscribe();
 
       HeliosCacheService.set(CACHE_KEY_PROVIDERS, true, CACHE_TIMEOUT_PROVIDERS);
     });
   }
 
+  private isValidUrlProvider(url: string) {
+    return WakoHttpRequestService.request<ProviderList>(
+      {
+        url: url,
+        method: 'GET'
+      },
+      null,
+      20000,
+      true
+    ).pipe(
+      catchError(() => {
+        return of(false);
+      }),
+      map(data => {
+        let valid = false;
+        if (typeof data === 'object') {
+          Object.keys(data).forEach(key => {
+            if (data[key].base_url) {
+              valid = true;
+            }
+          });
+        }
+        return valid;
+      })
+    );
+  }
 }

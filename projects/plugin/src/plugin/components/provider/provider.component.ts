@@ -107,6 +107,8 @@ export class ProviderComponent implements OnInit {
                     } else {
                       this.toastService.simpleMessage('toasts.providers.providerUrlFailedToAdd');
                     }
+                  }, err => {
+                    this.toastService.simpleMessage('toasts.providers.providerUrlFailedToAdd');
                   });
               });
             }
