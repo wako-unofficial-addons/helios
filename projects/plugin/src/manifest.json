@@ -16,6 +16,7 @@
     "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json"
   },
   "changeLogs": {
+    "3.0.6": "Disable fastMode for slow device (android < 7)",
     "3.0.1": "Scraping is faster than ever<br>You can now add more that one provider URL<br>When playing an episode Helios will try to queue the next one<br>View sources while scraping<br>Improved stats tab",
     "2.1.9": "Add option to enable/disable automatic open remote<br>Ability to hide keyboard via enter key<br>Handle episodes-item-option action",
     "2.1.8": "Fix issue when trying to open video on browser",
