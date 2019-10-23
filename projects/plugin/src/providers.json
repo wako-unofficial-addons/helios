@@ -2,9 +2,7 @@
   "yts": {
     "name": "YTS",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://yts.am",
     "fallback_urls": [
       "https://yts.pm",
@@ -37,9 +35,7 @@
   "torrentapi": {
     "name": "RARBG",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://torrentapi.org",
     "fallback_urls": [],
     "response_type": "json",
@@ -80,9 +76,7 @@
   "zooqle": {
     "name": "zooqle",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://zooqle.com",
     "fallback_urls": [
       "https://zooqle.t0r.club",
@@ -130,9 +124,7 @@
   "glodls": {
     "name": "glodls",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://glodls.to",
     "fallback_urls": [],
     "response_type": "text",
@@ -167,9 +159,7 @@
   "btscene": {
     "name": "btscene",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "http://btscene.today",
     "fallback_urls": [],
     "response_type": "text",
@@ -209,9 +199,7 @@
   "magnetdl": {
     "name": "MagnetDL",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://www.magnetdl.com",
     "fallback_urls": [],
     "response_type": "text",
@@ -244,13 +232,9 @@
   "yourbittorrent": {
     "name": "YourBittorent",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://yourbittorrent.com",
-    "fallback_urls": [
-      "https://yourbittorrent2.com"
-    ],
+    "fallback_urls": ["https://yourbittorrent2.com"],
     "response_type": "text",
     "movie": {
       "query": "/?v=&c=1&q={query}",
@@ -286,9 +270,7 @@
   "thepiratebay": {
     "name": "The Pirate Bay",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://pirateproxy.live",
     "fallback_urls": [
       "https://thepiratebay.org",
@@ -308,15 +290,11 @@
     },
     "episode": {
       "query": "/s/?q={query}&page=0&&video=on&orderby=99",
-      "keywords": [
-        "{title} {episodeCode}"
-      ]
+      "keywords": ["{title} {episodeCode}"]
     },
     "season": {
       "query": "/s/?q={query}&page=0&&video=on&orderby=99",
-      "keywords": [
-        "{title} {seasonCode}"
-      ]
+      "keywords": ["{title} {seasonCode}"]
     },
     "html_parser": {
       "row": "doc.querySelectorAll('tbody tr')",
@@ -334,9 +312,7 @@
   "torlock2": {
     "name": "TORLOCK (anime)",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://www.torlock2.com",
     "fallback_urls": [],
     "response_type": "text",
@@ -361,9 +337,7 @@
   "nayaa": {
     "name": "Nyaa (anime)",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://nyaa.si",
     "fallback_urls": [],
     "response_type": "text",
@@ -389,21 +363,13 @@
   "torrent9": {
     "name": "Torrent9",
     "enabled": false,
-    "languages": [
-      "fr"
-    ],
+    "languages": ["fr"],
     "base_url": "https://ww1.torrent9.is",
-    "fallback_urls": [
-      "https://www.torrent9.uno",
-      "https://www.torrent9.to"
-    ],
+    "fallback_urls": ["https://www.torrent9.uno", "https://www.torrent9.to"],
     "response_type": "text",
     "movie": {
       "query": "/search_torrent/{query}.html",
-      "keywords": [
-        "{title.fr}",
-        "{title}"
-      ]
+      "keywords": ["{title.fr}", "{title}"]
     },
     "episode": {
       "query": "/search_torrent/{query}.html",
@@ -430,9 +396,7 @@
   "eztv": {
     "name": "EZTV",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://eztv.io",
     "fallback_urls": [
       "https://eztv.re",
@@ -467,25 +431,23 @@
   "btdb": {
     "name": "btdb",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
-    "base_url": "https://btdb.eu/?s={query}&sort=popular",
+    "languages": ["en"],
+    "base_url": "https://btdb.eu",
     "response_type": "text",
     "movie": {
-      "query": "",
+      "query": "/?s={query}&sort=popular",
       "keywords": "{title} {year}"
     },
     "episode": {
-      "query": "",
+      "query": "/?s={query}&sort=popular",
       "keywords": "{title} {episodeCode}"
     },
     "season": {
-      "query": "",
+      "query": "/?s={query}&sort=popular",
       "keywords": "{title} {seasonCode}"
     },
     "anime": {
-      "query": "",
+      "query": "/?s={query}&sort=popular",
       "keywords": "{title} {absoluteNumber}"
     },
     "html_parser": {
@@ -506,13 +468,11 @@
   "legittorrents": {
     "name": "Legit Torrents",
     "enabled": false,
-    "languages": [
-      "en"
-    ],
-    "base_url": "http://www.legittorrents.info/index.php?page=torrents&active=1",
+    "languages": ["en"],
+    "base_url": "http://www.legittorrents.info",
     "response_type": "text",
     "movie": {
-      "query": "&search={query}&category=1",
+      "query": "/index.php?page=torrents&active=1&search={query}&category=1",
       "keywords": "{title} "
     },
     "html_parser": {
@@ -532,14 +492,9 @@
   "movcr": {
     "name": "MovCr",
     "enabled": false,
-    "languages": [
-      "in",
-      "en"
-    ],
+    "languages": ["in", "en"],
     "base_url": "https://movcr.tv",
-    "fallback_urls": [
-      "https://movcr.cc"
-    ],
+    "fallback_urls": ["https://movcr.cc"],
     "response_type": "text",
     "movie": {
       "query": "/search/search.php?q={query}",
@@ -576,14 +531,9 @@
   "limetorrents": {
     "name": "limetorrents",
     "enabled": false,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://www.limetorrents.info",
-    "fallback_urls": [
-      "https://www.limetorrents.asia",
-      "https://www.limetorrents.zone"
-    ],
+    "fallback_urls": ["https://www.limetorrents.asia", "https://www.limetorrents.zone"],
     "response_type": "text",
     "separator": "-",
     "movie": {
@@ -621,9 +571,7 @@
   "torrentgalaxy": {
     "name": "torrentgalaxy",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://torrentgalaxy.org",
     "response_type": "text",
     "separator": "+",
@@ -661,26 +609,23 @@
   "bitlord": {
     "name": "bitlord",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
-    "base_url": "https://bitlordsearch.com/search?q={query}",
-    "method": "POST",
+    "languages": ["en"],
+    "base_url": "https://bitlordsearch.com",
     "response_type": "text",
     "movie": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {year}"
     },
     "episode": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {episodeCode}"
     },
     "season": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {seasonCode}"
     },
     "anime": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {absoluteNumber}"
     },
     "html_parser": {
@@ -701,9 +646,7 @@
   "kickass": {
     "name": "kickass",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://kickass.vc",
     "fallback_urls": [
       "https://kat.how",
@@ -749,9 +692,7 @@
   "skytorrents": {
     "name": "skytorrents",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://www.skytorrents.lol",
     "fallback_urls": [],
     "response_type": "text",
@@ -786,9 +727,7 @@
   "solidtorrents": {
     "name": "solidtorrents",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://solidtorrents.net/api/v1/search?q={query}&category=video&sort=seeders",
     "response_type": "json",
     "movie": {
@@ -825,14 +764,9 @@
   "torrentdownloads": {
     "name": "torrentdownloads",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://www.torrentdownloads.me",
-    "fallback_urls": [
-      "https://www.torrentdownloads.info",
-      "http://torrentdownloads.d4.re"
-    ],
+    "fallback_urls": ["https://www.torrentdownloads.info", "http://torrentdownloads.d4.re"],
     "response_type": "text",
     "separator": "+",
     "source_is_in_sub_page": true,
@@ -870,27 +804,25 @@
   "torrentdownload": {
     "name": "torrentdownload",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
-    "base_url": "https://www.torrentdownload.ch/search?q={query}",
+    "languages": ["en"],
+    "base_url": "https://www.torrentdownload.ch",
     "response_type": "text",
     "separator": "+",
     "source_is_in_sub_page": true,
     "movie": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {year}"
     },
     "episode": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {episodeCode}"
     },
     "season": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {seasonCode}"
     },
     "anime": {
-      "query": "",
+      "query": "/search?q={query}",
       "keywords": "{title} {absoluteNumber}"
     },
     "html_parser": {
@@ -911,17 +843,15 @@
   "yohoho": {
     "name": "YOHOHO",
     "enabled": false,
-    "languages": [
-      "ru"
-    ],
-    "base_url": "https://4h0y.yohoho.cc/?title=",
+    "languages": ["ru"],
+    "base_url": "https://4h0y.yohoho.cc",
     "response_type": "text",
     "movie": {
-      "query": "{query}",
+      "query": "/?title={query}",
       "keywords": "{title} {year}"
     },
     "episode": {
-      "query": "{query}",
+      "query": "/?title={query}",
       "keywords": "{title} {episodeCode}"
     },
     "html_parser": {
@@ -936,17 +866,15 @@
   "rutor": {
     "name": "RuTor",
     "enabled": false,
-    "languages": [
-      "ru"
-    ],
-    "base_url": "http://rutor.info/search/{query}",
+    "languages": ["ru"],
+    "base_url": "http://rutor.info",
     "response_type": "text",
     "movie": {
-      "query": "",
+      "query": "/search/{query}",
       "keywords": "{title} {year}"
     },
     "episode": {
-      "query": "",
+      "query": "/search/{query}",
       "keywords": "{title} {season}"
     },
     "html_parser": {
@@ -961,9 +889,7 @@
   "extratorrent": {
     "name": "ExtraTorrent",
     "enabled": false,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://extratorrent.ag",
     "response_type": "text",
     "movie": {
@@ -1000,9 +926,7 @@
   "anirena": {
     "name": "AniRena",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://www.anirena.com",
     "response_type": "text",
     "anime": {
@@ -1027,9 +951,7 @@
   "anidex": {
     "name": "AniDex",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://anidex.info",
     "response_type": "text",
     "anime": {
@@ -1054,9 +976,7 @@
   "animetosho": {
     "name": "Anime Tosho",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://animetosho.org",
     "response_type": "text",
     "anime": {
@@ -1081,13 +1001,9 @@
   "digbt": {
     "name": "DIGBT",
     "enabled": false,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://digbt.unblocked.nz",
-    "fallback_urls": [
-      "https://www.digbt.org"
-    ],
+    "fallback_urls": ["https://www.digbt.org"],
     "response_type": "text",
     "movie": {
       "query": "/search/{query}-length-1/",
@@ -1123,9 +1039,7 @@
   "ilcorsaronero": {
     "name": "IlCorsaroNero",
     "enabled": false,
-    "languages": [
-      "it"
-    ],
+    "languages": ["it"],
     "base_url": "http://ilcorsaronero.ch",
     "fallback_urls": [],
     "response_type": "text",
@@ -1135,17 +1049,11 @@
     },
     "episode": {
       "query": "/argh.php?search={query}",
-      "keywords": [
-        "{title.it} {episodeCode}",
-        "{title.original} {episodeCode}"
-      ]
+      "keywords": ["{title.it} {episodeCode}", "{title.original} {episodeCode}"]
     },
     "season": {
       "query": "/argh.php?search={query}",
-      "keywords": [
-        "{title.it} {seasonCode}",
-        "{title.original} {seasonCode}"
-      ]
+      "keywords": ["{title.it} {seasonCode}", "{title.original} {seasonCode}"]
     },
     "html_parser": {
       "row": "doc.querySelectorAll('tr.odd, tr.odd2')",
@@ -1163,15 +1071,9 @@
   "torrentz2": {
     "name": "torrentz2",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "https://torrentz2.eu",
-    "fallback_urls": [
-      "https://torrentz2.is",
-      "https://torrentz2.cc",
-      "https://torrentz2.tv"
-    ],
+    "fallback_urls": ["https://torrentz2.is", "https://torrentz2.cc", "https://torrentz2.tv"],
     "response_type": "text",
     "movie": {
       "query": "/search?f={query}",
@@ -1208,13 +1110,9 @@
   "pirateiro": {
     "name": "pirateiro",
     "enabled": true,
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "base_url": "http://pirateiro.com",
-    "fallback_urls": [
-      "https://pirateiro.unblocked.nz"
-    ],
+    "fallback_urls": ["https://pirateiro.unblocked.nz"],
     "response_type": "text",
     "movie": {
       "query": "/torrents/?c300=1&search={query}&orderby=tamanho",
@@ -1243,51 +1141,36 @@
     "source_is_in_sub_page": false
   },
   "corsarored": {
-		"name": "Corsaro.red",
-		"enabled": false,
-		"languages": [
-			"it"
-		],
-		"base_url": "https://corsaro.red/api/search",
-		"response_type": "json",
-		"http_method": "POST",
-		"movie": {
-			"query": "{\"term\":\"{query}\",\"category\":\"2\"}",
-			"keywords": [
-				"{title.it} {year}",
-				"{title.original} {year}"
-			]
-		},
-		"episode": {
-			"query": "{\"term\":\"{query}\",\"category\":\"1\"}",
-			"keywords": [
-				"{title.it} {episodeCode}",
-				"{title.original} {episodeCode}"
-			]
-		},
-		"season": {
-			"query": "{\"term\":\"{query}\",\"category\":\"1\"}",
-			"keywords": [
-				"{title.it} {seasonCode}",
-				"{title.original} {seasonCode}"
-			]
-		},
-		"anime": {
-			"query": "{\"term\":\"{query}\",\"category\":\"7\"}",
-			"keywords": [
-				"{title.it} {episodeCode}",
-				"{title.original} {episodeCode}"
-			]
-		},
-		"json_format": {
-			"results": "results",
-			"url": "magnet",
-			"title": "title",
-			"seeds": "seeders",
-			"peers": "leechers",
-			"size": "size",
-			"quality": "description"
-		}
-	}
+    "name": "Corsaro.red",
+    "enabled": false,
+    "languages": ["it"],
+    "base_url": "https://corsaro.red/api/search",
+    "response_type": "json",
+    "http_method": "POST",
+    "movie": {
+      "query": "{\"term\":\"{query}\",\"category\":\"2\"}",
+      "keywords": ["{title.it} {year}", "{title.original} {year}"]
+    },
+    "episode": {
+      "query": "{\"term\":\"{query}\",\"category\":\"1\"}",
+      "keywords": ["{title.it} {episodeCode}", "{title.original} {episodeCode}"]
+    },
+    "season": {
+      "query": "{\"term\":\"{query}\",\"category\":\"1\"}",
+      "keywords": ["{title.it} {seasonCode}", "{title.original} {seasonCode}"]
+    },
+    "anime": {
+      "query": "{\"term\":\"{query}\",\"category\":\"7\"}",
+      "keywords": ["{title.it} {episodeCode}", "{title.original} {episodeCode}"]
+    },
+    "json_format": {
+      "results": "results",
+      "url": "magnet",
+      "title": "title",
+      "seeds": "seeders",
+      "peers": "leechers",
+      "size": "size",
+      "quality": "description"
+    }
+  }
 }
-
