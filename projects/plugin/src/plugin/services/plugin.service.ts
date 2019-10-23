@@ -42,18 +42,10 @@ export class PluginService extends PluginBaseService {
   }
 
   private async runSetupWizard() {
-    const wizardSeen = await this.storage.get('helios_setup_wizard_seen');
-    if (wizardSeen) {
+    const wizardSeen = await this.storage.get('helios_setup_wizard_seen_for_dev');
+    if (wizardSeen) { // Only for test purpose
       return;
     }
-
-    this.storage.set('helios_setup_wizard_seen', true);
-
-    const providers = await this.providerService.getProviderUrls();
-    if (providers.length > 0) {
-      return;
-    }
-
 
     const modal = await this.modalController.create({
       component: SetupWizardComponent
