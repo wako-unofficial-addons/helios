@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Episode, EventAction, EventCategory, EventService, Movie, Show, ToastService } from '@wako-app/mobile-sdk';
+import { EventAction, EventCategory, EventService, ToastService } from '@wako-app/mobile-sdk';
 import { catchError, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CachedTorrentSourceService } from './cached-torrent-source.service';
 import { TorrentSourceService } from './torrent-source.service';
@@ -19,6 +19,9 @@ import { TorrentSource } from '../../entities/torrent-source';
 import { StreamLinkSourceDetail } from '../../entities/stream-link-source-detail';
 import { TvdbService } from '../tvdb.service';
 import { KodiOpenMedia } from '../../entities/kodi-open-media';
+import { Platform } from '@ionic/angular';
+
+declare const device: any;
 
 const GET_LAST_MOVIE_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_movie2';
 const GET_LAST_SHOW_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_show2';
@@ -31,7 +34,8 @@ export class SourceService {
     private settingsService: SettingsService,
     private providerService: ProviderService,
     private tvdbService: TvdbService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private platform: Platform
   ) {
     EventService.subscribe<KodiOpenMedia>(EventCategory.kodi, 'playEpisode').subscribe((data: EventAction<KodiOpenMedia>) => {
       this.getSourceQueryFromKodiOpenMedia(data.data).subscribe(sourceQuery => {
@@ -344,6 +348,18 @@ export class SourceService {
       )
   }
 
+
+  private isFastModeEnabled() {
+
+    if (this.platform.is('android') && device && device['version']) {
+      const deviceVersion = +device['version'];
+      if (deviceVersion < 7) {
+        return of(false);
+      }
+    }
+    return of(true);
+  }
+
   getAll(sourceQuery: SourceQuery) {
     if (sourceQuery.query && sourceQuery.query.trim().length === 0) {
       return EMPTY;
@@ -364,7 +380,33 @@ export class SourceService {
         providers.forEach(provider => {
           obss.push(this.getByProvider(sourceQuery, provider));
         });
-        return merge(...obss);
+
+        return this.isFastModeEnabled()
+          .pipe(
+            switchMap(isFastModeEnabled => {
+              if (isFastModeEnabled) {
+                return merge(...obss);
+              }
+
+              const gourpObss: Observable<SourceByProvider>[] = [];
+              let _obss: Observable<SourceByProvider>[] = [];
+              obss.forEach((obs, index) => {
+                _obss.push(obs);
+
+                if (index % 3 === 0) {
+                  gourpObss.push(merge(..._obss));
+                  _obss = [];
+                }
+              });
+
+              if (_obss.length > 0) {
+                gourpObss.push(merge(..._obss));
+              }
+
+              return concat(...gourpObss)
+            })
+          )
+
       })
     );
   }
