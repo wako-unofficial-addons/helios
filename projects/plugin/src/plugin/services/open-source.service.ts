@@ -192,7 +192,14 @@ export class OpenSourceService {
   }
 
   private async openStreamLinks(streamLinks: StreamLink[], streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
+    const hasCloudAccount = await this.debridAccountService.hasAtLeastOneAccount();
+
+    const currentHost = KodiAppService.currentHost;
+
     const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
+
+    const realDebridSettings = await this.debridAccountService.getRealDebridSettings();
+
     const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
     const settings = await this.settingsService.get();
 
@@ -221,6 +228,7 @@ export class OpenSourceService {
       const buttonOptions = {
         text: this.translateService.instant('actionSheets.open-source.options.' + action)
       } as any;
+
 
       switch (action) {
         case 'open-browser':
@@ -296,6 +304,23 @@ export class OpenSourceService {
 
       buttons.push(buttonOptions);
     });
+
+    if (premiumizeSettings) {
+      buttons.push({
+        text: this.translateService.instant('actionSheets.open-source.options.addToPM'),
+        handler: () => {
+          this.addToPM(streamLinkSource.originalUrl);
+        }
+      });
+    }
+    if (realDebridSettings) {
+      buttons.push({
+        text: this.translateService.instant('actionSheets.open-source.options.addToRD'),
+        handler: () => {
+          this.addToRD(streamLinkSource.originalUrl);
+        }
+      });
+    }
 
     if (buttons.length === 1) {
       buttons[0].handler();

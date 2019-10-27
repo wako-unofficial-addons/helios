@@ -20,6 +20,7 @@ export class StreamLinkSource extends BaseSource {
     public isPackage: boolean,
     public debridService: 'PM' | 'RD',
     public provider: string,
+    public originalUrl: string
   ) {
     super(id, title, size, quality, provider, type);
   }

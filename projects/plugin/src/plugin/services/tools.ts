@@ -1,10 +1,9 @@
-import { Episode, KodiApiService, Movie, Show, wakoLog } from '@wako-app/mobile-sdk';
+import { Episode, KodiPlaylistAddItemsForm, Movie, Show, wakoLog } from '@wako-app/mobile-sdk';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
-
 
 export function logData(...data: any) {
   wakoLog('plugin.helios', data);
@@ -15,7 +14,6 @@ export function logEvent(eventName: string, data: {}) {
     const firebase = window['FirebasePlugin'] as any;
     firebase.logEvent(eventName, data);
   }
-
 }
 
 export function countryCodeToEmoji(country: string) {
@@ -50,7 +48,6 @@ export function cleanFilename(filename: string) {
   }
   return name;
 }
-
 
 export function convertSizeStrToBytes(sizeStr: string) {
   if (!sizeStr) {
@@ -92,7 +89,6 @@ export function add0(value: number) {
 
   return value;
 }
-
 
 export function torrentCacheStrings(episodeCode: string) {
   if (!episodeCode.match(/S([0-9]+)E([0-9]+)/i)) {
@@ -148,7 +144,6 @@ export function torrentCacheStrings(episodeCode: string) {
   };
 }
 
-
 export function cleanTitleCustom(title: string, replacements: { [key: string]: string }) {
   Object.keys(replacements).forEach(charToReplace => {
     title = title.split(charToReplace).join(replacements[charToReplace]);
@@ -174,7 +169,6 @@ export function cleanTitle(title: string) {
 
   return title.trim();
 }
-
 
 export function sortTorrentsByPackage(sources: StreamLinkSource[] | TorrentSource[]) {
   sources.sort((torrent1, torrent2) => {
@@ -273,7 +267,6 @@ export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: stri
   return match;
 }
 
-
 export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSource[], sortFunction: (source) => void) {
   const sourceByQuality: SourceByQuality<T> = {
     sources2160p: [],
@@ -307,9 +300,18 @@ export function getPreviousFileNamePlayed(traktId: number) {
 }
 
 export function getScoreMatchingName(sourceFileName: string, targetFileName: string) {
-
-  let sfs = sourceFileName.toLowerCase().split('/').pop().trim().replace(/\./g, ' ').split(' ');
-  let tfs = targetFileName.toLowerCase().trim().replace(/\./g, ' ').split(' ');
+  let sfs = sourceFileName
+    .toLowerCase()
+    .split('/')
+    .pop()
+    .trim()
+    .replace(/\./g, ' ')
+    .split(' ');
+  let tfs = targetFileName
+    .toLowerCase()
+    .trim()
+    .replace(/\./g, ' ')
+    .split(' ');
 
   let score = 0;
   sfs.forEach(word => {
@@ -321,7 +323,6 @@ export function getScoreMatchingName(sourceFileName: string, targetFileName: str
   return score;
 }
 
-
 export function getSourceQueryMovie(movie: Movie) {
   const sourceMovieQuery = new SourceMovieQuery();
 
@@ -331,7 +332,7 @@ export function getSourceQueryMovie(movie: Movie) {
   sourceMovieQuery.originalTitle = movie.originalTitle;
   sourceMovieQuery.year = movie.year;
 
-  return {movie: sourceMovieQuery, category: 'movie'} as SourceQuery;
+  return { movie: sourceMovieQuery, category: 'movie' } as SourceQuery;
 }
 
 export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumber?: number) {
@@ -352,7 +353,7 @@ export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumb
   sourceEpisodeQuery.absoluteNumber = absoluteNumber;
   sourceEpisodeQuery.isAnime = show.genres.includes('anime');
 
-  return {episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv'} as SourceQuery;
+  return { episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv' } as SourceQuery;
 }
 
 export function getEpisodeCode(seasonNumber: number, episodeNumber: number) {
@@ -383,16 +384,10 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
         episodeNumber: startEpisode ? startEpisode : null
       };
 
-      items.push({
-        file:
-          videoUrl +
-          `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`
-      });
+      videoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
+      items.push(videoUrl);
     }
   });
 
-  return KodiApiService.doHttpAction('Playlist.Add', {
-    playlistid: 1,
-    item: items
-  });
+  return KodiPlaylistAddItemsForm.submit(1, items);
 }

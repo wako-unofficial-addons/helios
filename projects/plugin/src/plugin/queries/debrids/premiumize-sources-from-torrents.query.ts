@@ -53,7 +53,8 @@ export class PremiumizeSourcesFromTorrentsQuery {
                   'cached_torrent',
                   torrent.isPackage,
                   'PM',
-                  torrent.provider
+                  torrent.provider,
+                  torrent.url
                 );
 
                 debridSource.premiumizeTransferDirectdlDto = PremiumizeTransferDirectdlForm.submit(torrent.url);

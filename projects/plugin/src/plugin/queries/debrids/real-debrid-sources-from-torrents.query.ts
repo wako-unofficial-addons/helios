@@ -87,7 +87,8 @@ export class RealDebridSourcesFromTorrentsQuery {
             'cached_torrent',
             torrent.isPackage,
             'RD',
-            torrent.provider
+            torrent.provider,
+            torrent.url
           );
 
 
