@@ -306,7 +306,7 @@ export class OpenSourceService {
     });
 
     if (premiumizeSettings) {
-      buttons.push({
+      buttons.unshift({
         text: this.translateService.instant('actionSheets.open-source.options.addToPM'),
         handler: () => {
           this.addToPM(streamLinkSource.originalUrl);
@@ -314,7 +314,7 @@ export class OpenSourceService {
       });
     }
     if (realDebridSettings) {
-      buttons.push({
+      buttons.unshift({
         text: this.translateService.instant('actionSheets.open-source.options.addToRD'),
         handler: () => {
           this.addToRD(streamLinkSource.originalUrl);
