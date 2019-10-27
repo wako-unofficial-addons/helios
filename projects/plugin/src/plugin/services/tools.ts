@@ -1,4 +1,4 @@
-import { Episode, KodiPlaylistAddItemsForm, Movie, Show, wakoLog } from '@wako-app/mobile-sdk';
+import { Episode, KodiApiService, Movie, Show, wakoLog } from '@wako-app/mobile-sdk';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
@@ -332,7 +332,7 @@ export function getSourceQueryMovie(movie: Movie) {
   sourceMovieQuery.originalTitle = movie.originalTitle;
   sourceMovieQuery.year = movie.year;
 
-  return { movie: sourceMovieQuery, category: 'movie' } as SourceQuery;
+  return {movie: sourceMovieQuery, category: 'movie'} as SourceQuery;
 }
 
 export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumber?: number) {
@@ -353,7 +353,7 @@ export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumb
   sourceEpisodeQuery.absoluteNumber = absoluteNumber;
   sourceEpisodeQuery.isAnime = show.genres.includes('anime');
 
-  return { episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv' } as SourceQuery;
+  return {episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv'} as SourceQuery;
 }
 
 export function getEpisodeCode(seasonNumber: number, episodeNumber: number) {
@@ -384,10 +384,16 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
         episodeNumber: startEpisode ? startEpisode : null
       };
 
-      videoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
-      items.push(videoUrl);
+      items.push({
+        file:
+          videoUrl +
+          `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`
+      });
     }
   });
 
-  return KodiPlaylistAddItemsForm.submit(1, items);
+  return KodiApiService.doHttpAction('Playlist.Add', {
+    playlistid: 1,
+    item: items
+  });
 }
