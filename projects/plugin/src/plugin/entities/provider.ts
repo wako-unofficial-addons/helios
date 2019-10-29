@@ -25,6 +25,7 @@ export interface Provider {
   fallback_urls?: string[];
   response_type: 'json' | 'text';
   http_method?: 'GET' | 'POST';
+  trust_results?: boolean; // If true then we don't check filename to know if the result is good
   time_to_wait_between_each_request_ms?: number; // In list mode we're gonna do request on all visible media
   time_to_wait_on_too_many_request_ms?: number;
   timeout_ms?: number

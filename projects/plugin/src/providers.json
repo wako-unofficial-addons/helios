@@ -13,6 +13,7 @@
       "https://ytss.unblocked.is"
     ],
     "response_type": "json",
+    "trust_results": true,
     "movie": {
       "query": "/api/v2/list_movies.json?query_term={query}&sort_by=seeds&order_by=desc",
       "keywords": "{imdbId}"
@@ -41,6 +42,7 @@
     "response_type": "json",
     "time_to_wait_between_each_request_ms": 300,
     "time_to_wait_on_too_many_request_ms": 2000,
+    "trust_results": true,
     "token": {
       "query": "/pubapi_v2.php?get_token=get_token&app_id=helios",
       "token_validity_time_ms": 840000,

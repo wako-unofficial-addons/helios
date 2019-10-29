@@ -171,15 +171,6 @@ export class SourceUtils {
       return true;
     }
 
-    // if (sourceQuery instanceof SourceEpisodeQuery) { // TODO
-    //   let show_title = this.cleanTitle(sourceQuery.title) + ' ';
-    //   show_title = this.removeFromTitle(show_title, year);
-    //   let episode_title = this.cleanTitle(sourceQuery.title);
-    //   let should_filter_by_title_only = episode_title.split(' ').length >= 3;
-    //   if (should_filter_by_title_only && release_title.startsWith(show_title) && release_title.match(episode_title) !== null) {
-    //     return true;
-    //   }
-    // }
     return false;
   }
 
@@ -209,6 +200,10 @@ export class SourceUtils {
   }
 
   static isMovieTitleMatching(release_title: string, searchQuery: string, sourceQuery: SourceMovieQuery) {
+    if (searchQuery === sourceQuery.imdbId) {
+      searchQuery = sourceQuery.title;
+    }
+
     release_title = release_title.toLowerCase();
 
     const year = sourceQuery.year ? sourceQuery.year.toString() : '';

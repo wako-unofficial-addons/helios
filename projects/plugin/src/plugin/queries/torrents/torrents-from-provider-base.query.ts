@@ -151,10 +151,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
       const replacerObj = Object.assign({query: query}, data ? data.cleanedReplacement : {});
 
-      let isAccurate = false;
       if (provider.base_url.match('imdbId') !== null || _keywords.match('imdbId') !== null) {
-        isAccurate = true;
-
         if (data && data.rawReplacement.imdbId === '') {
           console.log('EMPTY QUERY');
           return;
@@ -200,7 +197,7 @@ export abstract class TorrentsFromProviderBaseQuery {
             return this.getTorrentsFromProviderHttpResponse(response, provider, providerUrl);
           }),
           map(_torrents => {
-            if (isAccurate) {
+            if (provider.trust_results === true) {
               return _torrents;
             }
             return this.removeBadTorrents(_torrents, originalQuery, sourceQuery);
