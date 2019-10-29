@@ -4,11 +4,11 @@ import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
 import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
 import { SourceQuery } from '../../entities/source-query';
-import { cleanTitleCustom, convertSizeStrToBytes, logData } from '../../services/tools';
-import { TorrentQualityTitleQuery } from './torrent-quality-title.query';
+import { cleanTitleCustom, logData } from '../../services/tools';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceQuality } from '../../entities/source-quality';
 import { TorrentGetUrlQuery } from './torrent-get-url.query';
+import { SourceUtils } from '../../services/source-utils';
 
 
 function bodyReplacer(tpl: string, data: { [key: string]: any }) {
@@ -199,14 +199,14 @@ export abstract class TorrentsFromProviderBaseQuery {
             }
             return this.getTorrentsFromProviderHttpResponse(response, provider, providerUrl);
           }),
-          switchMap(_torrents => {
-            return this.getHashFromSubPages(_torrents);
-          }),
           map(_torrents => {
             if (isAccurate) {
               return _torrents;
             }
-            return this.removeBadTorrents(_torrents, originalQuery);
+            return this.removeBadTorrents(_torrents, originalQuery, sourceQuery);
+          }),
+          switchMap(_torrents => {
+            return this.getHashFromSubPages(_torrents);
           }),
           tap(_torrents => {
             torrents = torrents.concat(_torrents);
@@ -240,29 +240,45 @@ export abstract class TorrentsFromProviderBaseQuery {
     return null;
   }
 
-  private static removeBadTorrents(torrents: TorrentSource[], originalQuery: string) {
-    const words = originalQuery
-      .replace(/[^0-9a-z]/gi, ' ')
-      .split(' ')
-      .filter(word => word.trim().length >= 3);
 
-    const regexStr = words.join('|');
-
-    const regex = new RegExp(regexStr, 'ig');
+  private static removeBadTorrents(torrents: TorrentSource[], originalQuery: string, sourceQuery: SourceQuery) {
 
     return torrents.filter(torrent => {
-      if (torrent.title.match(/hdcam/gi) !== null) {
-        logData('Exclude', torrent.title, 'cause hdcam');
+      let releaseTitle = SourceUtils.cleanTitle(torrent.title);
+
+      if (releaseTitle.match(/hdcam/gi) !== null) {
+         logData('Exclude from', torrent.provider, torrent.title, 'cause hdcam');
         return false;
       }
-      const match = torrent.title.match(regex);
-      const keepIt = match !== null && match.length >= words.length;
 
-      if (!keepIt) {
-        logData('Exclude from provider', torrent.provider, torrent.title, 'cause no match', regexStr);
+      if (sourceQuery.movie) {
+        if (!SourceUtils.isMovieTitleMatching(torrent.title, originalQuery, sourceQuery.movie)) {
+          logData('Exclude Movie from', torrent.provider, torrent.title, 'cause no matching');
+          return false;
+        }
+        return true;
       }
-      return keepIt;
+
+      if (sourceQuery.episode) {
+        if (SourceUtils.isEpisodeTitleMatching(torrent.title, originalQuery, sourceQuery.episode)) {
+          return true;
+        } else {
+          logData('Exclude Episode from', torrent.provider, torrent.title, 'cause no matching');
+        }
+
+        if (SourceUtils.isSeasonPackTitleMatching(torrent.title, originalQuery, sourceQuery.episode)) {
+          torrent.isPackage = true;
+          return true;
+        } else {
+          logData('Exclude SeasonPack from', torrent.provider, torrent.title, 'cause no matching');
+        }
+
+        return false;
+      }
+
+      return true;
     });
+
   }
 
   private static getProviderQueryReplacement(
@@ -299,18 +315,18 @@ export abstract class TorrentsFromProviderBaseQuery {
 
     const cleanedReplacement: ProviderQueryReplacement = Object.assign({}, rawReplacement);
 
-    cleanedReplacement.title = cleanTitleCustom(query.title, provider.title_replacement);
+    cleanedReplacement.title = SourceUtils.cleanTitle(cleanTitleCustom(query.title, provider.title_replacement));
     cleanedReplacement.titleFirstLetter = cleanedReplacement.title[0];
 
     if (query.alternativeTitles) {
       Object.keys(query.alternativeTitles).forEach(language => {
         rawReplacement['title.' + language] = query.alternativeTitles[language];
-        cleanedReplacement['title.' + language] = cleanTitleCustom(query.alternativeTitles[language], provider.title_replacement);
+        cleanedReplacement['title.' + language] = SourceUtils.cleanTitle(cleanTitleCustom(query.alternativeTitles[language], provider.title_replacement));
       });
     }
     if (query.originalTitle) {
       rawReplacement['title.original'] = query.originalTitle;
-      cleanedReplacement['title.original'] = cleanTitleCustom(query.originalTitle, provider.title_replacement);
+      cleanedReplacement['title.original'] = SourceUtils.cleanTitle(cleanTitleCustom(query.originalTitle, provider.title_replacement));
     }
 
     rawReplacement.query = replacer(keywords, rawReplacement).trim();
@@ -379,7 +395,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     if (Number(size)) {
       return +size;
     } else {
-      const sizeBytes = convertSizeStrToBytes(size as string);
+      const sizeBytes = SourceUtils.convertSizeStrToBytes(size as string);
       if (sizeBytes !== null) {
         return sizeBytes;
       } else {
@@ -425,7 +441,7 @@ export abstract class TorrentsFromProviderBaseQuery {
               try {
                 const quality = provider.json_format.quality
                   ? this.getObjectFromKey(subResult, provider.json_format.quality)
-                  : TorrentQualityTitleQuery.getData(title || '');
+                  : SourceUtils.getQuality(title);
 
                 let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(subResult, provider.json_format.url));
                 let subPageUrl = null;
@@ -443,7 +459,7 @@ export abstract class TorrentsFromProviderBaseQuery {
                   subPageUrl: subPageUrl,
                   seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.seeds)),
                   peers: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.peers)),
-                  quality: TorrentQualityTitleQuery.getData(quality),
+                  quality: SourceUtils.getQuality(quality),
                   size: 0
                 };
 
@@ -464,7 +480,7 @@ export abstract class TorrentsFromProviderBaseQuery {
         } else {
           const quality = provider.json_format.quality
             ? this.getObjectFromKey(result, provider.json_format.quality)
-            : TorrentQualityTitleQuery.getData(title || '');
+            : SourceUtils.getQuality(title);
 
           let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(result, provider.json_format.url));
           let subPageUrl = null;
@@ -482,7 +498,7 @@ export abstract class TorrentsFromProviderBaseQuery {
             seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.seeds)),
             peers: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.peers)),
             size: this.getObjectFromKey(result, provider.json_format.size),
-            quality: TorrentQualityTitleQuery.getData(quality)
+            quality: SourceUtils.getQuality(quality)
           };
 
           if (!torrent.url && !torrent.subPageUrl) {
@@ -532,7 +548,7 @@ export abstract class TorrentsFromProviderBaseQuery {
             subPageUrl: subPageUrl,
             seeds: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'seeds')),
             peers: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'peers')),
-            quality: TorrentQualityTitleQuery.getData(title || ''),
+            quality: SourceUtils.getQuality(title),
             size: 0
           };
 

@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.0.9",
+  "version": "3.1.0",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -16,6 +16,7 @@
     "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json"
   },
   "changeLogs": {
+    "3.1.0": "Better match results",
     "3.0.9": "Add option to add cached source on your PM/RD account",
     "3.0.6": "Disable fastMode for slow device (android < 7)",
     "3.0.1": "Scraping is faster than ever<br>You can now add more that one provider URL<br>When playing an episode Helios will try to queue the next one<br>View sources while scraping<br>Improved stats tab",

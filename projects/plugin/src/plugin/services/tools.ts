@@ -33,42 +33,6 @@ export function countryCodeToEmoji(country: string) {
   return String.fromCodePoint(f + offset) + String.fromCodePoint(s + offset);
 }
 
-export function cleanFilename(filename: string) {
-  let name = filename;
-  const names = name.split('.');
-
-  if (names.length > 1) {
-    const ext = names.pop();
-    name = names.join(' ') + '.' + ext;
-  }
-
-  const match = name.match(/(S[0-9]+E[0-9]+)/i);
-  if (match) {
-    name = match[0] + ' - ' + name;
-  }
-  return name;
-}
-
-export function convertSizeStrToBytes(sizeStr: string) {
-  if (!sizeStr) {
-    return null;
-  }
-
-  if (sizeStr.match(/GB|GiB/gi) !== null) {
-    return +sizeStr.replace(/GB|GiB/gi, '') * 1024 * 1024 * 1024;
-  }
-
-  if (sizeStr.match(/MB|MiB/gi) !== null) {
-    return +sizeStr.replace(/MB|MiB/gi, '') * 1024 * 1024;
-  }
-
-  if (sizeStr.match(/KB|KiB/gi) !== null) {
-    return +sizeStr.replace(/KB|KiB/, '') * 1024;
-  }
-
-  return null;
-}
-
 export function getSupportedMedia(media) {
   if (media === 'video') {
     return '.m4v|.3g2|.3gp|.nsv|.tp|.ts|.ty|.strm|.pls|.rm|.rmvb|.mpd|.m3u|.m3u8|.ifo|.mov|.qt|.divx|.xvid|.bivx|.vob|.nrg|.img|.iso|.pva|.wmv|.asf|.asx|.ogm|.m2v|.avi|.bin|.dat|.mpg|.mpeg|.mp4|.mkv|.mk3d|.avc|.vp3|.svq3|.nuv|.viv|.dv|.fli|.flv|.rar|.001|.wpl|.vdr|.dvr-ms|.xsp|.mts|.m2t|.m2ts|.evo|.ogv|.sdp|.avs|.rec|.url|.pxml|.vc1|.h264|.rcv|.rss|.mpls|.webm|.bdmv|.wtv|.pvr|.disc';
@@ -347,6 +311,7 @@ export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumb
   sourceEpisodeQuery.showTvdbId = show.tvdbId;
   sourceEpisodeQuery.showTraktId = show.traktId;
   sourceEpisodeQuery.title = show.title;
+  sourceEpisodeQuery.episodeTitle = episode.title;
   sourceEpisodeQuery.alternativeTitles = show.alternativeTitles;
   sourceEpisodeQuery.originalTitle = show.originalTitle;
   sourceEpisodeQuery.year = show.year;

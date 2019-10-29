@@ -14,6 +14,7 @@ export class SourceEpisodeQuery extends SourceMovieQuery {
   seasonNumber: number;
   episodeCode: string;
   seasonCode: string;
+  episodeTitle: string;
   absoluteNumber?: number;
   isAnime: boolean;
   tvdbId: number;
