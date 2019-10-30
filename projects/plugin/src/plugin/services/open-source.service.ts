@@ -144,7 +144,7 @@ export class OpenSourceService {
     if (hasCloudAccount) {
       if (premiumizeSettings) {
         buttons.push({
-          text: this.translateService.instant('actionSheets.open-source.options.addToPM'),
+          text: this.translateService.instant('actionSheets.open-source.options.add-to-pm'),
           handler: () => {
             this.addToPM(torrent.url);
           }
@@ -152,7 +152,7 @@ export class OpenSourceService {
       }
       if (realDebridSettings) {
         buttons.push({
-          text: this.translateService.instant('actionSheets.open-source.options.addToRD'),
+          text: this.translateService.instant('actionSheets.open-source.options.add-to-rd'),
           handler: () => {
             this.addToRD(torrent.url);
           }
@@ -225,12 +225,30 @@ export class OpenSourceService {
       if (action.match('elementum')) {
         return;
       }
+
+      if (hasCloudAccount && action === 'add-to-pm' && !premiumizeSettings) {
+        return;
+      }
+      if (hasCloudAccount && action === 'add-to-rd' && !realDebridSettings) {
+        return;
+      }
+
       const buttonOptions = {
         text: this.translateService.instant('actionSheets.open-source.options.' + action)
       } as any;
 
 
       switch (action) {
+        case 'add-to-pm':
+          buttonOptions.handler = () => {
+            this.addToPM(streamLinkSource.originalUrl);
+          };
+          break;
+        case 'add-to-rd':
+          buttonOptions.handler = () => {
+            this.addToRD(streamLinkSource.originalUrl);
+          };
+          break;
         case 'open-browser':
           buttonOptions.handler = () => {
             if (streamLink.servicePlayerUrl) {
@@ -305,22 +323,6 @@ export class OpenSourceService {
       buttons.push(buttonOptions);
     });
 
-    if (premiumizeSettings) {
-      buttons.unshift({
-        text: this.translateService.instant('actionSheets.open-source.options.addToPM'),
-        handler: () => {
-          this.addToPM(streamLinkSource.originalUrl);
-        }
-      });
-    }
-    if (realDebridSettings) {
-      buttons.unshift({
-        text: this.translateService.instant('actionSheets.open-source.options.addToRD'),
-        handler: () => {
-          this.addToRD(streamLinkSource.originalUrl);
-        }
-      });
-    }
 
     if (buttons.length === 1) {
       buttons[0].handler();

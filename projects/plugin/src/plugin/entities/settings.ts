@@ -1,7 +1,7 @@
 import { SourceQuality } from './source-quality';
 
 export declare type PlayButtonAction =
-  'open-kodi'
+  | 'open-kodi'
   | 'open-browser'
   | 'copy-url'
   | 'open-vlc'
@@ -9,8 +9,9 @@ export declare type PlayButtonAction =
   | 'share-url'
   | 'open-elementum'
   | 'open-with'
-  | 'open-nplayer';
-
+  | 'open-nplayer'
+  | 'add-to-pm'
+  | 'add-to-rd';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -21,6 +22,8 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-browser',
   'open-kodi',
   'open-nplayer',
+  'add-to-pm',
+  'add-to-rd'
 ];
 
 export const PlayButtonActionAndroid: PlayButtonAction[] = [
@@ -30,13 +33,15 @@ export const PlayButtonActionAndroid: PlayButtonAction[] = [
   'open-vlc',
   'open-browser',
   'open-kodi',
-  'open-with'
+  'open-with',
+  'add-to-pm',
+  'add-to-rd'
 ];
 
 export interface SettingsQuality {
   quality: SourceQuality;
   displayName: string;
-  enabled: boolean
+  enabled: boolean;
 }
 
 export class Settings {
@@ -69,6 +74,6 @@ export class Settings {
   openRemoteAfterClickOnPlay = true;
 
   constructor(isAndroid: boolean) {
-    this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0)
+    this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0);
   }
 }

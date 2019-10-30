@@ -311,6 +311,56 @@
       "\"": ""
     }
   },
+  "_1337x": {
+    "name": "1337x",
+    "enabled": true,
+    "languages": [
+      "en"
+    ],
+    "base_url": "https://www.1337x.to",
+    "fallback_urls": [
+      "https://1337x.st",
+      "https://1337x.is",
+      "https://1337x.am",
+      "https://x1337x.ws",
+      "https://x1337x.eu",
+      "https://x1337x.se",
+      "https://1337x.unblocked.llc",
+      "https://1337x.unblocker.cc",
+      "https://1337x.unblockall.org"
+    ],
+    "response_type": "text",
+    "movie": {
+      "query": "/category-search/{query}/Movies/1/",
+      "keywords": "{title} {year}"
+    },
+    "episode": {
+      "query": "/sort-category-search/{query}/TV/size/desc/1/",
+      "keywords": "{title} {episodeCode}"
+    },
+    "season": {
+      "query": "/sort-category-search/{query}/TV/size/desc/1/",
+      "keywords": "{title} {seasonCode}"
+    },
+    "anime": {
+      "query": "/category-search/{query}/Anime/1/",
+      "keywords": "{title} {episode}"
+    },
+    "separator": "+",
+    "html_parser": {
+      "row": "doc.querySelectorAll('tbody > tr')",
+      "title": "row.querySelector('a:nth-child(2)').innerHTML",
+      "peers": "row.querySelector('.leeches').innerHTML",
+      "seeds": "row.querySelector('.seeds').innerHTML",
+      "size": "row.querySelector('tbody > tr .size').textContent.split('B')[0] + 'B'",
+      "url": "'https://www.1337x.to'+ row.querySelector('a:nth-child(2)').getAttribute('href')"
+    },
+    "source_is_in_sub_page": true,
+    "title_replacement": {
+      "'s": "s",
+      "\"": ""
+    }
+  },
   "torlock2": {
     "name": "TORLOCK (anime)",
     "enabled": true,
