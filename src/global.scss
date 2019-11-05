@@ -1,0 +1,26 @@
+// http://ionicframework.com/docs/theming/
+@import '~@ionic/angular/css/core.css';
+@import '~@ionic/angular/css/normalize.css';
+@import '~@ionic/angular/css/structure.css';
+@import '~@ionic/angular/css/typography.css';
+@import '~@ionic/angular/css/display.css';
+@import '~@ionic/angular/css/padding.css';
+@import '~@ionic/angular/css/float-elements.css';
+@import '~@ionic/angular/css/text-alignment.css';
+@import '~@ionic/angular/css/text-transformation.css';
+@import '~@ionic/angular/css/flex-utils.css';
+
+ion-spinner.center {
+  position: fixed;
+  display: flex;
+  left: 50%;
+  top: 50%;
+}
+
+ion-list-header {
+  ion-spinner {
+    width: 20px;
+    height: 20px;
+    float: right;
+  }
+}

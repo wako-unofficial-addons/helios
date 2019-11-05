@@ -1,0 +1,19 @@
+div {
+  background-color: var(--ion-color-dark-tint);
+  padding-left: 10px;
+  padding-right: 10px;
+
+  border-left: 4px solid var(--ion-color-primary-shade);
+
+  &.isBestTorrent {
+    border-left-color: var(--ion-color-success-shade);
+  }
+
+  margin-left: 17px;
+
+  .title {
+    padding-top: 5px;
+    font-size: 0.9em;
+    padding-right: 5px;
+  }
+}

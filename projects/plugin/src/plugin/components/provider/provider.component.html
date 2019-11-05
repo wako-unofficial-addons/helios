@@ -1,0 +1,35 @@
+<ion-list lines="full">
+  <ion-list-header>
+    <ion-label>
+      <ion-icon name="logo-dropbox"></ion-icon>
+      {{ 'pages.providers.list.providersUrl' | translate }}
+    </ion-label>
+    <ion-spinner *ngIf="isLoading"></ion-spinner>
+  </ion-list-header>
+  <ion-item-sliding *ngFor="let providerUrl of providersUrls; let i = index">
+    <ion-item button (click)="setUrl(i)">
+      {{providerUrl}}
+    </ion-item>
+    <ion-item-options side="end">
+      <ion-item-option color="danger" (click)="deleteProvider(providerUrl)">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+      </ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
+  <ion-item button (click)="setUrl()">
+    {{ 'pages.providers.list.addProvider' | translate }}
+  </ion-item>
+</ion-list>
+
+<ion-list lines="full" *ngIf="providerArray.length > 0">
+  <ion-list-header>
+    <ion-label>
+      <ion-icon name="list" slot="start"></ion-icon>
+      {{ 'pages.providers.providerList.header' | translate }}
+    </ion-label>
+  </ion-list-header>
+  <ion-item *ngFor="let provider of providerArray">
+    <ion-label>{{ provider.name }} </ion-label>
+    <ion-toggle [(ngModel)]="provider.enabled" (ngModelChange)="toggleProvider(provider.key, $event)"></ion-toggle>
+  </ion-item>
+</ion-list>
