@@ -31,7 +31,7 @@
     </ion-segment>
 
     <div [ngSwitch]="segment">
-      <ion-list *ngSwitchCase="'debrid'">
+      <ion-list [ngClass]="{'hidden': segment !== 'debrid'}">
         <ion-card *ngIf="!hasDebridAccount" (click)="openDebridAccountModal()">
           <ion-card-header>
             <ion-card-title>
@@ -102,7 +102,7 @@
         </div>
       </ion-list>
 
-      <ion-list *ngSwitchCase="'torrents'">
+      <ion-list [ngClass]="{'hidden': segment !== 'torrents'}">
         <ion-card *ngIf="!searching && totalTorrentSource === 0">
           <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
         </ion-card>

@@ -12,7 +12,7 @@ import { SourceQuery } from '../../entities/source-query';
 import { ProviderService } from '../../services/provider.service';
 import { Provider } from '../../entities/provider';
 import { LastPlayedSource } from '../../entities/last-played-source';
-import { Observable, of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { CloudAccountListComponent } from '../../settings/cloud-account/cloud-account-list/cloud-account-list.component';
 import { ProvidersComponent } from '../../settings/providers/providers.component';
@@ -75,6 +75,8 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   initialized = false;
 
+  private ready = false;
+
   constructor(
     private sourceService: SourceService,
     private debridAccountService: DebridAccountService,
@@ -89,6 +91,10 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.hasDebridAccount) {
       this.segment = 'torrents';
     }
+
+    this.ready = true;
+
+    this.search();
   }
 
   ngOnDestroy() {
@@ -96,6 +102,10 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async ngOnChanges() {
+
+    if (!this.ready) {
+      return;
+    }
 
     this.search();
   }

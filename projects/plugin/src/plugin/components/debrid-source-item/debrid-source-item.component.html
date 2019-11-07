@@ -9,14 +9,26 @@
     <ion-grid class="ion-no-margin ion-no-padding">
       <ion-row>
         <ion-col class="ion-text-left ion-no-margin ion-no-padding">
-          <ion-badge color="light" class="ion-margin-end">{{ source.size | bsFileSize }}</ion-badge>
-          <ion-badge color="dark">{{ source.provider  }} </ion-badge>
+          <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality}}</ion-badge>
+
+          <ion-badge color="light"> {{ source.size | bsFileSize }}</ion-badge>
+          <ion-icon *ngIf="source.isPackage" name="cube" class="ion-margin-start"></ion-icon>
         </ion-col>
+
+
         <ion-col class="ion-text-right ion-no-margin ion-no-padding">
-          <ion-icon *ngIf="source.isPackage" name="cube" class="ion-margin-end"></ion-icon>
           <ion-badge>{{ source.debridService }}</ion-badge>
         </ion-col>
       </ion-row>
+
+      <ion-row>
+        <ion-col class="ion-text-left ion-no-margin ion-no-padding">
+          <ion-badge color="dark">{{ source.provider }}</ion-badge>
+        </ion-col>
+
+
+      </ion-row>
+
     </ion-grid>
   </p>
 </div>
