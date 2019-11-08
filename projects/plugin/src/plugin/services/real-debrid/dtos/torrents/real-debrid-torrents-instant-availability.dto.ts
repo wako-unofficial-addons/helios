@@ -1,10 +1,12 @@
 export interface RealDebridTorrentsInstantAvailabilityDto {
   [key: string]: {
     rd: {
-      [key: number]: {
-        filename: string;
-        filesize: number;
-      };
+      [key: number]: RealDebridTorrentsInstantAvailabilitFileDto;
     }[];
   };
+}
+
+export interface RealDebridTorrentsInstantAvailabilitFileDto {
+  filename: string;
+  filesize: number;
 }

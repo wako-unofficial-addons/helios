@@ -1,9 +1,9 @@
 import { of } from 'rxjs';
 import { RealDebridTorrentsInstantAvailabilityForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { RealDebridGetCachedUrlQuery } from '../../services/real-debrid/queries/real-debrid-get-cached-url.query';
 import { SourceQuery } from '../../entities/source-query';
-import { isEpisodeCodeMatchesFileName } from '../../services/tools';
+import { getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../services/tools';
 import { RealDebridApiService } from '../../services/real-debrid/services/real-debrid-api.service';
 import { TorrentSource } from '../../entities/torrent-source';
 import { StreamLinkSource } from '../../entities/stream-link-source';
@@ -98,6 +98,27 @@ export class RealDebridSourcesFromTorrentsQuery {
             torrent.url,
             fileIds.join(','),
             torrent.isPackage
+          ).pipe(
+            switchMap(links => {
+
+              if (sourceQuery.movie && links.length === 1) {
+                const link = links.slice(0).pop();
+
+                const ext = '.' + link.filename.split('.').pop().toLowerCase();
+                const commonVideoExtensions = getSupportedMedia('video').split('|');
+
+                if (!commonVideoExtensions.includes(ext) || ext === '.rar') {
+                  // try to get all files
+                  return RealDebridGetCachedUrlQuery.getData(
+                    torrent.url,
+                    'all',
+                    torrent.isPackage
+                  );
+                }
+
+              }
+              return of(links);
+            })
           );
 
           streamLinkSources.push(debridSource);
