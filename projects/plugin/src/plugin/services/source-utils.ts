@@ -151,9 +151,8 @@ export class SourceUtils {
   }
 
 
-  static isTitleMatching(releaseTitle: string, title: string, sourceQuery: SourceMovieQuery | SourceEpisodeQuery) {
+  static isTitleMatching(releaseTitle: string, title: string, sourceQuery: SourceMovieQuery | SourceEpisodeQuery, addSpaceAtTheEnd = false) {
     title = this.cleanTitle(' ' + title + ' ');
-
 
     releaseTitle = this.cleanTags(releaseTitle);
 
@@ -161,6 +160,10 @@ export class SourceUtils {
     releaseTitle = this.removeSeparator(releaseTitle, title);
     releaseTitle = this.removeWWWUrl(releaseTitle, title);
     releaseTitle = this.cleanTitle(releaseTitle) + ' ';
+
+    if (addSpaceAtTheEnd) {
+      title += ' ';
+    }
 
     if (releaseTitle.startsWith(title)) {
       return true;
@@ -342,10 +345,10 @@ export class SourceUtils {
 
 
     const seasonFill = add0(season);
-    const seasonCheck = `s${season}`;
-    const seasonFillCheck = `s${seasonFill}`;
-    const seasonFullCheck = `season ${season}`;
-    const seasonFullFillCheck = `season ${seasonFill}`;
+    const seasonCheck = `s${season} `;
+    const seasonFillCheck = `s${seasonFill} `;
+    const seasonFullCheck = `season ${season} `;
+    const seasonFullFillCheck = `season ${seasonFill} `;
     const seasonFullPack = `S01-`;
     const seasonFullPackFull = `season 1-`;
 
@@ -380,7 +383,7 @@ export class SourceUtils {
           return true;
         }
 
-        if (this.isTitleMatching(releaseTitle, title + ' ' + code, sourceQuery)) {
+        if (this.isTitleMatching(releaseTitle, title + ' ' + code, sourceQuery, code.substr(-1, 1) === ' ')) {
           if ((code === seasonFullPack || code === seasonFullPackFull) && !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)) {
             continue;
           }
