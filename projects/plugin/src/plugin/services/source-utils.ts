@@ -216,6 +216,10 @@ export class SourceUtils {
         });
       }
 
+      words = words.map(word => {
+        return word + ' ';
+      });
+
       const regexStr = words.join('.*');
       const regex = new RegExp(regexStr, 'ig');
 
