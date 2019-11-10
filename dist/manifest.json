@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -17,6 +17,7 @@
     "it": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/it.json"
   },
   "changeLogs": {
+    "3.2.1": "Improve string matching",
     "3.2.0": "FIX RD issue",
     "3.1.9": "Improve performance",
     "3.1.8": "FIX RD issue",

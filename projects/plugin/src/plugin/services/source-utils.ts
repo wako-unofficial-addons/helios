@@ -61,15 +61,15 @@ export class SourceUtils {
     return str.replace(/[^\x20-\x7F]/g, '');
   }
 
-  static cleanTitle(title: string, apostrophe_replacement: 's' | '' | ' s' = 's') {
+  static cleanTitle(title: string, apostropheReplacement: 's' | '' | ' s' = 's') {
     title = title.toLowerCase();
     title = this.stripAccents(title);
     title = this.stripNonAsciiAndUnprintable(title);
 
-    title = title.replace(`\\'s`, apostrophe_replacement);
-    title = title.replace(`'s`, apostrophe_replacement);
-    title = title.replace('&#039;s', apostrophe_replacement);
-    title = title.replace(' 039 s', apostrophe_replacement);
+    title = title.replace(`\\'s`, apostropheReplacement);
+    title = title.replace(`'s`, apostropheReplacement);
+    title = title.replace('&#039;s', apostropheReplacement);
+    title = title.replace(' 039 s', apostropheReplacement);
 
     title = title.replace(/\:|\\|\/|\,|\!|\?|\(|\)|\'|\’|\"|\+|\[|\]|\-|\_|\.|\{|\}/g, ' ');
     title = title.replace(/\s+/g, ' ');
@@ -81,15 +81,15 @@ export class SourceUtils {
   static cleanTags(title: string) {
     title = title.toLowerCase().trim();
 
-    if (title[0] == '[' && title.indexOf(']') > 0) {
+    if (title[0] === '[' && title.indexOf(']') > 0) {
       title = title.substr(title.indexOf(']') + 1).trim();
       return this.cleanTags(title);
     }
-    if (title[0] == '(' && title.indexOf(')') > 0) {
+    if (title[0] === '(' && title.indexOf(')') > 0) {
       title = title.substr(title.indexOf(')') + 1).trim();
       return this.cleanTags(title);
     }
-    if (title[0] == '{' && title.indexOf('}') > 0) {
+    if (title[0] === '{' && title.indexOf('}') > 0) {
       title = title.substr(title.indexOf('}') + 1).trim();
       return this.cleanTags(title);
     }
@@ -151,28 +151,28 @@ export class SourceUtils {
   }
 
 
-  static isTitleMatching(release_title: string, title: string, sourceQuery: SourceMovieQuery | SourceEpisodeQuery) {
+  static isTitleMatching(releaseTitle: string, title: string, sourceQuery: SourceMovieQuery | SourceEpisodeQuery) {
     title = this.cleanTitle(' ' + title + ' ');
 
 
-    release_title = this.cleanTags(release_title);
+    releaseTitle = this.cleanTags(releaseTitle);
 
-    release_title = this.removeFromTitle(release_title, this.getQuality(release_title), false);
-    release_title = this.removeSeparator(release_title, title);
-    release_title = this.removeWWWUrl(release_title, title);
-    release_title = this.cleanTitle(release_title) + ' ';
+    releaseTitle = this.removeFromTitle(releaseTitle, this.getQuality(releaseTitle), false);
+    releaseTitle = this.removeSeparator(releaseTitle, title);
+    releaseTitle = this.removeWWWUrl(releaseTitle, title);
+    releaseTitle = this.cleanTitle(releaseTitle) + ' ';
 
-    if (release_title.startsWith(title)) {
+    if (releaseTitle.startsWith(title)) {
       return true;
     }
 
     const year = (sourceQuery.year || '').toString();
 
 
-    release_title = this.removeFromTitle(release_title, year);
+    releaseTitle = this.removeFromTitle(releaseTitle, year);
     title = this.removeFromTitle(title, year);
 
-    if (release_title.startsWith(title)) {
+    if (releaseTitle.startsWith(title)) {
       return true;
     }
 
@@ -180,55 +180,77 @@ export class SourceUtils {
   }
 
 
-  static checkEpisodeNumberMatch(release_title: string) {
-    release_title = this.cleanTitle(release_title);
+  static checkEpisodeNumberMatch(releaseTitle: string) {
+    releaseTitle = this.cleanTitle(releaseTitle);
 
-    return release_title.match(/(s\d+e[a-z]*\d+ )|(s\d+ *e\d+ )|(season \d+ episode \d+)/ig) !== null;
+    return releaseTitle.match(/(s\d+e[a-z]*\d+ )|(s\d+ *e\d+ )|(season \d+ episode \d+)/ig) !== null;
 
   }
 
-  static isWordMatching(release_title: string, title: string) {
-    const words = title
+  static isWordMatching(releaseTitle: string, title: string) {
+
+    const placeholder = 'ZZOOPPQQ';
+    const nameAndNumberMatches = title.match(/[a-z]+\s+[0-9]+/ig);
+
+    let hasBeenFixed = false;
+    if (nameAndNumberMatches) {
+      nameAndNumberMatches.forEach(str => {
+        const regExp = new RegExp(str, 'g');
+        title = title.replace(regExp, str.replace(/\s/, placeholder));
+      });
+      hasBeenFixed = true;
+
+    }
+
+    let words = title
       .replace(/[^0-9a-z]/gi, ' ')
       .split(' ')
-      .filter(word => word.trim().length >= 3);
+      .filter(word => word.trim().length >= 2);
 
     if (words.length >= 3) {
+
+      if (hasBeenFixed) {
+        const regExp = new RegExp(placeholder, 'g');
+        words = words.map(word => {
+          return word.replace(regExp, ' ');
+        });
+      }
+
       const regexStr = words.join('.*');
       const regex = new RegExp(regexStr, 'ig');
 
-      if (release_title.match(regex) !== null) {
+      if (releaseTitle.match(regex) !== null) {
         return true;
       }
     }
     return false;
   }
 
-  static isMovieTitleMatching(release_title: string, searchQuery: string, sourceQuery: SourceMovieQuery) {
+  static isMovieTitleMatching(releaseTitle: string, searchQuery: string, sourceQuery: SourceMovieQuery) {
     if (searchQuery === sourceQuery.imdbId) {
       searchQuery = sourceQuery.title;
     }
 
-    release_title = release_title.toLowerCase();
+    releaseTitle = releaseTitle.toLowerCase();
 
     const year = sourceQuery.year ? sourceQuery.year.toString() : '';
     const title = this.cleanTitle(searchQuery.replace(year, ''));
-    const title_broken_1 = this.cleanTitle(searchQuery, '');
-    const title_broken_2 = this.cleanTitle(searchQuery, ' s');
+    const titleBroken1 = this.cleanTitle(searchQuery, '');
+    const titleBroken2 = this.cleanTitle(searchQuery, ' s');
 
 
-    if (this.isWordMatching(release_title, title)) {
+    if (this.isWordMatching(releaseTitle, title)) {
       return true;
     }
 
 
-    if (!this.isTitleMatching(release_title, title, sourceQuery) && !this.isTitleMatching(release_title, title_broken_1, sourceQuery) && !this.isTitleMatching(release_title, title_broken_2, sourceQuery)) {
+    if (!this.isTitleMatching(releaseTitle, title, sourceQuery) && !this.isTitleMatching(releaseTitle, titleBroken1, sourceQuery) && !this.isTitleMatching(releaseTitle, titleBroken2, sourceQuery)) {
       return false;
     }
 
     let hasExclusion = false;
     ['soundtrack', 'gesproken'].forEach(exclusion => {
-      if (release_title.match(exclusion) !== null) {
+      if (releaseTitle.match(exclusion) !== null) {
         hasExclusion = true;
       }
     });
@@ -237,48 +259,48 @@ export class SourceUtils {
       return false;
     }
 
-    if (release_title.match(year) === null) {
+    if (releaseTitle.match(year) === null) {
       return false;
     }
 
-    if (release_title.match('xxx') !== null && title.match('xxx') === null) {
+    if (releaseTitle.match('xxx') !== null && title.match('xxx') === null) {
       return false;
     }
 
     return true;
   }
 
-  static isEpisodeTitleMatching(release_title: string, searchQuery: string, sourceQuery: SourceEpisodeQuery) {
-    const show_title = sourceQuery.title;
-    const episode_title = sourceQuery.episodeTitle;
+  static isEpisodeTitleMatching(releaseTitle: string, searchQuery: string, sourceQuery: SourceEpisodeQuery) {
+    const showTitle = sourceQuery.title;
+    const episodeTitle = sourceQuery.episodeTitle;
     const season = sourceQuery.seasonNumber;
     const episode = sourceQuery.episodeNumber;
     const absoluteNumber = sourceQuery.absoluteNumber;
 
-    const season_episode_check = `s${season}e${episode}`;
-    const season_episode_fill_check = `s${season}e${add0(episode)}`;
-    const season_fill_episode_fill_check = `s${add0(season)}e${add0(episode)}`;
-    const season_episode_full_check = `season ${season} episode ${episode}`;
-    const season_episode_fill_full_check = `season ${season} episode ${add0(episode)}`;
-    const season_fill_episode_fill_full_check = `season ${add0(season)} episode ${add0(episode)}`;
+    const seasonEpisodeCheck = `s${season}e${episode}`;
+    const seasonEpisodeFillCheck = `s${season}e${add0(episode)}`;
+    const seasonFillEpisodeFillCheck = `s${add0(season)}e${add0(episode)}`;
+    const seasonEpisodeFullCheck = `season ${season} episode ${episode}`;
+    const seasonEpisodeFillFullCheck = `season ${season} episode ${add0(episode)}`;
+    const seasonFillEpisodeFillFullCheck = `season ${add0(season)} episode ${add0(episode)}`;
 
-    const string_list = [];
+    const stringList = [];
 
-    string_list.push(season_episode_check);
-    string_list.push(season_episode_fill_check);
-    string_list.push(season_fill_episode_fill_check);
-    string_list.push(season_episode_full_check);
-    string_list.push(season_episode_fill_full_check);
-    string_list.push(season_fill_episode_fill_full_check);
+    stringList.push(seasonEpisodeCheck);
+    stringList.push(seasonEpisodeFillCheck);
+    stringList.push(seasonFillEpisodeFillCheck);
+    stringList.push(seasonEpisodeFullCheck);
+    stringList.push(seasonEpisodeFillFullCheck);
+    stringList.push(seasonFillEpisodeFillFullCheck);
 
     if (sourceQuery.isAnime && absoluteNumber) {
-      string_list.unshift(absoluteNumber);
+      stringList.unshift(absoluteNumber);
     }
 
     const titles = [
-      show_title,
-      episode_title + ' ' + show_title,
-      show_title + ' ' + episode_title,
+      showTitle,
+      episodeTitle + ' ' + showTitle,
+      showTitle + ' ' + episodeTitle
     ];
 
     titles.forEach(title => {
@@ -289,13 +311,13 @@ export class SourceUtils {
     });
 
 
-    for (let title of titles) {
-      for (let code of string_list) {
-        if (this.isWordMatching(release_title, title + ' ' + code)) {
+    for (const title of titles) {
+      for (const code of stringList) {
+        if (this.isWordMatching(releaseTitle, title + ' ' + code)) {
           return true;
         }
 
-        if (this.isTitleMatching(release_title, title + ' ' + code, sourceQuery)) {
+        if (this.isTitleMatching(releaseTitle, title + ' ' + code, sourceQuery)) {
           return true;
         }
       }
@@ -304,33 +326,38 @@ export class SourceUtils {
     return false;
   }
 
-  static isSeasonPackTitleMatching(release_title: string, searchQuery: string, sourceQuery: SourceEpisodeQuery) {
-    const episode_number_match = this.checkEpisodeNumberMatch(release_title);
-    if (episode_number_match) {
-      return false
+
+  static isSeasonPackTitleMatching(releaseTitle: string, searchQuery: string, sourceQuery: SourceEpisodeQuery) {
+    const episodeNumberMatch = this.checkEpisodeNumberMatch(releaseTitle);
+    if (episodeNumberMatch) {
+      return false;
     }
 
-    const show_title = sourceQuery.title;
+    const showTitle = sourceQuery.title;
     const season = sourceQuery.seasonNumber;
 
 
-    const season_fill = add0(season);
-    const season_check = `s${season}`;
-    const season_fill_check = `s${season_fill}`;
-    const season_full_check = `season ${season}`;
-    const season_full_fill_check = `season ${season_fill}`;
+    const seasonFill = add0(season);
+    const seasonCheck = `s${season}`;
+    const seasonFillCheck = `s${seasonFill}`;
+    const seasonFullCheck = `season ${season}`;
+    const seasonFullFillCheck = `season ${seasonFill}`;
+    const seasonFullPack = `S01-`;
+    const seasonFullPackFull = `season 1-`;
 
-    const string_list = [];
+    const stringList = [];
 
-    string_list.push(season_fill);
-    string_list.push(season_check);
-    string_list.push(season_fill_check);
-    string_list.push(season_full_check);
-    string_list.push(season_full_fill_check);
+    stringList.push(seasonFill);
+    stringList.push(seasonCheck);
+    stringList.push(seasonFillCheck);
+    stringList.push(seasonFullCheck);
+    stringList.push(seasonFullFillCheck);
+    stringList.push(seasonFullPack);
+    stringList.push(seasonFullPackFull);
 
 
     const titles = [
-      show_title,
+      showTitle
     ];
 
     titles.forEach(title => {
@@ -340,13 +367,19 @@ export class SourceUtils {
       }
     });
 
-    for (let title of titles) {
-      for (let code of string_list) {
-        if (this.isWordMatching(release_title, title + ' ' + code)) {
+    for (const title of titles) {
+      for (const code of stringList) {
+        if (this.isWordMatching(releaseTitle, title + ' ' + code)) {
+          if ((code === seasonFullPack || code === seasonFullPackFull) && !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)) {
+            continue;
+          }
           return true;
         }
 
-        if (this.isTitleMatching(release_title, title + ' ' + code, sourceQuery)) {
+        if (this.isTitleMatching(releaseTitle, title + ' ' + code, sourceQuery)) {
+          if ((code === seasonFullPack || code === seasonFullPackFull) && !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)) {
+            continue;
+          }
           return true;
         }
       }
@@ -355,5 +388,20 @@ export class SourceUtils {
     return false;
   }
 
+  static isMatchingFullPack(releaseTitle: string, seasonNumber: number, fullPackCode: string) {
+    let maxSeasonNumber = 0;
+    if (fullPackCode === 'season 1-') {
+      const matches = releaseTitle.match(/season 1-([0-9]+)/i);
+      if (matches && matches[1]) {
+        maxSeasonNumber = +matches[1];
+      }
+    } else if (fullPackCode === 'S01-') {
+      const matches = releaseTitle.match(/S01-S([0-9]+)/i);
+      if (matches && matches[1]) {
+        maxSeasonNumber = +matches[1];
+      }
+    }
+    return seasonNumber < maxSeasonNumber;
+  }
 
 }

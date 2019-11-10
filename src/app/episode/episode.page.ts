@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Episode, PluginLoaderService, Show } from '@wako-app/mobile-sdk';
+import { SourceQuery } from '../../../projects/plugin/src/plugin/entities/source-query';
+import { SourceUtils } from '../../../projects/plugin/src/plugin/services/source-utils';
 
 @Component({
   selector: 'app-tab1',
@@ -7,10 +9,10 @@ import { Episode, PluginLoaderService, Show } from '@wako-app/mobile-sdk';
   styleUrls: ['episode.page.scss']
 })
 export class EpisodePage implements OnInit {
-  @ViewChild('episodeRef', {read: ViewContainerRef, static: true})
+  @ViewChild('episodeRef', { read: ViewContainerRef, static: true })
   episodeVCRef: ViewContainerRef;
 
-  @ViewChild('episodeItemOptionRef', {read: ViewContainerRef, static: true})
+  @ViewChild('episodeItemOptionRef', { read: ViewContainerRef, static: true })
   episodeItemOptionVCRef: ViewContainerRef;
 
   // data: { show: Show, episode: Episode } = JSON.parse(
@@ -31,8 +33,11 @@ export class EpisodePage implements OnInit {
   // );
 
   data: { show: Show, episode: Episode } = JSON.parse(
-    `{"show":{"title":"American Horror Story","year":2011,"imdbId":"tt1844624","tmdbId":1413,"tvdbId":250487,"traktId":1404,"slug":"american-horror-story","overview":"An anthology series centering on different characters and locations, including a house with a murderous past, an insane asylum, a witch coven, a freak show, a haunted hotel, a possessed farmhouse, a cult, the apocalypse and a slasher camp. ","trailer":"http://youtube.com/watch?v=aSRQRiw4xwc","firstAired":"2011-10-06T02:00:00.000Z","runtime":45,"rating":8.1,"votes":17623,"language":"en","genres":["drama","mystery","fantasy","science-fiction","horror","thriller"],"certification":"TV-MA","airedEpisodes":100,"images_url":{"poster":"https://image.tmdb.org/t/p/w300/uR2K0Ui9UsOqnzb5IrV6tLUcUHl.jpg","backdrop":"https://image.tmdb.org/t/p/w500/1gGRY9bnIc0Jaohgc6jNFidjgLK.jpg","poster_original":"https://image.tmdb.org/t/p/original/uR2K0Ui9UsOqnzb5IrV6tLUcUHl.jpg","backdrop_original":"https://image.tmdb.org/t/p/original/1gGRY9bnIc0Jaohgc6jNFidjgLK.jpg"},"alternativeTitles":{"sa":"قصة رعب امريكية","bg":"Зловеща семейна история","bs":"American Horror Story","cz":"American Horror Story","dk":"American Horror Story","de":"American Horror Story","gr":"American Horror Story","us":"American Horror Story","es":"American Horror Story","mx":"American Horror Story","ir":"داستان ترسناک آمریکایی","fi":"American Horror Story","ca":"Histoire d'horreur","fr":"American Horror Story","il":"אימה אמריקאית","hr":"American Horror Story","hu":"Amerikai Horror Story","it":"American Horror Story","ge":"ამერიკული საშინელებათა ისტორია","kr":"아메리칸 호러 스토리","lb":"American Horror Story","lt":"Amerikietiška siaubo istorija","nl":"American Horror Story","no":"American Horror Story","pl":"American Horror Story","br":"História de Horror Americana","pt":"Histórias de Horror Americana","ro":"Poveşti de groază americane","ru":"Американская история ужасов","sk":"American Horror Story","rs":"Америчка хорор прича","se":"American Horror Story","tr":"American Horror Story","ua":"Американська історія жаху","cn":"美国恐怖故事","tw":"美國恐怖故事"},"originalTitle":"American Horror Story"},"episode":{"traktSeasonNumber":9,"traktNumber":3,"code":"S09E03","title":"Slashdance","imdbId":"tt10333022","tmdbId":1904031,"tvdbId":7346953,"traktId":3697909,"overview":"Imitation is the best form of tragedy. Coming clean can be pretty messy.","firstAired":"2019-10-03T02:00:00.000Z","rating":7.6,"votes":725,"runtime":43,"watched":false}}`
+    `{"show":{"title":"Parks and Recreation","year":2009,"imdbId":"tt1266020","tmdbId":8592,"tvdbId":84912,"traktId":8546,"slug":"parks-and-recreation","overview":"The series follows Leslie Knope, the deputy head of the Parks and Recreation department in the fictional town of Pawnee, Indiana. Knope takes on a project with a nurse named Ann to turn a construction pit into a park, while trying to mentor a bored college-aged intern. However, Leslie must fight through the bureaucrats, problem neighbors, and developers in order to make her dream a reality, all while with a camera crew recording her every gaff and mishap.","trailer":"http://youtube.com/watch?v=5IZWeAwdJ-s","firstAired":"2009-04-10T00:00:00.000Z","runtime":22,"rating":8.7,"votes":12331,"language":"en","genres":["comedy"],"certification":"TV-14","airedEpisodes":125,"images_url":{"poster":"https://image.tmdb.org/t/p/w300/bHk5mL1upPFaxWxXbs9ihQDFoXY.jpg","backdrop":"https://image.tmdb.org/t/p/w500/2T40B6Kdp8V72AdIk1yEokKAalr.jpg","poster_original":"https://image.tmdb.org/t/p/original/bHk5mL1upPFaxWxXbs9ihQDFoXY.jpg","backdrop_original":"https://image.tmdb.org/t/p/original/2T40B6Kdp8V72AdIk1yEokKAalr.jpg"},"alternativeTitles":{"bg":"Паркове и отдих","bs":"Parks and Recreation","de":"Parks and Recreation","gr":"Parks and Recreation","us":"Parks and Recreation","es":"Parks and Recreation","fi":"Puisto-osasto","fr":"Parks and Recreation","il":"מחלקת גנים ונוף","hu":"Városfejlesztési osztály","it":"Parks and Recreation","kr":"팍스 앤 레크리에이션","pl":"Parks and Recreation","br":"Confusões de Leslie","ro":"Parks and Recreation","ru":"Парки и зоны отдыха","se":"Parks and Recreation","tr":"Parks and Recreation","ua":"Парки та зони відпочинку"},"originalTitle":"Parks and Recreation"},"episode":{"traktSeasonNumber":6,"traktNumber":3,"code":"S06E03","title":"The Pawnee-Eagleton Tip Off Classic","imdbId":"tt3186496","tmdbId":397717,"tvdbId":4648445,"traktId":406303,"overview":"Ben, Leslie and Chris meet with Eagleton city councilor Ingrid de Forest to discuss financial matters. Ann brings April to vet school orientation. Ron tries to get off the grid.","firstAired":"2013-10-04T00:00:00.000Z","rating":7.9,"votes":1491,"runtime":21,"watched":false}}`
   );
+  // data: { show: Show, episode: Episode } = JSON.parse(
+  //   `{"show":{"title":"American Horror Story","year":2011,"imdbId":"tt1844624","tmdbId":1413,"tvdbId":250487,"traktId":1404,"slug":"american-horror-story","overview":"An anthology series centering on different characters and locations, including a house with a murderous past, an insane asylum, a witch coven, a freak show, a haunted hotel, a possessed farmhouse, a cult, the apocalypse and a slasher camp. ","trailer":"http://youtube.com/watch?v=aSRQRiw4xwc","firstAired":"2011-10-06T02:00:00.000Z","runtime":45,"rating":8.1,"votes":17623,"language":"en","genres":["drama","mystery","fantasy","science-fiction","horror","thriller"],"certification":"TV-MA","airedEpisodes":100,"images_url":{"poster":"https://image.tmdb.org/t/p/w300/uR2K0Ui9UsOqnzb5IrV6tLUcUHl.jpg","backdrop":"https://image.tmdb.org/t/p/w500/1gGRY9bnIc0Jaohgc6jNFidjgLK.jpg","poster_original":"https://image.tmdb.org/t/p/original/uR2K0Ui9UsOqnzb5IrV6tLUcUHl.jpg","backdrop_original":"https://image.tmdb.org/t/p/original/1gGRY9bnIc0Jaohgc6jNFidjgLK.jpg"},"alternativeTitles":{"sa":"قصة رعب امريكية","bg":"Зловеща семейна история","bs":"American Horror Story","cz":"American Horror Story","dk":"American Horror Story","de":"American Horror Story","gr":"American Horror Story","us":"American Horror Story","es":"American Horror Story","mx":"American Horror Story","ir":"داستان ترسناک آمریکایی","fi":"American Horror Story","ca":"Histoire d'horreur","fr":"American Horror Story","il":"אימה אמריקאית","hr":"American Horror Story","hu":"Amerikai Horror Story","it":"American Horror Story","ge":"ამერიკული საშინელებათა ისტორია","kr":"아메리칸 호러 스토리","lb":"American Horror Story","lt":"Amerikietiška siaubo istorija","nl":"American Horror Story","no":"American Horror Story","pl":"American Horror Story","br":"História de Horror Americana","pt":"Histórias de Horror Americana","ro":"Poveşti de groază americane","ru":"Американская история ужасов","sk":"American Horror Story","rs":"Америчка хорор прича","se":"American Horror Story","tr":"American Horror Story","ua":"Американська історія жаху","cn":"美国恐怖故事","tw":"美國恐怖故事"},"originalTitle":"American Horror Story"},"episode":{"traktSeasonNumber":9,"traktNumber":3,"code":"S09E03","title":"Slashdance","imdbId":"tt10333022","tmdbId":1904031,"tvdbId":7346953,"traktId":3697909,"overview":"Imitation is the best form of tragedy. Coming clean can be pretty messy.","firstAired":"2019-10-03T02:00:00.000Z","rating":7.6,"votes":725,"runtime":43,"watched":false}}`
+  // );
 
 
   // anime
@@ -41,17 +46,48 @@ export class EpisodePage implements OnInit {
   // );
 
 
-
   constructor(private pluginLoader: PluginLoaderService) {
   }
 
   ngOnInit() {
     this.loadPlugin();
+
+    this.test();
   }
 
   loadPlugin() {
 
     this.pluginLoader.createComponent('episodes', this.episodeVCRef, this.data);
     this.pluginLoader.createComponent('episodes-item-option', this.episodeItemOptionVCRef, this.data);
+  }
+
+  private test() {
+    let a = null;
+    let b = null;
+
+    let tTitle = 'Young Sheldon (2017) Season 1 S01 (1080p BluRay x265 HEVC 10bit AAC 5 1 Vyndros)';
+
+    let originalQuery = 'Young Sheldon season';
+
+    let sourceQuery: SourceQuery = JSON.parse(`
+    {"episode":{"episodeNumber":5,"seasonNumber":3,"episodeCode":"S03E05","seasonCode":"S03","imdbId":null,"tvdbId":7410970,"tmdbId":1944779,"showTvdbId":328724,"showTraktId":119172,"showTmdbId":71728,"title":"Young Sheldon","episodeTitle":"A Pineapple and the Bosom of Male Friendship","alternativeTitles":{"bg":"Младият Шелдън","cz":"Malý Sheldon","de":"Young Sheldon","gr":"Young Sheldon","us":"Young Sheldon","es":"El Joven Sheldon","mx":"El joven Sheldon","fr":"Young Sheldon","il":"שלדון הצעיר","hu":"Az ifjú Sheldon","it":"Young Sheldon","kr":"영 셸든","lv":"Young Sheldon","nl":"Young Sheldon","no":"Young Sheldon","pl":"Młody Sheldon","br":"Young Sheldon","ru":"Детство Шелдона","se":"Young Sheldon","tr":"Young Sheldon","ua":"Юний Шелдон","cn":"小谢尔顿","tw":"少年謝爾頓"},"originalTitle":"Young Sheldon","year":2017,"absoluteNumber":"","isAnime":false,"latestAiredEpisode":6},"category":"tv"}
+    `);
+
+    a = SourceUtils.isEpisodeTitleMatching(tTitle, originalQuery, sourceQuery.episode);
+    b = SourceUtils.isSeasonPackTitleMatching(tTitle, originalQuery, sourceQuery.episode);
+
+    console.log('test matching', tTitle, a, b);
+    tTitle = 'Parks And Recreation (2009) Season 1-7 S01-S07 (1080p AMZN WEBRip X265 HEVC 10bit AAC 5.1 Silence) [QxR]';
+
+    originalQuery = 'Parks and Recreation season';
+
+    sourceQuery = JSON.parse(`
+    {"episode":{"episodeNumber":3,"seasonNumber":6,"episodeCode":"S06E03","seasonCode":"S06","imdbId":"tt3186496","tvdbId":4648445,"tmdbId":397717,"showTvdbId":84912,"showTraktId":8546,"showTmdbId":8592,"title":"Parks and Recreation","episodeTitle":"The Pawnee-Eagleton Tip Off Classic","alternativeTitles":{"bg":"Паркове и отдих","bs":"Parks and Recreation","de":"Parks and Recreation","gr":"Parks and Recreation","us":"Parks and Recreation","es":"Parks and Recreation","fi":"Puisto-osasto","fr":"Parks and Recreation","il":"מחלקת גנים ונוף","hu":"Városfejlesztési osztály","it":"Parks and Recreation","kr":"팍스 앤 레크리에이션","pl":"Parks and Recreation","br":"Confusões de Leslie","ro":"Parks and Recreation","ru":"Парки и зоны отдыха","se":"Parks and Recreation","tr":"Parks and Recreation","ua":"Парки та зони відпочинку"},"originalTitle":"Parks and Recreation","year":2009,"absoluteNumber":"","isAnime":false,"latestAiredEpisode":22},"category":"tv"}
+    `);
+
+    a = SourceUtils.isEpisodeTitleMatching(tTitle, originalQuery, sourceQuery.episode);
+    b = SourceUtils.isSeasonPackTitleMatching(tTitle, originalQuery, sourceQuery.episode);
+
+    console.log('test matching', tTitle, a, b);
   }
 }
