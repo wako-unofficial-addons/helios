@@ -1,14 +1,48 @@
 {
   "pages": {
+    "tuto": {
+      "title": "Assistant d'installation",
+      "skip": "Passer",
+      "slide1": {
+        "title": "Qu'est-ce qu'Helios",
+        "description": "Helios est un chercheur de sources, il cherche sur des sites tiers (appelés providers) qui sont <strong>publicément disponibles</strong>sur internet.",
+        "disclaimer": "Helios n'héberge, ne télécharge ou ne gère aucun contenu sur ces sites et le module complémentaire d'Helios, le personnel et/ou les développeurs n'ont aucun contrôle sur le contenu de ces sites tiers. Helios ne peut être tenu responsable des droits d'auteur, de la légalité, de l'exactitude, de la conformité, de la décence ou de tout autre aspect du contenu affiché. Il est de la responsabilité de l'utilisateur final d'éviter toute action pouvant constituer une violation des lois nationales, fédérales ou terrestres qui lui sont applicables. <br/>>br/>Helios n'est pas développé ni endossé par wako, pour le support créer un ticket sur son github ou discuter avec la communauté sur reddit : https://www.reddit.com/r/Addons4Wako/\n\nTraduit avec www.DeepL.com/Translator"
+      },
+      "slide2": {
+        "title": "Ajouter des providers",
+        "description": "Comme nous l'avons déjà dit, Helios s'appuie sur les providers pour trouver les sources, alors ajoutons en"
+      },
+      "slide3": {
+        "title": "Choisir la qualité",
+        "description": "Sélectionnez la qualité la plus élevée que vous voulez jouer"
+      },
+      "slide4": {
+        "title": "Debrid Account",
+        "description": "Si vous voulez lire les sources sans aucun problème de mise en mémoire tampon, il est recommandé de connecter Helios à un service debrid."
+      },
+      "slide5": {
+        "title": "Sur quoi jouer ?",
+        "description": "Helios peut jouer la source sur différents lecteurs, sélectionnez votre lecteur par défaut"
+      },
+      "slide6": {
+        "title": "C'est tout bon",
+        "description": "Vous avez terminé, si vous voulez changer ces paramètres, allez dans Wako > Paramètres > Addons > Helios > Page Paramètres",
+        "button": "Fermer"
+      }
+    },
     "settings": {
       "list": {
+        "wizard": {
+          "header": "Assistant d'installation",
+          "item": "Lancer l'assistant d'installation"
+        },
         "provider": {
           "header": "Providers",
           "item": "Configurer les providers"
         },
         "debrid-account": {
-          "header": "Cloud Accounts (beta)",
-          "item": "Configure Cloud Accounts"
+          "header": "Compte Debrid",
+          "item": "Configurer les comptes Debrid"
         },
         "play-button": {
           "header": "Play Button",
@@ -41,7 +75,7 @@
     },
     "debrid-account": {
       "list": {
-        "title": "Cloud Accounts",
+        "title": "Debrid Accounts",
         "logout": "Se déconnecter",
         "login": "Se connecter",
         "realDebrid": {

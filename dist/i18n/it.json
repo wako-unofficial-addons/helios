@@ -6,7 +6,7 @@
       "slide1": {
         "title": "Che cos'è Helios",
         "description": "Helios è un cercatore di fonti, utilizza siti di terze parti (chiamati provider) che sono <strong>disponibili pubblicamente</strong> su Internet.",
-        "declaimer": "Helios non ospita, carica o gestisce nessuno dei contenuti di questi siti e l'add-on, il personale e/o gli sviluppatori di Helios non hanno alcun controllo sui contenuti di questi siti di terze parti. Helios non si assume alcuna responsabilità per diritti d'autore, legalità, accuratezza, conformità, decenza o qualsiasi altro aspetto del contenuto visualizzato. È positivamente responsabilità dell'utente finale evitare qualsiasi azione che possa costituire una violazione delle leggi nazionali, federali o terrestri a loro applicabili."
+        "disclaimer": "Helios non ospita, carica o gestisce nessuno dei contenuti di questi siti e l'add-on, il personale e/o gli sviluppatori di Helios non hanno alcun controllo sui contenuti di questi siti di terze parti. Helios non si assume alcuna responsabilità per diritti d'autore, legalità, accuratezza, conformità, decenza o qualsiasi altro aspetto del contenuto visualizzato. È positivamente responsabilità dell'utente finale evitare qualsiasi azione che possa costituire una violazione delle leggi nazionali, federali o terrestri a loro applicabili. <br/><br/>Helios non è sviluppato né avallato da wako, per il supporto creare un problema su github o discutere con la comunità su reddit: https://www.reddit.com/r/Addons4Wako/"
       },
       "slide2": {
         "title": "Aggiungi alcuni provider",

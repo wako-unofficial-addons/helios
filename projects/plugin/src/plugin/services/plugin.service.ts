@@ -44,7 +44,7 @@ export class PluginService extends PluginBaseService {
   private async runSetupWizard() {
     const wizardSeen = await this.storage.get('helios_setup_wizard_seen_for_dev');
     if (wizardSeen) { // Only for test purpose
-      return;
+      // return;
     }
 
     const modal = await this.modalController.create({

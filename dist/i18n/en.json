@@ -6,7 +6,7 @@
       "slide1": {
         "title": "What is Helios",
         "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are <strong>publicly available</strong> on the internet.",
-        "declaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them."
+        "disclaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them. <br/><br/>Helios is not developed nor endorsed by wako, for support create issue on its github or discuss with the community on reddit: https://www.reddit.com/r/Addons4Wako/"
       },
       "slide2": {
         "title": "Add some providers",
