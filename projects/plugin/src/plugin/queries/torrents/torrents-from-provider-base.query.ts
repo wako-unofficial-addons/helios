@@ -136,7 +136,7 @@ export abstract class TorrentsFromProviderBaseQuery {
       }
 
 
-      const replacerObj = Object.assign({query: query}, data ? data.cleanedReplacement : {});
+      const replacerObj = Object.assign({ query: query }, data ? data.cleanedReplacement : {});
 
       if (provider.base_url.match('imdbId') !== null || _keywords.match('imdbId') !== null) {
         if (data && data.rawReplacement.imdbId === '') {
@@ -235,6 +235,14 @@ export abstract class TorrentsFromProviderBaseQuery {
         return false;
       }
 
+      if (sourceQuery.query) {
+        if (!SourceUtils.isWordMatching(torrent.title, originalQuery, 0)) {
+          logData('Exclude Query from', torrent.provider, torrent.title, 'cause no matching');
+          return false;
+        }
+        return true;
+      }
+
       if (sourceQuery.movie) {
         if (!SourceUtils.isMovieTitleMatching(torrent.title, originalQuery, sourceQuery.movie)) {
           logData('Exclude Movie from', torrent.provider, torrent.title, 'cause no matching');
@@ -275,7 +283,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     if (!provider.title_replacement) {
       // Backward compatibility
       provider.title_replacement = {
-        "'s": 's',
+        '\'s': 's',
         '"': ' '
       };
     }
@@ -348,7 +356,7 @@ export abstract class TorrentsFromProviderBaseQuery {
       cleanedReplacement.query = encodeURIComponent(cleanedReplacement.query);
     }
 
-    return {rawReplacement, cleanedReplacement};
+    return { rawReplacement, cleanedReplacement };
   }
 
   private static doProviderHttpRequest(providerUrl: string, provider: Provider, providerBody = null) {
@@ -630,7 +638,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     const torrentSources: TorrentSource[] = [];
 
     providerTorrentResults.forEach(providerTorrentResult => {
-      torrentSources.push(this.transformProviderTorrentResultToTorrentSource(providerTorrentResult))
+      torrentSources.push(this.transformProviderTorrentResultToTorrentSource(providerTorrentResult));
     });
 
     return torrentSources;

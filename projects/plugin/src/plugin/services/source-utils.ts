@@ -190,7 +190,7 @@ export class SourceUtils {
 
   }
 
-  static isWordMatching(releaseTitle: string, title: string) {
+  static isWordMatching(releaseTitle: string, title: string, minWords = 3) {
 
     const placeholder = 'ZZOOPPQQ';
     const nameAndNumberMatches = title.match(/[a-z]+\s+[0-9]+/ig);
@@ -210,7 +210,7 @@ export class SourceUtils {
       .split(' ')
       .filter(word => word.trim().length >= 2);
 
-    if (words.length >= 3) {
+    if (words.length >= minWords) {
 
       if (hasBeenFixed) {
         const regExp = new RegExp(placeholder, 'g');
@@ -226,6 +226,16 @@ export class SourceUtils {
       const regexStr = words.join('.*');
       const regex = new RegExp(regexStr, 'ig');
 
+      if (releaseTitle.match(regex) !== null) {
+        return true;
+      }
+
+      releaseTitle = this.cleanTags(releaseTitle);
+
+      releaseTitle = this.removeFromTitle(releaseTitle, this.getQuality(releaseTitle), false);
+      releaseTitle = this.removeSeparator(releaseTitle, title);
+      releaseTitle = this.removeWWWUrl(releaseTitle, title);
+      releaseTitle = this.cleanTitle(releaseTitle) + ' ';
       if (releaseTitle.match(regex) !== null) {
         return true;
       }
