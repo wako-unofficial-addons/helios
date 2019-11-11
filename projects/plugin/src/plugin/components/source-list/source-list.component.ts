@@ -17,6 +17,7 @@ import { ModalController } from '@ionic/angular';
 import { CloudAccountListComponent } from '../../settings/cloud-account/cloud-account-list/cloud-account-list.component';
 import { ProvidersComponent } from '../../settings/providers/providers.component';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
+import { SourceUtils } from '../../services/source-utils';
 
 @Component({
   selector: 'wk-source-list',
@@ -39,6 +40,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   totalStreamLinkSource = 0;
   totalTorrentSource = 0;
+
+  private streamLinkSourcesByQualityCopy: SourceByQuality<StreamLinkSource>;
+  private torrentSourcesByQualityCopy: SourceByQuality<TorrentSource>;
 
   streamLinkSourcesByQuality: SourceByQuality<StreamLinkSource> = {
     sources2160p: [],
@@ -76,6 +80,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   initialized = false;
 
   private ready = false;
+  searchInput = '';
 
   constructor(
     private sourceService: SourceService,
@@ -102,7 +107,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async ngOnChanges() {
-
     if (!this.ready) {
       return;
     }
@@ -155,10 +159,8 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
       this.sourceQuery = await SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia).toPromise();
 
       if (this.kodiOpenMedia.movie) {
-
         this.lastPlayedSource = await this.sourceService.getLastMoviePlayedSource().toPromise();
       } else if (this.kodiOpenMedia.show && this.kodiOpenMedia.episode) {
-
         this.lastPlayedSource = await this.sourceService.getLastEpisodePlayedSource(this.kodiOpenMedia.show.traktId).toPromise();
       }
     }
@@ -228,8 +230,15 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, sortTorrentsBySize);
     this.torrentSourcesByQuality = getSourcesByQuality<TorrentSource>(torrentSources, sortTorrentsBalanced);
 
+    this.streamLinkSourcesByQualityCopy = Object.assign(this.streamLinkSourcesByQuality);
+    this.torrentSourcesByQualityCopy = Object.assign(this.torrentSourcesByQuality);
+
     this.totalStreamLinkSource = streamLinkSources.length;
     this.totalTorrentSource = torrentSources.length;
+
+    if (this.searchInput.length > 0) {
+      this.filterSearch();
+    }
   }
 
   getProviderStatus(name: string) {
@@ -267,5 +276,75 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     await modal.present();
 
     modal.onDidDismiss().then(() => this.search());
+  }
+
+  onSearch(event: any) {
+    this.searchInput = event.target.value ? event.target.value : '';
+
+    if (this.searchInput === '') {
+      this.resetSearch();
+      return;
+    }
+    this.filterSearch();
+  }
+
+  private resetCounter() {
+    this.totalStreamLinkSource =
+      this.streamLinkSourcesByQuality.sources2160p.length +
+      this.streamLinkSourcesByQuality.sources1080p.length +
+      this.streamLinkSourcesByQuality.sources720p.length +
+      this.streamLinkSourcesByQuality.sourcesOther.length;
+    this.totalTorrentSource =
+      this.torrentSourcesByQuality.sources2160p.length +
+      this.torrentSourcesByQuality.sources1080p.length +
+      this.torrentSourcesByQuality.sources720p.length +
+      this.torrentSourcesByQuality.sourcesOther.length;
+  }
+
+  private filterSearch() {
+    const streamLinkSource: SourceByQuality<StreamLinkSource> = {
+      sources2160p: [],
+      sources1080p: [],
+      sources720p: [],
+      sourcesOther: []
+    };
+
+    const torrentSource: SourceByQuality<TorrentSource> = {
+      sources2160p: [],
+      sources1080p: [],
+      sources720p: [],
+      sourcesOther: []
+    };
+    this.streamLinkSourcesByQuality = this.getSourcesFiltered<StreamLinkSource>(
+      streamLinkSource,
+      this.streamLinkSourcesByQualityCopy,
+      this.searchInput
+    );
+    this.torrentSourcesByQuality = this.getSourcesFiltered<TorrentSource>(
+      torrentSource,
+      this.torrentSourcesByQualityCopy,
+      this.searchInput
+    );
+
+    this.resetCounter();
+  }
+
+  private resetSearch() {
+    this.searchInput = '';
+    this.streamLinkSourcesByQuality = Object.assign(this.streamLinkSourcesByQualityCopy);
+    this.torrentSourcesByQuality = Object.assign(this.torrentSourcesByQualityCopy);
+
+    this.resetCounter();
+  }
+
+  private getSourcesFiltered<T>(targets: SourceByQuality<T>, sources: SourceByQuality<T>, filter: string) {
+    Object.keys(targets).forEach(key => {
+      if (sources.hasOwnProperty(key)) {
+        targets[key] = sources[key].filter((source: StreamLinkSource | TorrentSource) => {
+          return SourceUtils.isWordMatching(source.title + ' ' + source.provider, filter, 0);
+        });
+      }
+    });
+    return targets;
   }
 }
