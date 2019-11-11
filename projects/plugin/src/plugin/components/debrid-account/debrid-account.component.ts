@@ -201,6 +201,6 @@ export class DebridAccountComponent implements OnInit {
   }
 
   openRealDebrid() {
-    this.browserService.open('http://real-debrid.com/?id=3658750');
+    this.browserService.open('http://real-debrid.com/?id=4105935');
   }
 }
