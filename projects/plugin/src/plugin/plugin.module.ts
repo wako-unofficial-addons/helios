@@ -34,6 +34,7 @@ import { ProviderComponent } from './components/provider/provider.component';
 import { QualityComponent } from './components/quality/quality.component';
 import { DebridAccountComponent } from './components/debrid-account/debrid-account.component';
 import { PlayButtonComponent } from './components/play-button/play-button.component';
+import { SupportComponent } from './components/support/support.component';
 
 
 const components = [
@@ -53,7 +54,8 @@ const components = [
   ProviderComponent,
   QualityComponent,
   DebridAccountComponent,
-  PlayButtonComponent
+  PlayButtonComponent,
+  SupportComponent
 ];
 
 const directives = [HideKeyboardEnterDirective];

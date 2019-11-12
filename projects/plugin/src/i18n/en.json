@@ -88,6 +88,13 @@
           "noAccount": "No Premiumize account? Click here"
         }
       }
+    },
+    "support": {
+      "list": {
+        "header": "Support",
+        "reddit": "Our official Reddit",
+        "discord": "Our Official Discord"
+      }
     }
   },
   "toasts": {

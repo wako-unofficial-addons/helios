@@ -7,7 +7,6 @@ import { ProviderService } from './provider.service';
 import { ModalController } from '@ionic/angular';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
 import { Storage } from '@ionic/storage';
-import { HeliosCacheService } from './provider-cache.service';
 
 @Injectable()
 export class PluginService extends PluginBaseService {
@@ -44,7 +43,7 @@ export class PluginService extends PluginBaseService {
   private async runSetupWizard() {
     const wizardSeen = await this.storage.get('helios_setup_wizard_seen_for_dev');
     if (wizardSeen) { // Only for test purpose
-      // return;
+      return;
     }
 
     const modal = await this.modalController.create({
