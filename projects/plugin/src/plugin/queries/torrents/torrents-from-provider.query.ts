@@ -82,7 +82,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
             let errorMessage = '';
             if (typeof err === 'string') {
               errorMessage = err;
-            } else if (err instanceof WakoHttpError) {
+            } else if (err instanceof WakoHttpError && err.status) {
               errorMessage = err.status.toString();
             } else if (err.message) {
               errorMessage = err.message;

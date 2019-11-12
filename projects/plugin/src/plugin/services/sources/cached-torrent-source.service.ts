@@ -8,7 +8,7 @@ import { from, Observable, of } from 'rxjs';
 import {
   getScoreMatchingName,
   getSourcesByQuality,
-  isEpisodeCodeMatchesFileName,
+  isEpisodeCodeMatchesFileName, removeDuplicates,
   sortTorrentsByPackage,
   sortTorrentsBySize
 } from '../tools';
@@ -25,17 +25,6 @@ export class CachedTorrentSourceService {
 
   private excludedAlreadyCached(torrents: TorrentSource[]) {
     return torrents.filter(torrent => (torrent.isOnRD || torrent.isOnPM) === false);
-  }
-
-  private removeDuplicates(cachedSources: StreamLinkSource[]) {
-    const ids = [];
-    return cachedSources.filter(cachedSource => {
-      if (ids.includes(cachedSource.id)) {
-        return false;
-      }
-      ids.push(cachedSource.id);
-      return true;
-    });
   }
 
   getFromTorrents(torrents: TorrentSource[], sourceQuery: SourceQuery) {
@@ -73,7 +62,7 @@ export class CachedTorrentSourceService {
       return of(null);
     }
 
-    streamLinkSources = this.removeDuplicates(streamLinkSources);
+    streamLinkSources = removeDuplicates<StreamLinkSource>(streamLinkSources, 'id');
 
     const sourceQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, sortTorrentsBySize);
     sortTorrentsByPackage(sourceQuality.sources2160p);

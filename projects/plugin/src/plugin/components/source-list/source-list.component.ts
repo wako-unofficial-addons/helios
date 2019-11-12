@@ -6,7 +6,7 @@ import { SourceByQuality } from '../../entities/source-by-quality';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceByProvider } from '../../entities/source-by-provider';
 import { StreamLinkSource } from '../../entities/stream-link-source';
-import { getSourcesByQuality, sortTorrentsBalanced, sortTorrentsBySize } from '../../services/tools';
+import { getSourcesByQuality, removeDuplicates, sortTorrentsBalanced, sortTorrentsBySize } from '../../services/tools';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SourceQuery } from '../../entities/source-query';
 import { ProviderService } from '../../services/provider.service';
@@ -205,8 +205,8 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.sourceByProviders = sources;
 
-    const streamLinkSources: StreamLinkSource[] = [];
-    const torrentSources: TorrentSource[] = [];
+    let streamLinkSources: StreamLinkSource[] = [];
+    let torrentSources: TorrentSource[] = [];
 
     const streamIds = [];
     const torrentIds = [];
@@ -226,6 +226,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
         }
       });
     });
+
+    streamLinkSources = removeDuplicates<StreamLinkSource>(streamLinkSources, 'id');
+    torrentSources = removeDuplicates<TorrentSource>(torrentSources, 'hash');
 
     this.streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, sortTorrentsBySize);
     this.torrentSourcesByQuality = getSourcesByQuality<TorrentSource>(torrentSources, sortTorrentsBalanced);

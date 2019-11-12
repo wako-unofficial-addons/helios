@@ -1,12 +1,4 @@
-import {
-  Episode,
-  KodiApiService,
-  Movie,
-  Show,
-  wakoLog,
-  WakoPlaylistService,
-  WakoPlaylistVideo
-} from '@wako-app/mobile-sdk';
+import { Episode, KodiApiService, Movie, Show, wakoLog, WakoPlaylistService, WakoPlaylistVideo } from '@wako-app/mobile-sdk';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
@@ -264,9 +256,6 @@ export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSour
   return sourceByQuality;
 }
 
-export function getPreviousFileNamePlayed(traktId: number) {
-  return 'helios_previousplayed_' + traktId;
-}
 
 export function getScoreMatchingName(sourceFileName: string, targetFileName: string) {
   let sfs = sourceFileName
@@ -302,7 +291,7 @@ export function getSourceQueryMovie(movie: Movie) {
   sourceMovieQuery.originalTitle = movie.originalTitle;
   sourceMovieQuery.year = movie.year;
 
-  return {movie: sourceMovieQuery, category: 'movie'} as SourceQuery;
+  return { movie: sourceMovieQuery, category: 'movie' } as SourceQuery;
 }
 
 export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumber?: number) {
@@ -326,7 +315,7 @@ export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumb
   sourceEpisodeQuery.absoluteNumber = absoluteNumber;
   sourceEpisodeQuery.isAnime = show.genres.includes('anime');
 
-  return {episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv'} as SourceQuery;
+  return { episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv' } as SourceQuery;
 }
 
 export function getEpisodeCode(seasonNumber: number, episodeNumber: number) {
@@ -410,4 +399,19 @@ export function getElementumUrlBySourceUrl(sourceUrl: string, sourceQuery?: Sour
 
 
   return url + '?' + urlSearchParams.toString();
+}
+
+
+export function removeDuplicates<T>(data: T[], key: string) {
+  const ids = [];
+  return data.filter(d => {
+    if (d[key] === null) {
+      return true;
+    }
+    if (ids.includes(d[key])) {
+      return false;
+    }
+    ids.push(d[key]);
+    return true;
+  });
 }

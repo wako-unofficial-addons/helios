@@ -192,6 +192,8 @@ export class SourceUtils {
 
   static isWordMatching(releaseTitle: string, title: string, minWords = 3) {
 
+    title = this.stripAccents(title);
+
     const placeholder = 'ZZOOPPQQ';
     const nameAndNumberMatches = title.match(/[a-z]+\s+[0-9]+/ig);
 
