@@ -1,6 +1,7 @@
 import { SourceQuality } from '../entities/source-quality';
-import { SourceEpisodeQuery, SourceMovieQuery } from '../entities/source-query';
+import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
 import { add0 } from './tools';
+import { SourceVideoMetadata } from '../entities/base-source';
 
 export class SourceUtils {
   static convertSizeStrToBytes(sizeStr: string) {
@@ -422,4 +423,27 @@ export class SourceUtils {
     return seasonNumber < maxSeasonNumber;
   }
 
+
+  static getVideoMetadata(releaseTitle: string, sourceQuery: SourceQuery) {
+    let title = '';
+
+    const videoMetadata = {} as SourceVideoMetadata;
+
+    if (sourceQuery.query) {
+      title = sourceQuery.query;
+    }
+
+    if (sourceQuery.movie) {
+      title = sourceQuery.movie.title;
+    }
+
+    if (sourceQuery.episode) {
+      title = sourceQuery.episode.title;
+    }
+
+    videoMetadata.isCam = title.match(/hdcam/gi) === null && releaseTitle.match(/hdcam/gi) !== null;
+    videoMetadata.is3D = title.match(/3D/gi) === null && releaseTitle.match(/3D/gi) !== null;
+
+    return videoMetadata;
+  }
 }

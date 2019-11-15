@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { PluginLoaderService } from '@wako-app/mobile-sdk';
+import { SourceQuery } from '../../../projects/plugin/src/plugin/entities/source-query';
+import { SourceUtils } from '../../../projects/plugin/src/plugin/services/source-utils';
 
 @Component({
   selector: 'app-tab1',
@@ -7,7 +9,7 @@ import { PluginLoaderService } from '@wako-app/mobile-sdk';
   styleUrls: ['movie.page.scss']
 })
 export class MoviePage implements OnInit {
-  @ViewChild('movieRef', {read: ViewContainerRef, static: true})
+  @ViewChild('movieRef', { read: ViewContainerRef, static: true })
   movieVCRef: ViewContainerRef;
 
   constructor(private pluginLoader: PluginLoaderService) {
@@ -35,5 +37,24 @@ export class MoviePage implements OnInit {
     // );
 
     this.pluginLoader.createComponent('movies', this.movieVCRef, data);
+
+    this.test();
+  }
+
+  private test() {
+    let a = null;
+
+    let tTitle = 'Windows 10 X64 19H2 ESD En-US OCT 2019 Gen2';
+
+    let originalQuery = 'Us 2019';
+
+    let sourceQuery: SourceQuery = JSON.parse(`
+    {"movie":{"imdbId":"tt6857112","tmdbId":458723,"title":"Us","alternativeTitles":{"sa":"نحن","by":"Мы","bg":"Нас","cz":"My","dk":"Us","de":"Wir","gr":"Εμείς","us":"Us","es":"Nosotros","mx":"Nosotros","ca":"Nous","fr":"Us","il":"אנחנו","hr":"Mi","hu":"Mi","it":"Noi","jp":"Us","kr":"어스","lt":"Mes","lv":"Mēs","nl":"Us","pl":"To my","br":"Nós","pt":"Nós","ro":"Noi","ru":"Мы","sk":"My","si":"Mi","rs":"Ми","se":"Us","th":"หลอน ลวง เรา","tr":"Biz","ua":"Ми","vn":"Chúng Tôi","cn":"我们","hk":"我們．異","tw":"我們"},"originalTitle":"Us","year":2019},"category":"movie"}
+    `);
+
+    a = SourceUtils.isMovieTitleMatching(tTitle, originalQuery, sourceQuery.movie);
+
+    console.log('test matching', tTitle, a);
+
   }
 }

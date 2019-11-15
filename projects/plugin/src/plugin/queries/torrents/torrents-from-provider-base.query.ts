@@ -184,6 +184,12 @@ export abstract class TorrentsFromProviderBaseQuery {
             return this.getTorrentsFromProviderHttpResponse(response, provider, providerUrl);
           }),
           map(_torrents => {
+            return this.setVideoMetadata(_torrents, sourceQuery);
+          }),
+          map(_torrents => {
+            return this.removeUnwantedTorrents(_torrents);
+          }),
+          map(_torrents => {
             if (provider.trust_results === true && sourceQuery.movie) { // Trust only movie
               return _torrents;
             }
@@ -225,15 +231,34 @@ export abstract class TorrentsFromProviderBaseQuery {
   }
 
 
-  private static removeBadTorrents(torrents: TorrentSource[], originalQuery: string, sourceQuery: SourceQuery) {
+  private static setVideoMetadata(torrents: TorrentSource[], sourceQuery: SourceQuery) {
+    torrents.forEach(torrent => {
+      torrent.videoMetaData = SourceUtils.getVideoMetadata(torrent.title, sourceQuery);
+    });
+    return torrents;
+  }
 
+  private static removeUnwantedTorrents(torrents: TorrentSource[]) {
     return torrents.filter(torrent => {
-      let releaseTitle = SourceUtils.cleanTitle(torrent.title);
 
-      if (releaseTitle.match(/hdcam/gi) !== null) {
+      if (torrent.videoMetaData.isCam) {
         logData('Exclude from', torrent.provider, torrent.title, 'cause hdcam');
         return false;
       }
+
+
+      if (torrent.videoMetaData.is3D) {
+        logData('Exclude from', torrent.provider, torrent.title, 'cause 3D');
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  private static removeBadTorrents(torrents: TorrentSource[], originalQuery: string, sourceQuery: SourceQuery) {
+
+    return torrents.filter(torrent => {
 
       if (sourceQuery.query) {
         if (!SourceUtils.isWordMatching(torrent.title, originalQuery, 0)) {

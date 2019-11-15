@@ -198,6 +198,7 @@
     "clickToAddProvider": "Click here to add some provider",
     "noSourceFound": "No source found",
     "noBestSource": "Helios didn't find the best source for you, please choose it manually",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "enabled": "Enabled"
   }
 }
