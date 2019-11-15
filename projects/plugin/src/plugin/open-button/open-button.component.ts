@@ -8,7 +8,7 @@ import { SearchSourceComponent } from '../components/search-source/search-source
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { OpenSourceService } from '../services/open-source.service';
 import { ProviderService } from '../services/provider.service';
-import { logData, logEvent } from '../services/tools';
+import { logData } from '../services/tools';
 import { NEVER } from 'rxjs';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
@@ -151,13 +151,12 @@ export class OpenButtonComponent implements OnInit {
             default:
               SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia).subscribe(sourceQuery => {
                 this.openSourceService.openStreamLinkSource(bestSource, sourceQuery, this.kodiOpenMedia);
-              })
+              });
           }
 
         }
       });
 
-    logEvent('helios_main_button', {action: this.settings.defaultPlayButtonAction});
   }
 
   async openSourceModal() {
@@ -169,7 +168,5 @@ export class OpenButtonComponent implements OnInit {
     });
 
     modal.present();
-
-    logEvent('helios_more_button', null);
   }
 }

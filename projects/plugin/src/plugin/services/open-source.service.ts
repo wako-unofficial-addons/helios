@@ -22,13 +22,7 @@ import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-ca
 import { ClipboardService } from 'ngx-clipboard';
 import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
 import { TorrentSource } from '../entities/torrent-source';
-import {
-  addToPlaylist,
-  getElementumUrlBySourceUrl,
-  incrementEpisodeCode,
-  isEpisodeCodeMatchesFileName,
-  logEvent
-} from './tools';
+import { addToPlaylist, getElementumUrlBySourceUrl, incrementEpisodeCode, isEpisodeCodeMatchesFileName } from './tools';
 import { SettingsService } from './settings.service';
 import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
 import { CachedTorrentSourceService } from './sources/cached-torrent-source.service';
@@ -49,7 +43,7 @@ export class OpenSourceService {
     private clipboardService: ClipboardService,
     private settingsService: SettingsService,
     private cachedTorrentService: CachedTorrentSourceService,
-    private sourceService: SourceService,
+    private sourceService: SourceService
   ) {
   }
 
@@ -291,7 +285,7 @@ export class OpenSourceService {
         case 'copy-url':
           buttonOptions.role = 'copy-url';
           buttonOptions.handler = () => {
-            this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'Video URL'});
+            this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
           };
           break;
 
@@ -339,7 +333,7 @@ export class OpenSourceService {
           buttonOptions.handler = () => {
             const videoUrls = [];
             streamLinks.forEach(_streamLink => {
-              videoUrls.push(preferTranscodedFiles && _streamLink.transcodedUrl ? _streamLink.transcodedUrl : _streamLink.url)
+              videoUrls.push(preferTranscodedFiles && _streamLink.transcodedUrl ? _streamLink.transcodedUrl : _streamLink.url);
             });
             this.openKodi(
               videoUrls,
@@ -372,7 +366,6 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(streamLink.url);
-      logEvent('helios_action', {action: 'copy-url'});
     });
   }
 
@@ -382,7 +375,7 @@ export class OpenSourceService {
       .pipe(
         catchError(err => {
           if (err === 'hostUnreachable') {
-            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', {hostName: KodiAppService.currentHost.name}, 2000);
+            this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
           } else {
             this.toastService.simpleMessage('toasts.kodi.noHost');
           }
@@ -421,7 +414,7 @@ export class OpenSourceService {
         }),
         tap(done => {
           if (kodiOpenMedia && kodiOpenMedia.show && videoUrls.length === 0) {
-            EventService.emit(EventCategory.kodi, 'playEpisode', {kodiOpenMedia, pluginId});
+            EventService.emit(EventCategory.kodi, 'playEpisode', { kodiOpenMedia, pluginId });
           }
 
           // Take only 5 episodes
@@ -438,7 +431,7 @@ export class OpenSourceService {
           let message = this.translateService.instant(toastMessage, toastParams);
 
           if (totalNextUpVideo > 0) {
-            message += '<br/>' + this.translateService.instant('sources.addToQueue', {totalEpisode: totalNextUpVideo})
+            message += '<br/>' + this.translateService.instant('sources.addToQueue', { totalEpisode: totalNextUpVideo });
           }
 
           this.toastService.simpleMessage(message);
@@ -448,8 +441,6 @@ export class OpenSourceService {
             action = 'open-elementum';
           }
 
-
-          logEvent('helios_action', {action: action});
           if (videoUrls.length > 0) {
             addToPlaylist(newVideoUrls, kodiOpenMedia, !pluginId).subscribe();
           }
@@ -477,8 +468,6 @@ export class OpenSourceService {
     } else {
       window.open(url, '_system', 'location=yes');
     }
-
-    logEvent('helios_action', {action: 'open-browser'});
   }
 
   async openVlc(videoUrl: string) {
@@ -489,8 +478,6 @@ export class OpenSourceService {
       const url = `vlc://${videoUrl}`;
       this.browserService.open(url, false);
     }
-
-    logEvent('helios_action', {action: 'open-vlc'});
   }
 
   async openNplayer(videoUrl: string) {
@@ -499,8 +486,6 @@ export class OpenSourceService {
     }
     const url = `nplayer-${videoUrl}`;
     this.browserService.open(url, false);
-
-    logEvent('helios_action', {action: 'open-nplayer'});
   }
 
   async downloadWithVlc(videoUrl: string) {
@@ -510,8 +495,6 @@ export class OpenSourceService {
       const url = `vlc-x-callback://x-callback-url/download?url=${encodeURIComponent(videoUrl)}`;
       this.browserService.open(url, false);
     }
-
-    logEvent('helios_action', {action: 'download-vlc'});
   }
 
   private async addToPM(url: string) {
@@ -528,10 +511,8 @@ export class OpenSourceService {
         if (data.status === 'success') {
           this.toastService.simpleMessage('toasts.open-source.addedToPM');
         } else {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', {error: data.message});
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', { error: data.message });
         }
-
-        logEvent('helios_action', {action: 'add-pm'});
       });
   }
 
@@ -546,7 +527,7 @@ export class OpenSourceService {
     RealDebridCacheUrlCommand.handle(url)
       .pipe(
         catchError(err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err});
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err });
           return EMPTY;
         }),
         finalize(() => loader.dismiss())
@@ -554,11 +535,9 @@ export class OpenSourceService {
       .subscribe(
         () => {
           this.toastService.simpleMessage('toasts.open-source.addedToRD');
-
-          logEvent('helios_action', {action: 'add-rd'});
         },
         err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', {error: err.toString()});
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err.toString() });
         }
       );
   }
@@ -613,7 +592,7 @@ export class OpenSourceService {
         }
 
         this.openKodi(urls, kodiOpenMedia, 'plugin.video.elementum', obs);
-      })
+      });
 
 
   }
@@ -637,8 +616,6 @@ export class OpenSourceService {
         url: cachedUrl,
         chooserTitle: torrentTitle
       });
-
-      logEvent('helios_action', {action: 'share-url'});
     }
   }
 
