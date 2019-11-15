@@ -98,6 +98,7 @@ export class DebridAccountComponent implements OnInit {
                   this.debridAccountService.getPremiumizeSettings().then(settings => {
                     if (!settings) {
                       settings = {
+                        disabled: false,
                         apiKey: '',
                         preferTranscodedFiles: this.preferTranscoded
                       };
