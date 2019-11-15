@@ -1,11 +1,6 @@
 import { PreimumizeTransferDirectdlContentDto } from '../../services/premiumize/dtos/transfer/premiumize-transfer-directdl.dto';
 import { SourceQuery } from '../../entities/source-query';
-import {
-  cleanTitle,
-  getSupportedMedia,
-  incrementEpisodeCode,
-  isEpisodeCodeMatchesFileName
-} from '../../services/tools';
+import { cleanTitle, getSupportedMedia, incrementEpisodeCode, isEpisodeCodeMatchesFileName } from '../../services/tools';
 import { of, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StreamLink, StreamLinkSource } from '../../entities/stream-link-source';
@@ -65,12 +60,22 @@ export class PremiumizeGetStreamLinkQuery {
           let episodeCode = sourceQuery.episode.episodeCode;
           let error = false;
 
+          const title = sourceQuery.episode.title + ' ' + sourceQuery.episode.episodeTitle;
+
+          const hasSampleInTitle = title.match('sample') !== null;
+
           files.forEach(d => {
             if (error) {
               return;
             }
             const filename = d.path;
             if (isEpisodeCodeMatchesFileName(episodeCode, filename)) {
+
+              if (!hasSampleInTitle && filename.match('sample') !== null) {
+                return;
+              }
+
+
               currentEpisodeFound = true;
               try {
                 episodeCode = incrementEpisodeCode(episodeCode);
