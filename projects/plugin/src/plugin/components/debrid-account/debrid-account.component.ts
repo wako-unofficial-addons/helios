@@ -14,7 +14,7 @@ import { RealDebridApiService } from '../../services/real-debrid/services/real-d
 @Component({
   selector: 'wk-debrid-account',
   templateUrl: './debrid-account.component.html',
-  styleUrls: ['./debrid-account.component.scss'],
+  styleUrls: ['./debrid-account.component.scss']
 })
 export class DebridAccountComponent implements OnInit {
   isPremiumizeLogged = false;
@@ -35,7 +35,8 @@ export class DebridAccountComponent implements OnInit {
     private providerService: ProviderService,
     private clipboardService: ClipboardService,
     private ngZone: NgZone
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.debridAccountService.getPremiumizeSettings().then(settings => {
@@ -147,6 +148,7 @@ export class DebridAccountComponent implements OnInit {
 
       this.debridAccountService.setPremiumizeSettings(settings).then(() => {
         this.ngOnInit();
+        document.location.reload();
       });
     });
   }
@@ -160,6 +162,7 @@ export class DebridAccountComponent implements OnInit {
 
       this.debridAccountService.setRealDebridSettings(settings).then(() => {
         this.ngOnInit();
+        document.location.reload();
       });
     });
   }
@@ -192,7 +195,7 @@ export class DebridAccountComponent implements OnInit {
               text: this.translateService.instant('alerts.cloud-account.real-debrid.openUrlButton'),
               cssClass: 'copy-url',
               handler: () => {
-                this.toastService.simpleMessage('toasts.copyToClipboard', {element: 'The code'});
+                this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'The code' });
 
                 setTimeout(() => {
                   this.browserService.open(`https://real-debrid.com/device`);
@@ -228,7 +231,7 @@ export class DebridAccountComponent implements OnInit {
 
           alert.onDidDismiss().then(() => {
             this.debridAccountService.stopRealDebridAuthInterval();
-          })
+          });
         });
     });
   }
