@@ -115,7 +115,7 @@ export class SourceUtils {
     }
 
     releaseTitle = checkForSep(releaseTitle, '/');
-    releaseTitle = checkForSep(releaseTitle, '-');
+    releaseTitle = checkForSep(releaseTitle, ' - ');
 
     return releaseTitle;
   }
@@ -256,7 +256,6 @@ export class SourceUtils {
     const title = this.cleanTitle(searchQuery.replace(year, ''));
     const titleBroken1 = this.cleanTitle(searchQuery, '');
     const titleBroken2 = this.cleanTitle(searchQuery, ' s');
-
 
     if (this.isWordMatching(releaseTitle, title)) {
       return true;
