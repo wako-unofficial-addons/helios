@@ -21,7 +21,11 @@ export class DebridAccountComponent implements OnInit {
   isLoadingPremiumize = false;
   preferTranscoded = false;
 
+  isPremiumizeEnabled = true;
+  isRealDebridEnabled = true;
+
   isRealDebridLogged = false;
+
   constructor(
     private debridAccountService: DebridAccountService,
     private alertController: AlertController,
@@ -38,11 +42,13 @@ export class DebridAccountComponent implements OnInit {
       this.isPremiumizeLogged = !!settings;
       console.log('this.isPremiumizeLogged', this.isPremiumizeLogged);
       this.preferTranscoded = settings ? settings.preferTranscodedFiles : false;
+      this.isPremiumizeEnabled = settings ? settings.disabled !== true : false;
       PremiumizeApiService.setApiKey(settings ? settings.apiKey : null);
     });
 
     this.debridAccountService.getRealDebridSettings().then(settings => {
       this.isRealDebridLogged = !!settings;
+      this.isRealDebridEnabled = settings ? settings.disabled !== true : false;
       RealDebridApiService.setToken(settings ? settings.access_token : null);
     });
   }
@@ -126,6 +132,32 @@ export class DebridAccountComponent implements OnInit {
       settings.preferTranscodedFiles = enabled;
 
       this.debridAccountService.setPremiumizeSettings(settings).then(() => {
+        this.ngOnInit();
+      });
+    });
+  }
+
+  toggleEnabledPM(enabled: boolean) {
+    this.debridAccountService.getPremiumizeSettings().then(settings => {
+      if (!settings) {
+        return;
+      }
+      settings.disabled = !enabled;
+
+      this.debridAccountService.setPremiumizeSettings(settings).then(() => {
+        this.ngOnInit();
+      });
+    });
+  }
+
+  toggleEnabledRD(enabled: boolean) {
+    this.debridAccountService.getRealDebridSettings().then(settings => {
+      if (!settings) {
+        return;
+      }
+      settings.disabled = !enabled;
+
+      this.debridAccountService.setRealDebridSettings(settings).then(() => {
         this.ngOnInit();
       });
     });

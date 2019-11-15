@@ -11,6 +11,10 @@
     </ion-text>
     <ion-list lines="full">
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
+        <ion-label>{{ 'shared.enabled' | translate }}</ion-label>
+        <ion-toggle [(ngModel)]="isPremiumizeEnabled" (ngModelChange)="toggleEnabledPM($event)"></ion-toggle>
+      </ion-item>
+      <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
         <ion-label>{{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}</ion-label>
         <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)"></ion-toggle>
       </ion-item>
@@ -40,6 +44,10 @@
     </ion-text>
 
     <ion-list lines="full">
+      <ion-item class="ion-no-padding" *ngIf="isRealDebridLogged">
+        <ion-label>{{ 'shared.enabled' | translate }}</ion-label>
+        <ion-toggle [(ngModel)]="isRealDebridEnabled" (ngModelChange)="toggleEnabledRD($event)"></ion-toggle>
+      </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isRealDebridLogged" button (click)="logoutRealDebrid()">
         <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
       </ion-item>

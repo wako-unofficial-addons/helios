@@ -32,12 +32,12 @@ export class DebridAccountService {
 
   async initialize() {
     const premiumizeSettings = await this.getPremiumizeSettings();
-    if (premiumizeSettings) {
+    if (premiumizeSettings && premiumizeSettings.disabled !== true) {
       PremiumizeApiService.setApiKey(premiumizeSettings.apiKey);
     }
 
     const realDebridSettings = await this.getRealDebridSettings();
-    if (realDebridSettings) {
+    if (realDebridSettings && realDebridSettings.disabled !== true) {
       RealDebridApiService.setToken(realDebridSettings.access_token);
 
       this.realDebridRefreshToken().subscribe();
@@ -50,7 +50,12 @@ export class DebridAccountService {
     const premiumizeSettings = await this.getPremiumizeSettings();
     const realDebridSettings = await this.getRealDebridSettings();
 
-    const has = !!premiumizeSettings || !!realDebridSettings;
+    let has = false;
+    if (premiumizeSettings && premiumizeSettings.disabled !== true) {
+      has = true;
+    } else if (realDebridSettings && realDebridSettings.disabled !== true) {
+      has = true;
+    }
 
     this.hasAtLeastOneAccount$.next(has);
     return has;
@@ -94,6 +99,7 @@ export class DebridAccountService {
 
             return from(
               this.setRealDebridSettings({
+                disabled: settings.disabled,
                 client_id: settings.client_id,
                 client_secret: settings.client_secret,
                 access_token: token.access_token,
@@ -175,6 +181,7 @@ export class DebridAccountService {
 
             RealDebridOauthTokenForm.submit(credentials.client_id, credentials.client_secret, data.device_code).subscribe(token => {
               this.setRealDebridSettings({
+                disabled: false,
                 client_id: credentials.client_id,
                 client_secret: credentials.client_secret,
                 access_token: token.access_token,
@@ -192,11 +199,13 @@ export class DebridAccountService {
 }
 
 export interface PremiumizeSettings {
+  disabled: boolean;
   apiKey: string;
   preferTranscodedFiles: boolean;
 }
 
 export interface RealDebridSettings {
+  disabled: boolean;
   client_id: string;
   access_token: string;
   refresh_token: string;

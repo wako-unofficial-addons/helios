@@ -1,12 +1,9 @@
-import { of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { SourceEpisodeQuery, SourceQuery } from '../../entities/source-query';
-import { cleanTitle, getSupportedMedia, isEpisodeCodeMatchesFileName, logData } from '../../services/tools';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { logData } from '../../services/tools';
 import { PremiumizeApiService } from '../../services/premiumize/services/premiumize-api.service';
 import { PremiumizeCacheCheckForm } from '../../services/premiumize/forms/cache/premiumize-cache-check.form';
 import { PremiumizeTransferDirectdlForm } from '../../services/premiumize/forms/transfer/premiumize-transfer-directdl.form';
-import { PreimumizeTransferDirectdlContentDto } from '../../services/premiumize/dtos/transfer/premiumize-transfer-directdl.dto';
-import { DebridSource, DebridSourceFile } from '../../entities/debrid-source';
 import { TorrentSource } from '../../entities/torrent-source';
 import { StreamLinkSource } from '../../entities/stream-link-source';
 
