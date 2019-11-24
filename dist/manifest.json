@@ -10,11 +10,11 @@
     "episodes",
     "episodes-item-option"
   ],
-  "entryPoint": "/plugin.js",
+  "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
   "languages": {
-    "en": "/i18n/en.json",
-    "fr": "/i18n/fr.json",
-    "it": "/i18n/it.json"
+    "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
+    "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json",
+    "it": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/it.json"
   },
   "changeLogs": {
     "3.4.0": "Handle new wako playlist feature",
