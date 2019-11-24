@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -10,13 +10,14 @@
     "episodes",
     "episodes-item-option"
   ],
-  "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
+  "entryPoint": "/plugin.js",
   "languages": {
-    "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
-    "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json",
-    "it": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/it.json"
+    "en": "/i18n/en.json",
+    "fr": "/i18n/fr.json",
+    "it": "/i18n/it.json"
   },
   "changeLogs": {
+    "3.4.0": "Handle new wako playlist feature",
     "3.3.0": "Add icons",
     "3.2.9": "Improve query matching, remove 3D",
     "3.2.7": "Remove duplicated sources. Strip accent on manual search",

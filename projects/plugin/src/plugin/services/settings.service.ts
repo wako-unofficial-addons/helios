@@ -16,14 +16,17 @@ export class SettingsService {
   async get() {
     let settings: Settings = await this.storage.get(this.heliosSettingsKey);
 
+    const defaultSettings = new Settings(this.platform.is('android'));
     if (!settings) {
-      settings = new Settings(this.platform.is('android'));
+      settings = defaultSettings;
     }
 
-    // Patches
-    if (settings.openRemoteAfterClickOnPlay === undefined) {
-      settings.openRemoteAfterClickOnPlay = true;
-    }
+    Object.keys(defaultSettings).forEach(key => {
+      if (settings[key] === undefined) {
+        settings[key] = defaultSettings[key];
+      }
+    });
+
 
     return settings;
   }

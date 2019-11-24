@@ -11,7 +11,8 @@ export declare type PlayButtonAction =
   | 'open-with'
   | 'open-nplayer'
   | 'add-to-pm'
-  | 'add-to-rd';
+  | 'add-to-rd'
+  | 'add-to-playlist';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -23,7 +24,8 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-kodi',
   'open-nplayer',
   'add-to-pm',
-  'add-to-rd'
+  'add-to-rd',
+  'add-to-playlist'
 ];
 
 export const PlayButtonActionAndroid: PlayButtonAction[] = [
@@ -35,7 +37,8 @@ export const PlayButtonActionAndroid: PlayButtonAction[] = [
   'open-kodi',
   'open-with',
   'add-to-pm',
-  'add-to-rd'
+  'add-to-rd',
+  'add-to-playlist'
 ];
 
 export interface SettingsQuality {
@@ -72,6 +75,7 @@ export class Settings {
   ];
 
   openRemoteAfterClickOnPlay = true;
+  enableEpisodeAutomaticPlaylist = true;
 
   constructor(isAndroid: boolean) {
     this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0);

@@ -6,6 +6,7 @@ import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiu
 import { TorrentSource } from '../../entities/torrent-source';
 import { from, Observable, of } from 'rxjs';
 import {
+  episodeFoundInStreamLinks,
   getScoreMatchingName,
   getSourcesByQuality,
   isEpisodeCodeMatchesFileName, removeDuplicates,
@@ -116,14 +117,7 @@ export class CachedTorrentSourceService {
               map((streamLinks: StreamLink[]) => {
                 if (streamLinks.length > 0) {
                   if (sourceQuery.episode && streamLinks.length > 1) {
-                    let currentEpisodeFound = false;
-                    let episodeCode = sourceQuery.episode.episodeCode;
-
-                    streamLinks.forEach(streamLink => {
-                      if (isEpisodeCodeMatchesFileName(episodeCode, streamLink.filename)) {
-                        currentEpisodeFound = true;
-                      }
-                    });
+                    const currentEpisodeFound = episodeFoundInStreamLinks(streamLinks, sourceQuery);
 
                     if (!currentEpisodeFound) {
                       return bestSource;

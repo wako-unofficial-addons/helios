@@ -5,8 +5,8 @@
       "skip": "Passer",
       "slide1": {
         "title": "Qu'est-ce qu'Helios",
-        "description": "Helios est un chercheur de sources, il cherche sur des sites tiers (appelés providers) qui sont <strong>publicément disponibles</strong>sur internet.",
-        "disclaimer": "Helios n'héberge, ne télécharge ou ne gère aucun contenu sur ces sites et le module complémentaire d'Helios, le personnel et/ou les développeurs n'ont aucun contrôle sur le contenu de ces sites tiers. Helios ne peut être tenu responsable des droits d'auteur, de la légalité, de l'exactitude, de la conformité, de la décence ou de tout autre aspect du contenu affiché. Il est de la responsabilité de l'utilisateur final d'éviter toute action pouvant constituer une violation des lois nationales, fédérales ou terrestres qui lui sont applicables. <br/>>br/>Helios n'est pas développé ni endossé par wako, pour le support créer un ticket sur son github ou discuter avec la communauté sur reddit : https://www.reddit.com/r/Addons4Wako/\n\nTraduit avec www.DeepL.com/Translator"
+        "description": "Helios est un chercheur de sources, il cherche sur des sites tiers (appelés providers) qui sont <strong>publiquement accessible</strong>sur internet.",
+        "disclaimer": "Helios n'héberge, ne télécharge ou ne gère aucun contenu sur ces sites et l'addon Helios, le personnel et/ou les développeurs n'ont aucun contrôle sur le contenu de ces sites tiers. Helios ne peut être tenu responsable des droits d'auteur, de la légalité, de l'exactitude, de la conformité, de la décence ou de tout autre aspect du contenu affiché. Il est de la responsabilité de l'utilisateur final d'éviter toute action pouvant constituer une violation des lois nationales, fédérales ou terrestres qui lui sont applicables. <br/><br/>Helios n'est pas développé ni endossé par wako, pour le support créer un ticket sur son github ou discuter avec la communauté sur reddit : https://www.reddit.com/r/Addons4Wako/"
       },
       "slide2": {
         "title": "Ajouter des providers",

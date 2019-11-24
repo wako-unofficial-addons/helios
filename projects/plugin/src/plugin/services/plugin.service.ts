@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PluginBaseService } from '@wako-app/mobile-sdk';
+import { PlaylistVideo, PluginBaseService } from '@wako-app/mobile-sdk';
 import { TranslateService } from '@ngx-translate/core';
 import { logData } from './tools';
 import { DebridAccountService } from './debrid-account.service';
@@ -7,6 +7,7 @@ import { ProviderService } from './provider.service';
 import { ModalController } from '@ionic/angular';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
 import { Storage } from '@ionic/storage';
+import { OpenSourceService } from './open-source.service';
 
 @Injectable()
 export class PluginService extends PluginBaseService {
@@ -15,17 +16,18 @@ export class PluginService extends PluginBaseService {
     private cloudService: DebridAccountService,
     private providerService: ProviderService,
     private modalController: ModalController,
-    private storage: Storage
+    private storage: Storage,
+    private openSourceService: OpenSourceService
   ) {
     super();
   }
 
-  initialize() {
+  async initialize() {
     logData('plugin initialized');
 
-    this.cloudService.initialize();
+    await this.cloudService.initialize();
 
-    this.providerService.initialize();
+    await this.providerService.initialize();
   }
 
   afterInstall(): any {
@@ -40,6 +42,13 @@ export class PluginService extends PluginBaseService {
     this.translate.setTranslation(lang, translations);
   }
 
+  customAction(action: string, data: any): any {
+    if (action === 'resume') {
+      const item = data as PlaylistVideo;
+      this.openSourceService.openPlaylistVideo(item);
+    }
+  }
+
   private async runSetupWizard() {
     const wizardSeen = await this.storage.get('helios_setup_wizard_seen_for_dev');
     if (wizardSeen) { // Only for test purpose
@@ -51,5 +60,6 @@ export class PluginService extends PluginBaseService {
     });
 
     await modal.present();
+
   }
 }

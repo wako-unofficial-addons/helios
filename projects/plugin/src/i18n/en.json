@@ -54,6 +54,10 @@
         "openRemoteList": {
           "header": "Remote",
           "item": "Open remote after clicking"
+        },
+        "playlist": {
+          "header": "Playlist",
+          "item": "Automatically seek for next episodes and create a playlist"
         }
       }
     },
@@ -127,7 +131,8 @@
       "sourceNotCached": "Failed to retrieved the video URL",
       "permissionDenied": "Permission Denied - Please check you account"
     },
-    "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi"
+    "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi",
+    "playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items"
   },
   "actionSheets": {
     "open-source": {
@@ -144,6 +149,7 @@
         "open-nplayer": "Play on nPlayer",
         "add-to-pm": "Add to Premiumize.me",
         "add-to-rd": "Add to RealDebrid",
+        "add-to-playlist": "Add to wako's playlist",
         "letMeChoose": "Let Me choose"
       },
       "selectLink": {

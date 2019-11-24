@@ -4,15 +4,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { DebridAccountService } from './debrid-account.service';
 import {
   BrowserService,
-  EventCategory,
-  EventService,
   KodiApiService,
   KodiAppService,
   KodiGetAddonDetailsForm,
+  KodiSeekToCommand,
   OpenMedia,
+  PlaylistVideo,
   ToastService,
-  WakoHttpError,
-  WakoPlaylistService
+  WakoHttpError
 } from '@wako-app/mobile-sdk';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { EMPTY, from, NEVER, Observable, of } from 'rxjs';
@@ -22,13 +21,21 @@ import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-ca
 import { ClipboardService } from 'ngx-clipboard';
 import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
 import { TorrentSource } from '../entities/torrent-source';
-import { addToPlaylist, getElementumUrlBySourceUrl, incrementEpisodeCode, isEpisodeCodeMatchesFileName } from './tools';
+import {
+  addToKodiPlaylist,
+  episodeFoundInStreamLinks,
+  getElementumUrlBySourceUrl,
+  getOpenMediaFromKodiOpenMedia,
+  incrementEpisodeCode
+} from './tools';
 import { SettingsService } from './settings.service';
-import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
+import { StreamLinkSource } from '../entities/stream-link-source';
 import { CachedTorrentSourceService } from './sources/cached-torrent-source.service';
 import { SourceQuery } from '../entities/source-query';
 import { SourceService } from './sources/source.service';
+import { HeliosPlaylistService } from './helios-playlist.service';
 import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
+import { PlayButtonAction, Settings } from '../entities/settings';
 
 @Injectable()
 export class OpenSourceService {
@@ -43,8 +50,10 @@ export class OpenSourceService {
     private clipboardService: ClipboardService,
     private settingsService: SettingsService,
     private cachedTorrentService: CachedTorrentSourceService,
-    private sourceService: SourceService
-  ) {}
+    private sourceService: SourceService,
+    private heliosPlaylistService: HeliosPlaylistService
+  ) {
+  }
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
     TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
@@ -77,17 +86,12 @@ export class OpenSourceService {
           let selectStreamLinks = sourceQuery.query && streamLinks.length > 1;
 
           if (sourceQuery.episode && streamLinks.length > 1) {
-            let currentEpisodeFound = false;
-            let episodeCode = sourceQuery.episode.episodeCode;
-
-            streamLinks.forEach(streamLink => {
-              if (isEpisodeCodeMatchesFileName(episodeCode, streamLink.filename)) {
-                currentEpisodeFound = true;
-              }
-            });
+            const currentEpisodeFound = episodeFoundInStreamLinks(streamLinks, sourceQuery);
 
             if (!currentEpisodeFound) {
               selectStreamLinks = true;
+
+              const episodeCode = sourceQuery.episode.episodeCode;
 
               this.toastService.simpleMessage(`Episode ${episodeCode} not found`);
             }
@@ -96,7 +100,7 @@ export class OpenSourceService {
           if (selectStreamLinks) {
             this.selectStreamLink(streamLinkSource, kodiOpenMedia);
           } else {
-            this.openStreamLinks(streamLinks, streamLinkSource, kodiOpenMedia);
+            this._openStreamLinkSource(streamLinkSource, kodiOpenMedia);
           }
         },
         err => {
@@ -121,7 +125,21 @@ export class OpenSourceService {
       buttons.push({
         text: link.filename,
         handler: () => {
-          this.openStreamLinks([link], streamLinkSource, kodiOpenMedia);
+          const streamLinkSourceCopy = new StreamLinkSource(
+            streamLinkSource.id,
+            streamLinkSource.title,
+            streamLinkSource.size,
+            streamLinkSource.quality,
+            streamLinkSource.type,
+            streamLinkSource.isPackage,
+            streamLinkSource.debridService,
+            streamLinkSource.provider,
+            streamLinkSource.originalUrl
+          );
+
+          streamLinkSourceCopy.streamLinks = [link];
+
+          this._openStreamLinkSource(streamLinkSourceCopy, kodiOpenMedia);
         }
       });
     });
@@ -146,6 +164,8 @@ export class OpenSourceService {
   }
 
   private async _openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
+    const settings = await this.settingsService.get();
+
     const hasCloudAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
     const currentHost = KodiAppService.currentHost;
@@ -156,21 +176,13 @@ export class OpenSourceService {
 
     const buttons = [];
 
-    if (kodiOpenMedia) {
-      if (kodiOpenMedia.show) {
-        this.sourceService.setLastEpisodePlayedSource(torrent.id, torrent.title, torrent.provider, kodiOpenMedia.show.traktId);
-      } else if (kodiOpenMedia.movie) {
-        this.sourceService.setLastMoviePlayedSource(torrent.id, torrent.title, torrent.provider);
-      }
-    }
-
     if (hasCloudAccount) {
       if (premiumizeSettings) {
         buttons.push({
           cssClass: 'pm',
           text: this.translateService.instant('actionSheets.open-source.options.add-to-pm'),
           handler: () => {
-            this.addToPM(torrent.url);
+            this.open(torrent, 'add-to-pm', kodiOpenMedia);
           }
         });
       }
@@ -179,18 +191,18 @@ export class OpenSourceService {
           cssClass: 'rd',
           text: this.translateService.instant('actionSheets.open-source.options.add-to-rd'),
           handler: () => {
-            this.addToRD(torrent.url);
+            this.open(torrent, 'add-to-rd', kodiOpenMedia);
           }
         });
       }
     }
 
-    if (window['plugins'] && window['plugins'].socialsharing) {
+    if (settings.availablePlayButtonActions.includes('share-url') && window['plugins'] && window['plugins'].socialsharing) {
       buttons.push({
         icon: 'share',
         text: this.translateService.instant('actionSheets.open-source.options.share-url'),
         handler: () => {
-          this.share(torrent.url, torrent.title);
+          this.open(torrent, 'share-url', kodiOpenMedia);
         }
       });
     }
@@ -200,7 +212,17 @@ export class OpenSourceService {
         cssClass: 'kodi',
         text: this.translateService.instant('actionSheets.open-source.options.open-elementum'),
         handler: () => {
-          this.openElementum(torrent, kodiOpenMedia);
+          this.open(torrent, 'open-elementum', kodiOpenMedia);
+        }
+      });
+    }
+
+    if (settings.availablePlayButtonActions.includes('add-to-playlist')) {
+      buttons.push({
+        icon: 'list',
+        text: this.translateService.instant('actionSheets.open-source.options.add-to-playlist'),
+        handler: () => {
+          this.open(torrent, 'add-to-playlist', kodiOpenMedia);
         }
       });
     }
@@ -227,38 +249,17 @@ export class OpenSourceService {
     await action.present();
   }
 
-  private async openStreamLinks(streamLinks: StreamLink[], streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
+  private async _openStreamLinkSource(streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
+    const settings = await this.settingsService.get();
     const hasCloudAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
     const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
 
     const realDebridSettings = await this.debridAccountService.getRealDebridSettings();
 
-    const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
-    const settings = await this.settingsService.get();
-
-    let title = '';
-    let posterUrl = '';
-
-    if (kodiOpenMedia) {
-      title = kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title + ' ' + kodiOpenMedia.episode.code;
-      posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.images_url.poster : kodiOpenMedia.show.images_url.poster;
-
-      if (kodiOpenMedia.show) {
-        this.sourceService.setLastEpisodePlayedSource(
-          streamLinkSource.id,
-          streamLinkSource.title,
-          streamLinkSource.provider,
-          kodiOpenMedia.show.traktId
-        );
-      } else if (kodiOpenMedia.movie) {
-        this.sourceService.setLastMoviePlayedSource(streamLinkSource.id, streamLinkSource.title, streamLinkSource.provider);
-      }
-    }
-
     const buttons = [];
 
-    const streamLink = streamLinks[0];
+    const streamLink = streamLinkSource.streamLinks[0];
 
     settings.availablePlayButtonActions.forEach(action => {
       if (action.match('elementum')) {
@@ -280,24 +281,19 @@ export class OpenSourceService {
         case 'add-to-pm':
           buttonOptions.cssClass = 'pm';
           buttonOptions.handler = () => {
-            this.addToPM(streamLinkSource.originalUrl);
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
         case 'add-to-rd':
           buttonOptions.cssClass = 'rd';
           buttonOptions.handler = () => {
-            this.addToRD(streamLinkSource.originalUrl);
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
         case 'open-browser':
           buttonOptions.icon = 'browsers';
           buttonOptions.handler = () => {
-            if (streamLink.servicePlayerUrl) {
-              // They have their own player
-              this.openBrowserUrl(streamLink.servicePlayerUrl);
-            } else {
-              this.openBrowser(streamLink.url, streamLink.transcodedUrl, title, posterUrl);
-            }
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
         case 'copy-url':
@@ -311,49 +307,49 @@ export class OpenSourceService {
         case 'share-url':
           buttonOptions.icon = 'share';
           buttonOptions.handler = () => {
-            this.share(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url, streamLink.filename);
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
 
         case 'open-with':
           buttonOptions.icon = 'open';
           buttonOptions.handler = () => {
-            this.openWith(
-              preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url,
-              streamLink.filename
-            );
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
 
         case 'download-vlc':
           buttonOptions.icon = 'cloud-download';
           buttonOptions.handler = () => {
-            this.downloadWithVlc(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
 
         case 'open-vlc':
           buttonOptions.cssClass = 'vlc';
           buttonOptions.handler = () => {
-            this.openVlc(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
 
         case 'open-nplayer':
           buttonOptions.cssClass = 'nplayer';
           buttonOptions.handler = () => {
-            this.openNplayer(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
 
         case 'open-kodi':
           buttonOptions.cssClass = 'kodi';
           buttonOptions.handler = () => {
-            const videoUrls = [];
-            streamLinks.forEach(_streamLink => {
-              videoUrls.push(preferTranscodedFiles && _streamLink.transcodedUrl ? _streamLink.transcodedUrl : _streamLink.url);
-            });
-            this.openKodi(videoUrls, kodiOpenMedia);
+            this.open(streamLinkSource, action, kodiOpenMedia);
+          };
+          break;
+
+        case 'add-to-playlist':
+          buttonOptions.icon = 'list';
+          buttonOptions.handler = () => {
+            this.open(streamLinkSource, action, kodiOpenMedia);
           };
           break;
       }
@@ -372,12 +368,12 @@ export class OpenSourceService {
       return;
     }
 
-    const action = await this.actionSheetController.create({
+    const actionSheet = await this.actionSheetController.create({
       header: this.translateService.instant('actionSheets.open-source.openTitle'),
       buttons: buttons
     });
 
-    await action.present();
+    await actionSheet.present();
 
     this.setImages();
 
@@ -431,8 +427,17 @@ export class OpenSourceService {
     });
   }
 
-  openKodi(videoUrls: string[], kodiOpenMedia?: KodiOpenMedia, pluginId?: string, obsBeforeOpening?: Observable<any>) {
+  private openKodi(
+    videoUrls: string[],
+    kodiOpenMedia?: KodiOpenMedia,
+    pluginId?: string,
+    obsBeforeOpening?: Observable<any>,
+    openMedia?: OpenMedia,
+    seekTo?: number
+  ) {
     let totalNextUpVideo = 0;
+
+    let settings: Settings;
     return KodiAppService.checkAndConnectToCurrentHost()
       .pipe(
         catchError(err => {
@@ -445,16 +450,9 @@ export class OpenSourceService {
         }),
         switchMap(() => (obsBeforeOpening ? obsBeforeOpening : of(true))),
         switchMap(() => {
-          let openMedia: OpenMedia = {};
-
           let firstVideoUrl = videoUrls.shift();
           if (kodiOpenMedia) {
-            openMedia = {
-              movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.traktId : null,
-              showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.traktId : null,
-              seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktSeasonNumber : null,
-              episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
-            };
+            openMedia = getOpenMediaFromKodiOpenMedia(kodiOpenMedia);
 
             if (!pluginId) {
               firstVideoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
@@ -462,24 +460,13 @@ export class OpenSourceService {
           }
 
           return from(this.settingsService.get()).pipe(
-            switchMap(settings => {
-              if (WakoPlaylistService) {
-                WakoPlaylistService.set([
-                  {
-                    url: firstVideoUrl,
-                    isCurrent: true
-                  }
-                ]);
-              }
+            switchMap(_settings => {
+              settings = _settings;
               return KodiAppService.openUrl(firstVideoUrl, openMedia, settings.openRemoteAfterClickOnPlay);
             })
           );
         }),
-        tap(done => {
-          if (kodiOpenMedia && kodiOpenMedia.show && videoUrls.length === 0) {
-            EventService.emit(EventCategory.kodi, 'playEpisode', { kodiOpenMedia, pluginId });
-          }
-
+        tap(() => {
           // Take only 5 episodes
           const newVideoUrls = videoUrls.slice(0, 5);
 
@@ -493,26 +480,33 @@ export class OpenSourceService {
 
           let message = this.translateService.instant(toastMessage, toastParams);
 
-          if (totalNextUpVideo > 0) {
-            message += '<br/>' + this.translateService.instant('sources.addToQueue', { totalEpisode: totalNextUpVideo });
+          if (settings.enableEpisodeAutomaticPlaylist && videoUrls.length > 0) {
+            addToKodiPlaylist(newVideoUrls, kodiOpenMedia, typeof pluginId === 'string').subscribe();
+
+            if (totalNextUpVideo > 0 && typeof pluginId !== 'string') {
+              message += '<br/>' + this.translateService.instant('sources.addToQueue', { totalEpisode: totalNextUpVideo });
+            }
           }
 
           this.toastService.simpleMessage(message);
-
-          let action = 'open-kodi';
-          if (pluginId === 'plugin.video.elementum') {
-            action = 'open-elementum';
-          }
-
-          if (videoUrls.length > 0) {
-            addToPlaylist(newVideoUrls, kodiOpenMedia, !pluginId).subscribe();
-          }
         })
       )
-      .subscribe(() => {});
+      .subscribe(() => {
+        if (seekTo) {
+          const sub = KodiApiService.wsMessage$.subscribe(data => {
+            if (data.method === 'Player.OnAVStart') {
+              sub.unsubscribe();
+
+              setTimeout(() => {
+                KodiSeekToCommand.handle(1, seekTo).subscribe();
+              }, 3000);
+            }
+          });
+        }
+      });
   }
 
-  async openBrowser(videoUrl: string, transcodedUrl?: string, title?: string, posterUrl?: string) {
+  private async openBrowser(videoUrl: string, transcodedUrl?: string, title?: string, posterUrl?: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('title', title);
     urlSearchParams.set('posterUrl', posterUrl);
@@ -532,7 +526,7 @@ export class OpenSourceService {
     }
   }
 
-  async openVlc(videoUrl: string) {
+  private async openVlc(videoUrl: string) {
     if (this.platform.is('ios')) {
       const url = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(videoUrl)}`;
       this.browserService.open(url, false);
@@ -542,7 +536,7 @@ export class OpenSourceService {
     }
   }
 
-  async openNplayer(videoUrl: string) {
+  private async openNplayer(videoUrl: string) {
     if (!this.platform.is('ios')) {
       return;
     }
@@ -550,7 +544,7 @@ export class OpenSourceService {
     this.browserService.open(url, false);
   }
 
-  async downloadWithVlc(videoUrl: string) {
+  private async downloadWithVlc(videoUrl: string) {
     console.log('downloadWithVlc', videoUrl);
 
     if (this.platform.is('ios')) {
@@ -604,8 +598,23 @@ export class OpenSourceService {
       );
   }
 
-  openElementum(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
-    const obs = of(true).pipe(
+  private openElementum(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
+    let _obs = of(null);
+    if (kodiOpenMedia) {
+      _obs = SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia);
+    }
+    _obs.subscribe(sourceQuery => {
+      this.openKodi(
+        [getElementumUrlBySourceUrl(torrent.url, sourceQuery)],
+        kodiOpenMedia,
+        'plugin.video.elementum',
+        this.getElementumCheckObservable()
+      );
+    });
+  }
+
+  private getElementumCheckObservable() {
+    return of(true).pipe(
       switchMap(() => this.isElementumAddonInstalled()),
       switchMap(isInstalled => {
         if (!isInstalled) {
@@ -616,40 +625,6 @@ export class OpenSourceService {
         return of(true);
       })
     );
-
-    let _obs = of(null);
-    if (kodiOpenMedia) {
-      _obs = SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia);
-    }
-    _obs.subscribe(sourceQuery => {
-      const urls = [getElementumUrlBySourceUrl(torrent.url, sourceQuery)];
-
-      if (sourceQuery && sourceQuery.episode && torrent.isPackage) {
-        let limit = sourceQuery.episode.latestAiredEpisode - sourceQuery.episode.episodeNumber;
-
-        let episodeCode = sourceQuery.episode.episodeCode;
-        let episodeAbsoluteNumber = sourceQuery.episode.absoluteNumber;
-        let episodeNumber = sourceQuery.episode.episodeNumber;
-
-        for (let i = 0; i < limit; i++) {
-          const _sourceQuery = JSON.parse(JSON.stringify(sourceQuery));
-          episodeCode = incrementEpisodeCode(episodeCode);
-
-          if (episodeAbsoluteNumber) {
-            episodeAbsoluteNumber++;
-            _sourceQuery.episode.absoluteNumber = episodeAbsoluteNumber;
-          }
-          episodeNumber++;
-          _sourceQuery.episode.episodeNumber = episodeNumber;
-
-          _sourceQuery.episode.episodeCode = episodeCode;
-
-          urls.push(getElementumUrlBySourceUrl(torrent.url, _sourceQuery));
-        }
-      }
-
-      this.openKodi(urls, kodiOpenMedia, 'plugin.video.elementum', obs);
-    });
   }
 
   private isElementumAddonInstalled() {
@@ -664,7 +639,7 @@ export class OpenSourceService {
     );
   }
 
-  share(cachedUrl: string, torrentTitle: string) {
+  private share(cachedUrl: string, torrentTitle: string) {
     if (window['plugins'] && window['plugins'].socialsharing) {
       window['plugins'].socialsharing.shareWithOptions({
         url: cachedUrl,
@@ -673,7 +648,7 @@ export class OpenSourceService {
     }
   }
 
-  openWith(url: string, title: string) {
+  private openWith(url: string, title: string) {
     if (window['plugins'] && window['plugins'].intentShim) {
       const intentShim: any = window['plugins'].intentShim;
 
@@ -690,5 +665,405 @@ export class OpenSourceService {
         err => console.log('intentShim err', err)
       );
     }
+  }
+
+  private getElementumNextEpisodeUrlFromPackage(torrent: TorrentSource, sourceQuery?: SourceQuery) {
+    const urls = [];
+
+    if (sourceQuery && sourceQuery.episode && torrent.isPackage) {
+      const limit = sourceQuery.episode.latestAiredEpisode - sourceQuery.episode.episodeNumber;
+
+      let episodeCode = sourceQuery.episode.episodeCode;
+      let episodeAbsoluteNumber = sourceQuery.episode.absoluteNumber;
+      let episodeNumber = sourceQuery.episode.episodeNumber;
+
+      for (let i = 0; i < limit; i++) {
+        const _sourceQuery = JSON.parse(JSON.stringify(sourceQuery));
+        episodeCode = incrementEpisodeCode(episodeCode);
+
+        if (episodeAbsoluteNumber) {
+          episodeAbsoluteNumber++;
+          _sourceQuery.episode.absoluteNumber = episodeAbsoluteNumber;
+        }
+        episodeNumber++;
+        _sourceQuery.episode.episodeNumber = episodeNumber;
+
+        _sourceQuery.episode.episodeCode = episodeCode;
+
+        urls.push(getElementumUrlBySourceUrl(torrent.url, _sourceQuery));
+      }
+    }
+    return urls;
+  }
+
+  private handleWakoPlaylist(source: StreamLinkSource | TorrentSource, kodiOpenMedia?: KodiOpenMedia, isAutomatic = true) {
+    let obs = of(null);
+    if (kodiOpenMedia) {
+      obs = SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia);
+    }
+
+    return obs.pipe(
+      switchMap(sourceQuery => {
+        return from(this.heliosPlaylistService.setPlaylist(source, kodiOpenMedia)).pipe(
+          switchMap(playlist => {
+            if (kodiOpenMedia && kodiOpenMedia.episode) {
+              playlist.items.push({
+                label: sourceQuery.episode.episodeCode,
+                url:
+                  source.type === 'torrent'
+                    ? getElementumUrlBySourceUrl((source as TorrentSource).url, sourceQuery)
+                    : (source as StreamLinkSource).streamLinks[0].url,
+                currentSeconds: 0,
+                pluginId: 'plugin.helios',
+                openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null
+              });
+
+              playlist.currentItem = playlist.items.length - 1;
+
+              return this.getNextEpisodeVideoUrls(source, sourceQuery).pipe(
+                map(urls => {
+                  let episodeCode = sourceQuery.episode.episodeCode;
+                  let episodeAbsoluteNumber = sourceQuery.episode.absoluteNumber;
+                  let episodeNumber = sourceQuery.episode.episodeNumber;
+
+                  const kodiOpenMediaCopy = JSON.parse(JSON.stringify(kodiOpenMedia)) as KodiOpenMedia;
+
+                  urls.forEach(url => {
+                    const _sourceQuery = JSON.parse(JSON.stringify(sourceQuery));
+                    episodeCode = incrementEpisodeCode(episodeCode);
+
+                    if (episodeAbsoluteNumber) {
+                      episodeAbsoluteNumber++;
+                      _sourceQuery.episode.absoluteNumber = episodeAbsoluteNumber;
+                    }
+                    episodeNumber++;
+                    _sourceQuery.episode.episodeNumber = episodeNumber;
+
+                    _sourceQuery.episode.episodeCode = episodeCode;
+
+                    kodiOpenMediaCopy.episode.traktNumber++;
+
+                    playlist.items.push({
+                      label: _sourceQuery.episode.episodeCode,
+                      url: url,
+                      currentSeconds: 0,
+                      pluginId: 'plugin.helios',
+                      openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null
+                    });
+                  });
+
+                  return playlist;
+                })
+              );
+            } else if (!isAutomatic) {
+              if (source.type === 'torrent') {
+                const torrent = source as TorrentSource;
+                const videoUrl = getElementumUrlBySourceUrl(torrent.url, sourceQuery);
+                playlist.items.push({
+                  label: torrent.title,
+                  url: videoUrl,
+                  currentSeconds: 0,
+                  pluginId: 'plugin.helios',
+                  openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null
+                });
+              } else if (source instanceof StreamLinkSource) {
+                source.streamLinks.forEach(link => {
+                  playlist.items.push({
+                    label: link.title,
+                    url: link.url,
+                    currentSeconds: 0,
+                    pluginId: 'plugin.helios',
+                    openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null
+                  });
+                });
+              }
+            }
+            return of(playlist);
+          }),
+          switchMap(playlist => {
+            if (playlist.items.length === 0) {
+              return EMPTY;
+            }
+            return from(this.heliosPlaylistService.savePlaylist(playlist))
+              .pipe(
+                tap(() => {
+                  this.toastService.simpleMessage('toasts.playlist', { playlistName: playlist.label, items: playlist.items.length }, 5000);
+                })
+              );
+          })
+        );
+      })
+    );
+  }
+
+  private getNextEpisodeVideoUrls(source: StreamLinkSource | TorrentSource, sourceQuery: SourceQuery) {
+    let urls = [];
+    if (!sourceQuery.episode) {
+      return of(urls);
+    }
+
+    if (source.isPackage) {
+      if (source.type === 'torrent') {
+        urls = this.getElementumNextEpisodeUrlFromPackage(source as TorrentSource, sourceQuery);
+      } else if (source instanceof StreamLinkSource) {
+        const links = source.streamLinks;
+        links.shift();
+
+        links.forEach(link => {
+          urls.push(link.url);
+        });
+      }
+
+      return of(urls);
+    } else {
+      return this.sourceService.getNextEpisodeVideoUrls(sourceQuery, source.type === 'torrent' ? 'torrent' : 'stream');
+    }
+  }
+
+  async open(source: TorrentSource | StreamLinkSource, action: PlayButtonAction, kodiOpenMedia: KodiOpenMedia) {
+    const settings = await this.settingsService.get();
+
+    if (source.type === 'torrent') {
+      const torrent = source as TorrentSource;
+      switch (action) {
+        case 'add-to-pm':
+          this.addToPM(torrent.url);
+          break;
+        case 'add-to-rd':
+          this.addToRD(torrent.url);
+          break;
+        case 'open-elementum':
+          this.openElementum(torrent, kodiOpenMedia);
+          if (settings.enableEpisodeAutomaticPlaylist) {
+            this.handleWakoPlaylist(torrent, kodiOpenMedia).subscribe();
+          }
+          break;
+        case 'add-to-playlist':
+          this.handleWakoPlaylist(torrent, kodiOpenMedia, false).subscribe();
+          break;
+      }
+
+      return;
+    } else {
+      const streamLinkSource = source as StreamLinkSource;
+
+      const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
+
+      const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
+
+      let title = '';
+      let posterUrl = '';
+
+      if (kodiOpenMedia) {
+        title = kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title + ' ' + kodiOpenMedia.episode.code;
+        posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.images_url.poster : kodiOpenMedia.show.images_url.poster;
+      }
+
+      let playVideo = false;
+
+      const streamLink = streamLinkSource.streamLinks[0];
+
+      switch (action) {
+        case 'add-to-pm':
+          this.addToPM(streamLinkSource.originalUrl);
+          break;
+        case 'add-to-rd':
+          this.addToRD(streamLinkSource.originalUrl);
+          break;
+        case 'open-browser':
+          if (streamLink.servicePlayerUrl) {
+            // They have their own player
+            this.openBrowserUrl(streamLink.servicePlayerUrl);
+          } else {
+            this.openBrowser(streamLink.url, streamLink.transcodedUrl, title, posterUrl);
+          }
+          playVideo = true;
+          break;
+
+        case 'share-url':
+          this.share(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url, streamLink.filename);
+          break;
+
+        case 'open-with':
+          this.openWith(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url, streamLink.filename);
+          playVideo = true;
+          break;
+
+        case 'download-vlc':
+          this.downloadWithVlc(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
+          playVideo = true;
+          break;
+
+        case 'open-vlc':
+          this.openVlc(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
+          playVideo = true;
+          break;
+
+        case 'open-nplayer':
+          this.openNplayer(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url);
+          playVideo = true;
+          break;
+
+        case 'open-kodi':
+          const videoUrls = [];
+          streamLinkSource.streamLinks.forEach(_streamLink => {
+            videoUrls.push(preferTranscodedFiles && _streamLink.transcodedUrl ? _streamLink.transcodedUrl : _streamLink.url);
+          });
+          this.openKodi(videoUrls, kodiOpenMedia);
+          playVideo = true;
+          break;
+
+        case 'add-to-playlist':
+          this.handleWakoPlaylist(source, kodiOpenMedia, false).subscribe();
+          break;
+
+        default:
+          SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).subscribe(sourceQuery => {
+            this.openStreamLinkSource(streamLinkSource, sourceQuery, kodiOpenMedia);
+          });
+          return;
+      }
+
+      if (playVideo) {
+        if (kodiOpenMedia) {
+          if (kodiOpenMedia.show) {
+            this.sourceService.setLastEpisodePlayedSource(
+              streamLinkSource.id,
+              streamLinkSource.title,
+              streamLinkSource.provider,
+              kodiOpenMedia.show.traktId
+            );
+          } else if (kodiOpenMedia.movie) {
+            this.sourceService.setLastMoviePlayedSource(streamLinkSource.id, streamLinkSource.title, streamLinkSource.provider);
+          }
+        }
+
+        if (settings.enableEpisodeAutomaticPlaylist) {
+          this.handleWakoPlaylist(source, kodiOpenMedia).subscribe();
+        }
+      }
+    }
+  }
+
+  async openPlaylistVideo(playlistVideo: PlaylistVideo) {
+    const seek = Math.round(((playlistVideo.currentSeconds - 5) / playlistVideo.totalSeconds) * 100);
+
+    if (playlistVideo.url.match('elementum')) {
+      return this.openKodi(
+        [playlistVideo.url],
+        null,
+        'plugin.video.elementum',
+        this.getElementumCheckObservable(),
+        playlistVideo.openMedia,
+        seek
+      );
+    }
+
+    const settings = await this.settingsService.get();
+
+    const buttons = [];
+
+    settings.availablePlayButtonActions.forEach(action => {
+      if (action.match('elementum')) {
+        return;
+      }
+
+      if (action === 'add-to-pm' || action === 'add-to-rd' || action === 'add-to-playlist') {
+        return;
+      }
+
+      const buttonOptions = {
+        text: this.translateService.instant('actionSheets.open-source.options.' + action)
+      } as any;
+
+      switch (action) {
+        case 'open-browser':
+          buttonOptions.icon = 'browsers';
+          buttonOptions.handler = () => {
+            this.openBrowser(playlistVideo.url, null, playlistVideo.label);
+          };
+          break;
+        case 'copy-url':
+          buttonOptions.role = 'copy-url';
+          buttonOptions.icon = 'copy';
+          buttonOptions.handler = () => {
+            this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
+          };
+          break;
+
+        case 'share-url':
+          buttonOptions.icon = 'share';
+          buttonOptions.handler = () => {
+            this.share(playlistVideo.url, playlistVideo.label);
+          };
+          break;
+
+        case 'open-with':
+          buttonOptions.icon = 'open';
+          buttonOptions.handler = () => {
+            this.openWith(playlistVideo.url, playlistVideo.label);
+          };
+          break;
+
+        case 'download-vlc':
+          buttonOptions.icon = 'cloud-download';
+          buttonOptions.handler = () => {
+            this.downloadWithVlc(playlistVideo.url);
+          };
+          break;
+
+        case 'open-vlc':
+          buttonOptions.cssClass = 'vlc';
+          buttonOptions.handler = () => {
+            this.openVlc(playlistVideo.url);
+          };
+          break;
+
+        case 'open-nplayer':
+          buttonOptions.cssClass = 'nplayer';
+          buttonOptions.handler = () => {
+            this.openNplayer(playlistVideo.url);
+          };
+          break;
+
+        case 'open-kodi':
+          buttonOptions.cssClass = 'kodi';
+          buttonOptions.handler = () => {
+            this.openKodi([playlistVideo.url], null, null, null, playlistVideo.openMedia, seek);
+          };
+          break;
+      }
+
+      buttons.push(buttonOptions);
+    });
+
+    buttons.forEach(button => {
+      if (!button.icon) {
+        button.icon = 'arrow-dropright';
+      }
+    });
+
+    if (buttons.length === 1) {
+      buttons[0].handler();
+      return;
+    }
+
+    const actionSheet = await this.actionSheetController.create({
+      header: this.translateService.instant('actionSheets.open-source.openTitle'),
+      buttons: buttons
+    });
+
+    await actionSheet.present();
+
+    this.setImages();
+
+    const copyEl = document.querySelector('.action-sheet-copy-url');
+    if (!copyEl) {
+      return;
+    }
+
+    copyEl.addEventListener('click', () => {
+      this.clipboardService.copyFromContent(playlistVideo.url);
+    });
   }
 }

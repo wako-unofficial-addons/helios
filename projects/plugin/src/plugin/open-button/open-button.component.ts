@@ -14,7 +14,6 @@ import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
 import { finalize } from 'rxjs/operators';
 import { ProvidersComponent } from '../settings/providers/providers.component';
-import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
 
 @Component({
   selector: 'wk-open-button',
@@ -44,8 +43,7 @@ export class OpenButtonComponent implements OnInit {
     private providerService: ProviderService,
     private toastService: ToastService,
     private modalController: ModalController
-  ) {
-  }
+  ) {}
 
   async ngOnInit() {
     this.settings = await this.settingsService.get();
@@ -55,9 +53,7 @@ export class OpenButtonComponent implements OnInit {
       show: this.show,
       episode: this.episode
     };
-
   }
-
 
   private async openProviderModal() {
     const modal = await this.modalController.create({
@@ -87,14 +83,14 @@ export class OpenButtonComponent implements OnInit {
 
     const startTime = Date.now();
 
-
-    this.sourceService.getBestSourceFromKodiOpenMedia(this.kodiOpenMedia)
+    this.sourceService
+      .getBestSourceFromKodiOpenMedia(this.kodiOpenMedia)
       .pipe(
         finalize(() => {
           loader.dismiss();
-        }))
+        })
+      )
       .subscribe(bestSource => {
-
         const endTime = Date.now();
 
         this.elapsedTime = endTime - startTime;
@@ -110,53 +106,11 @@ export class OpenButtonComponent implements OnInit {
         this.bestSource = bestSource;
 
         if (bestSource.type === 'torrent') {
-          this.openSourceService.openElementum(bestSource as TorrentSource, this.kodiOpenMedia);
-          return;
+          this.openSourceService.open(bestSource, 'open-elementum', this.kodiOpenMedia);
         } else if (bestSource instanceof StreamLinkSource) {
-
-          const title = this.kodiOpenMedia.movie
-            ? this.kodiOpenMedia.movie.title
-            : this.kodiOpenMedia.episode.code + ' - ' + this.kodiOpenMedia.show.title;
-
-          const images = this.kodiOpenMedia.movie ? this.kodiOpenMedia.movie.images_url : this.kodiOpenMedia.show.images_url;
-
-          const streamLink = bestSource.streamLinks[0];
-
-          switch (this.settings.defaultPlayButtonAction) {
-            case 'open-kodi':
-              const urls = [];
-              bestSource.streamLinks.forEach(streamLink => {
-                urls.push(streamLink.url);
-              });
-              this.openSourceService.openKodi(urls, this.kodiOpenMedia);
-              break;
-            case 'open-browser':
-              this.openSourceService.openBrowser(streamLink.url, streamLink.transcodedUrl, title, images ? images.poster_original : null);
-              break;
-            case 'open-vlc':
-              this.openSourceService.openVlc(streamLink.url);
-              break;
-            case 'download-vlc':
-              this.openSourceService.downloadWithVlc(streamLink.url);
-              break;
-            case 'share-url':
-              this.openSourceService.share(streamLink.url, title);
-              break;
-            case 'open-with':
-              this.openSourceService.openWith(streamLink.url, title);
-              break;
-            case 'open-nplayer':
-              this.openSourceService.openNplayer(streamLink.url);
-              break;
-            default:
-              SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia).subscribe(sourceQuery => {
-                this.openSourceService.openStreamLinkSource(bestSource, sourceQuery, this.kodiOpenMedia);
-              });
-          }
-
+          this.openSourceService.open(bestSource, this.settings.defaultPlayButtonAction, this.kodiOpenMedia);
         }
       });
-
   }
 
   async openSourceModal() {

@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { EventAction, EventCategory, EventService, ToastService } from '@wako-app/mobile-sdk';
-import { catchError, finalize, map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { ToastService } from '@wako-app/mobile-sdk';
+import { catchError, last, map, mapTo, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CachedTorrentSourceService } from './cached-torrent-source.service';
 import { TorrentSourceService } from './torrent-source.service';
 import { SourceQuery } from '../../entities/source-query';
 import { HeliosCacheService } from '../provider-cache.service';
-import { addToPlaylist, getElementumUrlBySourceUrl, incrementEpisodeCode } from '../tools';
 import { concat, EMPTY, forkJoin, from, merge, Observable, of, Subject } from 'rxjs';
 import { SettingsService } from '../settings.service';
 import { Provider } from '../../entities/provider';
@@ -21,6 +20,7 @@ import { KodiOpenMedia } from '../../entities/kodi-open-media';
 import { Platform } from '@ionic/angular';
 import { TmdbSeasonGetByIdForm } from '../tmdb/forms/seasons/tmdb-season-get-by-id.form';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
+import { getElementumUrlBySourceUrl, incrementEpisodeCode } from '../tools';
 
 declare const device: any;
 
@@ -37,102 +37,7 @@ export class SourceService {
     private toastService: ToastService,
     private platform: Platform
   ) {
-    EventService.subscribe<KodiOpenMedia>(EventCategory.kodi, 'playEpisode').subscribe(
-      (eventAction: EventAction<{ kodiOpenMedia: KodiOpenMedia; pluginId: string }>) => {
-        if(!eventAction.data.kodiOpenMedia){
-          return ;
-        }
-        SourceQueryFromKodiOpenMediaQuery.getData(eventAction.data.kodiOpenMedia).subscribe(sourceQuery => {
-          let limit = sourceQuery.episode.latestAiredEpisode - sourceQuery.episode.episodeNumber;
 
-          if (limit > 3) {
-            limit = 3;
-          }
-
-          const obss: Observable<{ source: TorrentSource | StreamLinkSource; sourceQuery: SourceQuery }>[] = [];
-          let episodeCode = sourceQuery.episode.episodeCode;
-          let episodeAbsoluteNumber = sourceQuery.episode.absoluteNumber;
-          let episodeNumber = sourceQuery.episode.episodeNumber;
-
-          for (let i = 0; i < limit; i++) {
-            const _sourceQuery = JSON.parse(JSON.stringify(sourceQuery));
-            episodeCode = incrementEpisodeCode(episodeCode);
-
-            if (episodeAbsoluteNumber) {
-              episodeAbsoluteNumber++;
-              _sourceQuery.episode.absoluteNumber = episodeAbsoluteNumber;
-            }
-            episodeNumber++;
-            _sourceQuery.episode.episodeNumber = episodeNumber;
-
-            _sourceQuery.episode.episodeCode = episodeCode;
-
-            obss.push(
-              this.getBestSource(_sourceQuery, true).pipe(
-                map(source => {
-                  return {
-                    source,
-                    sourceQuery: _sourceQuery
-                  };
-                })
-              )
-            );
-          }
-
-          const stop$ = new Subject();
-
-          let added = false;
-
-          let totalAdded = 0;
-
-          concat(...obss)
-            .pipe(
-              takeUntil(stop$),
-              finalize(() => {
-                if (totalAdded > 0) {
-                  this.toastService.simpleMessage('sources.addToQueue', {totalEpisode: totalAdded});
-                }
-              }),
-              switchMap((data: { source: TorrentSource | StreamLinkSource; sourceQuery: SourceQuery }) => {
-                const source = data.source;
-                if (source === null) {
-                  return EMPTY;
-                }
-
-                const videoUrls = [];
-
-                if (source.type === 'torrent') {
-                  added = true;
-
-                  const url = getElementumUrlBySourceUrl((source as TorrentSource).url, data.sourceQuery);
-
-                  videoUrls.push(url);
-
-                  totalAdded++;
-
-                  return of(true);
-                } else if (source instanceof StreamLinkSource) {
-                  if (!source.streamLinks || (source.streamLinks.length > 1 && added)) {
-                    stop$.next(true);
-                    return EMPTY;
-                  }
-
-                  added = true;
-
-                  totalAdded += source.streamLinks.length;
-
-                  source.streamLinks.forEach(link => {
-                    videoUrls.push(link.url);
-                  });
-                }
-
-                return addToPlaylist(videoUrls, eventAction.data.kodiOpenMedia, !!eventAction.data.pluginId);
-              })
-            )
-            .subscribe();
-        });
-      }
-    );
   }
 
   private getByProvider(sourceQuery: SourceQuery, provider: Provider) {
@@ -176,7 +81,7 @@ export class SourceService {
           return null;
         }
         if (_source.type !== 'torrent') {
-          let source = _source as StreamLinkSource;
+          const source = _source as StreamLinkSource;
 
           const streamLinkSource = new StreamLinkSource(
             source.id,
@@ -300,7 +205,7 @@ export class SourceService {
   ) {
     // Let's proceed X providers by X providers
     let obss: Observable<SourceByProvider>[] = [];
-    let groupObss: Observable<TorrentSource | StreamLinkSource>[] = [];
+    const groupObss: Observable<TorrentSource | StreamLinkSource>[] = [];
 
     providers.forEach(provider => {
       if (lastPlayedSource && provider.name === lastPlayedSource.provider) {
@@ -357,7 +262,7 @@ export class SourceService {
     );
   }
 
-  private getBestSource(sourceQuery: SourceQuery, stopIfFirstSourceIsNull = false) {
+  private getBestSource(sourceQuery: SourceQuery, stopIfFirstSourceIsNull = false, type?: 'torrent' | 'stream') {
     const itemId = sourceQuery.movie
       ? sourceQuery.movie.imdbId
       : sourceQuery.episode
@@ -366,7 +271,9 @@ export class SourceService {
 
     return from(this.settingsService.get()).pipe(
       switchMap(settings => {
-        let type: 'torrent' | 'stream' = settings.defaultPlayButtonAction === 'open-elementum' ? 'torrent' : 'stream';
+        if (!type) {
+          type = settings.defaultPlayButtonAction === 'open-elementum' ? 'torrent' : 'stream';
+        }
         let obs = of(null);
         if (itemId) {
           obs = this.getBestSourceFromCache(itemId, type);
@@ -402,7 +309,7 @@ export class SourceService {
     let done = 0;
     let totalToDo = 0;
     return new Observable<TorrentSource | StreamLinkSource>(observer => {
-      let bestSourceReturned$ = new Subject();
+      const bestSourceReturned$ = new Subject();
 
       from(this.settingsService.get())
         .pipe(
@@ -516,5 +423,86 @@ export class SourceService {
         );
       })
     );
+  }
+
+  getNextEpisodeVideoUrls(sourceQuery: SourceQuery, type?: 'torrent' | 'stream') {
+    let limit = sourceQuery.episode.latestAiredEpisode - sourceQuery.episode.episodeNumber;
+
+    if (limit > 3) {
+      limit = 3;
+    }
+
+    const obss: Observable<{ source: TorrentSource | StreamLinkSource; sourceQuery: SourceQuery }>[] = [];
+    let episodeCode = sourceQuery.episode.episodeCode;
+    let episodeAbsoluteNumber = sourceQuery.episode.absoluteNumber;
+    let episodeNumber = sourceQuery.episode.episodeNumber;
+
+    for (let i = 0; i < limit; i++) {
+      const _sourceQuery = JSON.parse(JSON.stringify(sourceQuery));
+      episodeCode = incrementEpisodeCode(episodeCode);
+
+      if (episodeAbsoluteNumber) {
+        episodeAbsoluteNumber++;
+        _sourceQuery.episode.absoluteNumber = episodeAbsoluteNumber;
+      }
+      episodeNumber++;
+      _sourceQuery.episode.episodeNumber = episodeNumber;
+
+      _sourceQuery.episode.episodeCode = episodeCode;
+
+      obss.push(
+        this.getBestSource(_sourceQuery, true, type).pipe(
+          map(source => {
+            return {
+              source,
+              sourceQuery: _sourceQuery
+            };
+          })
+        )
+      );
+    }
+
+    const stop$ = new Subject();
+
+    let added = false;
+
+    const videoUrls: string[] = [];
+
+    return concat(...obss)
+      .pipe(
+        takeUntil(stop$),
+        switchMap((data: { source: TorrentSource | StreamLinkSource; sourceQuery: SourceQuery }) => {
+          const source = data.source;
+          if (source === null) {
+            return of(null);
+          }
+
+          if (source.type === 'torrent') {
+            added = true;
+
+            const url = getElementumUrlBySourceUrl((source as TorrentSource).url, data.sourceQuery);
+
+            videoUrls.push(url);
+
+
+            return of(true);
+          } else if (source instanceof StreamLinkSource) {
+            if (!source.streamLinks || (source.streamLinks.length > 1 && added)) {
+              stop$.next(true);
+              return of(null);
+            }
+
+            added = true;
+
+            source.streamLinks.forEach(link => {
+              videoUrls.push(link.url);
+            });
+          }
+
+          return of(true);
+        }),
+        last(),
+        mapTo(videoUrls)
+      );
   }
 }

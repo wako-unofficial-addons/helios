@@ -1,8 +1,8 @@
-import { Episode, KodiApiService, Movie, Show, wakoLog, WakoPlaylistService, WakoPlaylistVideo } from '@wako-app/mobile-sdk';
+import { Episode, KodiApiService, Movie, OpenMedia, Show, wakoLog } from '@wako-app/mobile-sdk';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
-import { StreamLinkSource } from '../entities/stream-link-source';
+import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { of } from 'rxjs';
 
@@ -323,20 +323,14 @@ export function incrementEpisodeCode(episodeCode: string) {
   throw 'Invalid episode code';
 }
 
-export function addToPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia, isPluginUrl = false, addToKodiPlaylist = true) {
+export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia, isPluginUrl = false, addToKodiPlaylist = true) {
   const items = [];
   let startEpisode = kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null;
-  let playlistVideos: WakoPlaylistVideo[] = [];
 
   videoUrls.forEach(videoUrl => {
     if (startEpisode) {
       startEpisode++;
     }
-
-    playlistVideos.push({
-      url: videoUrl,
-      isCurrent: false
-    });
 
     if (kodiOpenMedia) {
       const openMedia = {
@@ -356,9 +350,6 @@ export function addToPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia,
     }
   });
 
-  if (WakoPlaylistService) {
-    WakoPlaylistService.add(playlistVideos);
-  }
 
   if (isPluginUrl || !addToKodiPlaylist) {
     return of(true);
@@ -407,4 +398,29 @@ export function removeDuplicates<T>(data: T[], key: string) {
     ids.push(d[key]);
     return true;
   });
+}
+
+export function getOpenMediaFromKodiOpenMedia(kodiOpenMedia: KodiOpenMedia) {
+  return {
+    movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.traktId : null,
+    showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.traktId : null,
+    seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktSeasonNumber : null,
+    episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
+  } as OpenMedia;
+}
+
+export function episodeFoundInStreamLinks(streamLinks: StreamLink[], sourceQuery: SourceQuery) {
+  let currentEpisodeFound = false;
+  if (sourceQuery.episode && streamLinks.length > 1) {
+    const episodeCode = sourceQuery.episode.episodeCode;
+
+    streamLinks.forEach(streamLink => {
+      if (isEpisodeCodeMatchesFileName(episodeCode, streamLink.filename)) {
+        currentEpisodeFound = true;
+      }
+    });
+
+  }
+
+  return currentEpisodeFound;
 }

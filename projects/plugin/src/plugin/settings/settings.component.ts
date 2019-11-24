@@ -104,4 +104,10 @@ export class SettingsComponent implements OnInit {
 
     this.settingsService.set(this.settings);
   }
+
+  setEnableEpisodeAutomaticPlaylist(enableEpisodeAutomaticPlaylist) {
+    this.settings.enableEpisodeAutomaticPlaylist = enableEpisodeAutomaticPlaylist;
+
+    this.settingsService.set(this.settings);
+  }
 }
