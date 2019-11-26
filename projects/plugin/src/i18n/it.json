@@ -54,6 +54,10 @@
         "openRemoteList": {
           "header": "Telecomando",
           "item": "Apri telecomando dopo aver cliccato"
+        },
+        "playlist": {
+          "header": "Playlist",
+          "item": "Cerca automaticamente i prossimi episodi e crea una playlist"
         }
       }
     },
@@ -88,6 +92,13 @@
           "noAccount": "Nessun account Premiumize? Clicca qui"
         }
       }
+    },
+    "support": {
+      "list": {
+        "header": "Supporto",
+        "reddit": "Il nostro Reddit ufficiale",
+        "discord": "Il nostro Discord ufficiale"
+      }
     }
   },
   "toasts": {
@@ -120,7 +131,8 @@
       "sourceNotCached": "Impossibile recuperare l'URL del video",
       "permissionDenied": "Autorizzazione Negata - Controlla il tuo account"
     },
-    "elementumNotInstalled": "Per utilizzare l'add-on Kodi Elementum, è necessario installarlo su Kodi"
+    "elementumNotInstalled": "Per utilizzare l'add-on Kodi Elementum, è necessario installarlo su Kodi",
+    "playlist": "La playlist {{playlistName}} è stata creata/aggiornata. Contiene {{items}} elementi"
   },
   "actionSheets": {
     "open-source": {
@@ -137,6 +149,7 @@
         "open-nplayer": "Riproduci su nPlayer",
         "add-to-pm": "Aggiungi a Premiumize.me",
         "add-to-rd": "Aggiungi a RealDebrid",
+        "add-to-playlist": "Aggiungi alla playlist di wako",
         "letMeChoose": "Fammi scegliere"
       },
       "selectLink": {
@@ -191,6 +204,7 @@
     "clickToAddProvider": "Clicca qui per aggiungere un provider",
     "noSourceFound": "Nessuna fonte trovata",
     "noBestSource": "Helios non ha trovato la fonte migliore per te, per favore sceglila manualmente",
-    "cancel": "Cancella"
+    "cancel": "Cancella",
+    "enabled": "Abilitato"
   }
 }
