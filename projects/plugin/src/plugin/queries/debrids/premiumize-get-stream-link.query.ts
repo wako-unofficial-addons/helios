@@ -110,23 +110,23 @@ export class PremiumizeGetStreamLinkQuery {
 
             const title = cleanTitle(names.join('/'));
 
-            if (!file && title.indexOf(filterTitle) !== -1 && ((year && title.indexOf(year.toString()) !== -1) || !year)) {
+            if (!file && title.indexOf('sample') === -1 && title.indexOf(filterTitle) !== -1 && ((year && title.indexOf(year.toString()) !== -1) || !year)) {
               file = _file;
             }
           });
-
-          if (!file && files.length === 1) {
-            file = files[0];
-          }
 
           if (!file) {
             files.forEach(__file => {
               const _title = cleanTitle(__file.path);
 
-              if (!file && _title.indexOf('sample') !== -1 && _title.indexOf(filterTitle) !== -1) {
+              if (!file && _title.indexOf('sample') === -1 && _title.indexOf(filterTitle) !== -1) {
                 file = __file;
               }
             });
+          }
+
+          if (!file && files.length === 1) {
+            file = files[0];
           }
 
           if (file) {
