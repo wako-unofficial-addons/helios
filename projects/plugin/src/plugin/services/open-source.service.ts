@@ -838,6 +838,9 @@ export class OpenSourceService {
             this.handleWakoPlaylist(torrent, kodiOpenMedia).subscribe();
           }
           break;
+        case 'share-url':
+          this.share(torrent.url, torrent.title);
+          break;
         case 'add-to-playlist':
           this.handleWakoPlaylist(torrent, kodiOpenMedia, false).subscribe();
           break;
