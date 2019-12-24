@@ -16,8 +16,8 @@ export class RealDebridGetStreamLinkQuery {
             links.push({
               filename: file.filename,
               size: file.filesize,
-              streamLink: file.streamable ? file.link : null,
-              url: file.link,
+              streamLink: file.streamable ? file.download : null,
+              url: file.download,
               servicePlayerUrl: `https://real-debrid.com/streaming-${file.id}`
             });
           }
