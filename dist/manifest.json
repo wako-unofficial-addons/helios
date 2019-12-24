@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -17,6 +17,7 @@
     "it": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/it.json"
   },
   "changeLogs": {
+    "3.4.3": "Add a more button on each source in sources list.<br>Apply same select files method for RD and PM",
     "3.4.2": "Fix share button in torrent tabs",
     "3.4.0": "Handle new wako playlist feature",
     "3.3.0": "Add icons",
