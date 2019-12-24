@@ -90,6 +90,7 @@ export class OpenSourceService {
           let selectStreamLinks = sourceQuery.query && streamLinks.length > 1;
 
           if (sourceQuery.episode && streamLinks.length > 1) {
+
             const currentEpisodeFound = episodeFoundInStreamLinks(streamLinks, sourceQuery);
 
             if (!currentEpisodeFound) {
@@ -141,7 +142,24 @@ export class OpenSourceService {
             streamLinkSource.originalUrl
           );
 
-          streamLinkSourceCopy.streamLinks = [link];
+          const links = [link];
+
+          if (kodiOpenMedia.episode) {
+            let addFromHere = false;
+            streamLinkSource.streamLinks.forEach(l => {
+              if (link.filename === l.filename) {
+                addFromHere = true;
+              } else if (addFromHere) {
+                links.push(l);
+              }
+            });
+
+            if (links.length > 1) {
+              streamLinkSourceCopy.isPackage = true;
+            }
+          }
+
+          streamLinkSourceCopy.streamLinks = links;
 
           this._openStreamLinkSource(streamLinkSourceCopy, kodiOpenMedia, actions);
         }
