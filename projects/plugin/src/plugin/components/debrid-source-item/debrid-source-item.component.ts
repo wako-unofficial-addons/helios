@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { KodiOpenMedia } from '../../entities/kodi-open-media';
 import { OpenSourceService } from '../../services/open-source.service';
-import { DebridSource } from '../../entities/debrid-source';
 import { StreamLinkSource } from '../../entities/stream-link-source';
 import { SourceQuery } from '../../entities/source-query';
 
@@ -26,7 +25,11 @@ export class DebridSourceItemComponent {
   constructor(private openSourceService: OpenSourceService) {
   }
 
- async download() {
-    await this.openSourceService.openStreamLinkSource(this.source, this.sourceQuery, this.kodiOpenMedia);
+  async download() {
+    await this.openSourceService.openStreamLinkSource(this.source, this.sourceQuery, this.kodiOpenMedia, 'default');
+  }
+
+  async more() {
+    await this.openSourceService.openStreamLinkSource(this.source, this.sourceQuery, this.kodiOpenMedia, 'more');
   }
 }

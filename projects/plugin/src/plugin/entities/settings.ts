@@ -51,6 +51,7 @@ export class Settings {
   defaultPlayButtonAction: PlayButtonAction = 'open-kodi';
 
   availablePlayButtonActions: PlayButtonAction[] = [];
+
   qualities: SettingsQuality[] = [
     {
       quality: '2160p',
@@ -80,4 +81,6 @@ export class Settings {
   constructor(isAndroid: boolean) {
     this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0);
   }
+
+
 }

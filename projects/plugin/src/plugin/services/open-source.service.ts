@@ -35,7 +35,7 @@ import { SourceQuery } from '../entities/source-query';
 import { SourceService } from './sources/source.service';
 import { HeliosPlaylistService } from './helios-playlist.service';
 import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
-import { PlayButtonAction, Settings } from '../entities/settings';
+import { PlayButtonAction, PlayButtonActionAndroid, PlayButtonActionIos, Settings } from '../entities/settings';
 
 @Injectable()
 export class OpenSourceService {
@@ -68,11 +68,15 @@ export class OpenSourceService {
     });
   }
 
-  async openStreamLinkSource(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, kodiOpenMedia: KodiOpenMedia) {
+  async openStreamLinkSource(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, kodiOpenMedia: KodiOpenMedia, action: 'default' | 'more' = 'default') {
     const loader = await this.loadingController.create({
       message: 'Please wait...',
       spinner: 'crescent'
     });
+
+    const settings = await this.settingsService.get();
+
+    const actions = action === 'default' ? settings.availablePlayButtonActions : (this.platform.is('android') ? PlayButtonActionAndroid : PlayButtonActionIos);
 
     loader.present();
 
@@ -98,9 +102,9 @@ export class OpenSourceService {
           }
 
           if (selectStreamLinks) {
-            this.selectStreamLink(streamLinkSource, kodiOpenMedia);
+            this.selectStreamLink(streamLinkSource, kodiOpenMedia, actions);
           } else {
-            this._openStreamLinkSource(streamLinkSource, kodiOpenMedia);
+            this._openStreamLinkSource(streamLinkSource, kodiOpenMedia, actions);
           }
         },
         err => {
@@ -119,7 +123,7 @@ export class OpenSourceService {
       );
   }
 
-  private async selectStreamLink(streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
+  private async selectStreamLink(streamLinkSource: StreamLinkSource, kodiOpenMedia: KodiOpenMedia, actions: PlayButtonAction[]) {
     const buttons = [];
     streamLinkSource.streamLinks.forEach(link => {
       buttons.push({
@@ -139,7 +143,7 @@ export class OpenSourceService {
 
           streamLinkSourceCopy.streamLinks = [link];
 
-          this._openStreamLinkSource(streamLinkSourceCopy, kodiOpenMedia);
+          this._openStreamLinkSource(streamLinkSourceCopy, kodiOpenMedia, actions);
         }
       });
     });
@@ -249,8 +253,7 @@ export class OpenSourceService {
     await action.present();
   }
 
-  private async _openStreamLinkSource(streamLinkSource: StreamLinkSource, kodiOpenMedia?: KodiOpenMedia) {
-    const settings = await this.settingsService.get();
+  private async _openStreamLinkSource(streamLinkSource: StreamLinkSource, kodiOpenMedia: KodiOpenMedia, actions: PlayButtonAction[]) {
     const hasCloudAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
     const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
@@ -261,7 +264,7 @@ export class OpenSourceService {
 
     const streamLink = streamLinkSource.streamLinks[0];
 
-    settings.availablePlayButtonActions.forEach(action => {
+    actions.forEach(action => {
       if (action.match('elementum')) {
         return;
       }
