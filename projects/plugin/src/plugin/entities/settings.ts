@@ -12,7 +12,9 @@ export declare type PlayButtonAction =
   | 'open-nplayer'
   | 'add-to-pm'
   | 'add-to-rd'
-  | 'add-to-playlist';
+  | 'add-to-playlist'
+  | 'open-infuse'
+  ;
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -25,7 +27,8 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-nplayer',
   'add-to-pm',
   'add-to-rd',
-  'add-to-playlist'
+  'add-to-playlist',
+  'open-infuse'
 ];
 
 export const PlayButtonActionAndroid: PlayButtonAction[] = [

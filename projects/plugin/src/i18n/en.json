@@ -45,7 +45,7 @@
           "item": "Configure Debrid Accounts"
         },
         "play-button": {
-          "header": "Play Button",
+          "header": "Default Play Action",
           "item": "Play button default action"
         },
         "actions": {
@@ -147,6 +147,7 @@
         "open-elementum": "Play on Kodi via Elementum",
         "open-with": "Play on...",
         "open-nplayer": "Play on nPlayer",
+        "open-infuse": "Play on Infuse",
         "add-to-pm": "Add to Premiumize.me",
         "add-to-rd": "Add to RealDebrid",
         "add-to-playlist": "Add to wako's playlist",
