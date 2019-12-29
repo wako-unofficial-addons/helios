@@ -126,7 +126,7 @@ export class OpenSourceService {
 
   private async selectStreamLink(streamLinkSource: StreamLinkSource, kodiOpenMedia: KodiOpenMedia, actions: PlayButtonAction[]) {
     const buttons = [];
-    streamLinkSource.streamLinks.concat(streamLinkSource.streamLinks).concat(streamLinkSource.streamLinks).concat(streamLinkSource.streamLinks).forEach(link => {
+    streamLinkSource.streamLinks.forEach(link => {
       buttons.push({
         text: link.filename,
         handler: () => {
@@ -375,7 +375,7 @@ export class OpenSourceService {
           break;
 
         case 'open-infuse':
-          buttonOptions.icon = 'infuse';
+          buttonOptions.cssClass = 'infuse';
           buttonOptions.handler = () => {
             this.open(streamLinkSource, action, kodiOpenMedia);
           };
