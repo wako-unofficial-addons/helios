@@ -1,0 +1,194 @@
+{
+  "pages": {
+    "tuto": {
+      "title": "Assistant d'installation",
+      "skip": "Passer",
+      "slide1": {
+        "title": "Qu'est-ce qu'Helios",
+        "description": "Helios est un chercheur de sources, il cherche sur des sites tiers (appelés providers) qui sont <strong>publiquement accessible</strong>sur internet.",
+        "disclaimer": "Helios n'héberge, ne télécharge ou ne gère aucun contenu sur ces sites et l'addon Helios, le personnel et/ou les développeurs n'ont aucun contrôle sur le contenu de ces sites tiers. Helios ne peut être tenu responsable des droits d'auteur, de la légalité, de l'exactitude, de la conformité, de la décence ou de tout autre aspect du contenu affiché. Il est de la responsabilité de l'utilisateur final d'éviter toute action pouvant constituer une violation des lois nationales, fédérales ou terrestres qui lui sont applicables. <br/><br/>Helios n'est pas développé ni endossé par wako, pour le support créer un ticket sur son github ou discuter avec la communauté sur reddit : https://www.reddit.com/r/Addons4Wako/"
+      },
+      "slide2": {
+        "title": "Ajouter des providers",
+        "description": "Comme nous l'avons déjà dit, Helios s'appuie sur les providers pour trouver les sources, alors ajoutons en"
+      },
+      "slide3": {
+        "title": "Choisir la qualité",
+        "description": "Sélectionnez la qualité la plus élevée que vous voulez jouer"
+      },
+      "slide4": {
+        "title": "Debrid Account",
+        "description": "Si vous voulez lire les sources sans aucun problème de mise en mémoire tampon, il est recommandé de connecter Helios à un service debrid."
+      },
+      "slide5": {
+        "title": "Sur quoi jouer ?",
+        "description": "Helios peut jouer la source sur différents lecteurs, sélectionnez votre lecteur par défaut"
+      },
+      "slide6": {
+        "title": "C'est tout bon",
+        "description": "Vous avez terminé, si vous voulez changer ces paramètres, allez dans Wako > Paramètres > Addons > Helios > Page Paramètres",
+        "button": "Fermer"
+      }
+    },
+    "settings": {
+      "list": {
+        "wizard": {
+          "header": "Assistant d'installation",
+          "item": "Lancer l'assistant d'installation"
+        },
+        "provider": {
+          "header": "Providers",
+          "item": "Configurer les providers"
+        },
+        "debrid-account": {
+          "header": "Compte Debrid",
+          "item": "Configurer les comptes Debrid"
+        },
+        "play-button": {
+          "header": "Action Jouer par défaut",
+          "item": "Play button action par défaut"
+        },
+        "actions": {
+          "header": "Reorder/Toggle Actions"
+        },
+        "openRemoteList": {
+          "header": "Télécommande",
+          "item": "Ouvrir la télécommande après avoir cliqué"
+        }
+      }
+    },
+    "providers": {
+      "title": "Providers",
+      "list": {
+        "header": "Configuration",
+        "providersUrl": "Providers URLs",
+        "noUrl": "aucune",
+        "addProvider": "Ajouter des providers"
+      },
+      "enabledSource": {
+        "header": "Source activée",
+        "howItWorks": "Pour des raisons de performance, il est recommandé de n'activer que la meilleure qualité que vous préférez. Si moins de 20 sources sont trouvées pour cette qualité, alors la qualité inférieure sera utilisée jusqu'à ce que la qualité la plus basse soit atteinte."
+      },
+      "providerList": {
+        "header": "Providers"
+      }
+    },
+    "debrid-account": {
+      "list": {
+        "title": "Debrid Accounts",
+        "logout": "Se déconnecter",
+        "login": "Se connecter",
+        "realDebrid": {
+          "explain": "RealDebrid est un outils de téléchargement sans restriction qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
+          "noAccount": "Pas de compte Real Debrid ? Cliquez ici"
+        },
+        "premiumize": {
+          "explain": "Premiumize.me est un outils de téléchargement sans restriction (et plus encore) qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
+          "preferTranscoded": "Prefer transcoded files",
+          "noAccount": "Pas de compte Premiumize ? Cliquez ici"
+        }
+      }
+    }
+  },
+  "toasts": {
+    "kodi": {
+      "hostUnreachable": "Aïe, votre hôte kodi {{hostName}} est injoignable",
+      "noHost": "Aucun hôte définit pour kodi"
+    },
+    "startOpening": "Ouverture {{title}} on {{hostName}}",
+    "providersUpdated": "Les Providers ont été mis à jour",
+    "providers": {
+      "providerUrlAdded": "Providers ajoutés",
+      "providerUrlFailedToAdd": "Impossible d'ajouter les Providers. Vérifier l'URL"
+    },
+    "cloud-account": {
+      "needToAddProviders": "vous avez besoin d'ajouter des providers pour profiter des services debrid."
+    },
+    "premiumize": {
+      "invalidApiKey": "La clé API n'est pas valide"
+    },
+    "real-debrid": {
+      "failedToLogin": "Impossible de se connecter"
+    },
+    "copyToClipboard": "{{element}} a été copié dans votre presse-papiers",
+    "open-source": {
+      "cannotRetrieveUrl": "Cette source est illisible, on ne peut pas récupérer son URL",
+      "addedToPM": "La source a été ajoutée à votre compte PM",
+      "failedToAddToPM": "Impossible d'ajouter la source à votre compte PM :{{error}}",
+      "addedToRD": "La source a été ajoutée à votre compte RD",
+      "failedToAddToRD": "Impossible d'ajouter la source à votre compte RD: {{error}}",
+      "sourceNotCached": "Impossible de récupérer l'URL de la vidéo",
+      "permissionDenied": "Accès refusé - Vérifiez votre compte"
+    },
+    "elementumNotInstalled": "Pour utiliser Elementum kodi add-on, vous devez l'installer sur kodi"
+  },
+  "actionSheets": {
+    "open-source": {
+      "openTitle": "Que faire ?",
+      "options": {
+        "open-kodi": "Play avec Kodi",
+        "open-browser": "Play dans votre navigateur",
+        "copy-url": "Copier l'URL",
+        "share-url": "Partager l'URL",
+        "open-vlc": "Play avec VLC",
+        "open-infuse": "Play avec Infuse",
+        "download-vlc": "Télécharger avec VLC",
+        "open-elementum": "Play avec Kodi via Elementum",
+        "open-with": "Play avec...",
+        "add-to-pm": "Ajouter à Premiumize.me",
+        "add-to-rd": "Ajouter à RealDebrid",
+        "letMeChoose":"Let Me choose"
+      },
+      "selectLink": {
+        "openTitle": "Cette source a plusieurs liens, lequel voulez-vous ouvrir ?"
+      }
+    }
+  },
+  "alerts": {
+    "cancelButton": "Annuler",
+    "debrid-account": {
+      "real-debrid": {
+        "authHeader": "Real Debrid Autentification",
+        "enterCode": "Ouvrir le lient: https://real-debrid.com/device<br><br>Entrer ce code :",
+        "openUrlButton": "Open le lient"
+      }
+    }
+  },
+  "modals": {
+    "search-manual": {
+      "search": "Rechercher une source",
+      "category": "Categorie",
+      "categoryOptions": {
+        "movies": "Film",
+        "tv": "Série",
+        "anime": "Anime"
+      }
+    },
+    "search-source":{
+      "manual": "Search Sources Manually"
+    }
+  },
+  "source-list": {
+    "noProviderSet": "Aucun Provider n'est défini"
+  },
+  "open-button": {
+    "more": "Sources"
+  },
+  "sources": {
+    "segments": {
+      "debrid": "Stream",
+      "torrents": "Torrents",
+      "all": "Tous"
+    },
+    "statsInfo":  "Note : Les torrents dupliqués sont supprimés de la liste des torrents.",
+    "addToQueue": "{{totalEpisode}} prochains épisodes ont été mis en file d'attente."
+  },
+  "shared": {
+    "noDebridAccountSet": "Aucun compte Debrid",
+    "clickToAddDebridAccount": "Cliquez ici pour ajouter un service de Debrid",
+    "clickToAddProvider": "Cliquez ici pour ajouter des providers",
+    "noSourceFound": "Aucune source trouvée",
+    "noBestSource": "Helios n'a pas trouvé la meilleure source pour vous, veuillez la choisir manuellement.",
+    "cancel": "Annuler"
+  }
+}
