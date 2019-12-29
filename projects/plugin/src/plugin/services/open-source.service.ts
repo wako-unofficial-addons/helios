@@ -1085,7 +1085,7 @@ export class OpenSourceService {
           break;
 
         case 'open-infuse':
-          buttonOptions.cssClass = 'kodi';
+          buttonOptions.cssClass = 'infuse';
           buttonOptions.handler = () => {
             this.openInfuse(playlistVideo.url);
           };
