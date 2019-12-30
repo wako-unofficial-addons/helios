@@ -69,9 +69,6 @@ export class OpenSourceService {
   }
 
   async openStreamLinkSource(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, kodiOpenMedia?: KodiOpenMedia, action: 'default' | 'more' = 'default') {
-    if (kodiOpenMedia === undefined) {
-      kodiOpenMedia = {};
-    }
     const loader = await this.loadingController.create({
       message: 'Please wait...',
       spinner: 'crescent'
@@ -106,9 +103,9 @@ export class OpenSourceService {
           }
 
           if (selectStreamLinks) {
-            this.selectStreamLink(streamLinkSource, kodiOpenMedia, actions);
+            this.selectStreamLink(streamLinkSource, actions, kodiOpenMedia);
           } else {
-            this._openStreamLinkSource(streamLinkSource, kodiOpenMedia, actions);
+            this._openStreamLinkSource(streamLinkSource, actions, kodiOpenMedia);
           }
         },
         err => {
@@ -127,7 +124,7 @@ export class OpenSourceService {
       );
   }
 
-  private async selectStreamLink(streamLinkSource: StreamLinkSource, kodiOpenMedia: KodiOpenMedia, actions: PlayButtonAction[]) {
+  private async selectStreamLink(streamLinkSource: StreamLinkSource, actions: PlayButtonAction[], kodiOpenMedia?: KodiOpenMedia) {
     const buttons = [];
     streamLinkSource.streamLinks.forEach(link => {
       buttons.push({
@@ -147,7 +144,7 @@ export class OpenSourceService {
 
           const links = [link];
 
-          if (kodiOpenMedia.episode) {
+          if (kodiOpenMedia && kodiOpenMedia.episode) {
             let addFromHere = false;
             streamLinkSource.streamLinks.forEach(l => {
               if (link.filename === l.filename) {
@@ -164,7 +161,7 @@ export class OpenSourceService {
 
           streamLinkSourceCopy.streamLinks = links;
 
-          this._openStreamLinkSource(streamLinkSourceCopy, kodiOpenMedia, actions);
+          this._openStreamLinkSource(streamLinkSourceCopy, actions, kodiOpenMedia);
         }
       });
     });
@@ -274,7 +271,7 @@ export class OpenSourceService {
     await action.present();
   }
 
-  private async _openStreamLinkSource(streamLinkSource: StreamLinkSource, kodiOpenMedia: KodiOpenMedia, actions: PlayButtonAction[]) {
+  private async _openStreamLinkSource(streamLinkSource: StreamLinkSource, actions: PlayButtonAction[], kodiOpenMedia?: KodiOpenMedia) {
     const hasCloudAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
     const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
