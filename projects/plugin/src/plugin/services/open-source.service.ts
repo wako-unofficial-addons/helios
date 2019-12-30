@@ -68,7 +68,10 @@ export class OpenSourceService {
     });
   }
 
-  async openStreamLinkSource(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, kodiOpenMedia: KodiOpenMedia, action: 'default' | 'more' = 'default') {
+  async openStreamLinkSource(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, kodiOpenMedia?: KodiOpenMedia, action: 'default' | 'more' = 'default') {
+    if (kodiOpenMedia === undefined) {
+      kodiOpenMedia = {};
+    }
     const loader = await this.loadingController.create({
       message: 'Please wait...',
       spinner: 'crescent'
