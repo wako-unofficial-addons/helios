@@ -68,6 +68,54 @@ export class TorrentSourceService {
     );
   }
 
+  private applyFileSizeFilter(sourceQuery: SourceQuery, torrents: TorrentSource[]) {
+    return from(this.settingsService.get()).pipe(
+      map(settings => {
+
+        const filter = sourceQuery.category === 'movie' ? settings.fileSizeFilteringMovie : settings.fileSizeFilteringTv;
+
+        if (filter.enabled === false) {
+          return torrents;
+        }
+
+        const maxSizeByte = filter.maxSize > 0 ? filter.maxSize * 1024 * 1024 * 1024 : 0;
+        const minSizeByte = filter.minSize > 0 ? filter.minSize * 1024 * 1024 * 1024 : 0;
+
+
+        return torrents.filter(torrent => {
+          if (torrent.size === null || torrent.size === 0 || torrent.isPackage) {
+            // console.log('FILTERSIZE', 'exclude', torrent.title, 'cause', torrent.size);
+            return true;
+          }
+
+          let conditionValid = 0;
+
+          if (minSizeByte === 0) {
+            conditionValid++;
+          }
+
+          if (maxSizeByte === 0) {
+            conditionValid++;
+          }
+
+          if (minSizeByte > 0 && torrent.size >= minSizeByte) {
+            conditionValid++;
+          }
+          if (maxSizeByte > 0 && torrent.size <= maxSizeByte) {
+            conditionValid++;
+          }
+
+
+          if (conditionValid < 2) {
+            // console.log('FILTERSIZE', 'exclude', torrent.title, 'cause', torrent.size);
+          }
+          return conditionValid >= 2;
+
+        });
+      })
+    );
+  }
+
   getByProvider(sourceQuery: SourceQuery, provider: Provider) {
     return TorrentsFromProviderQuery.getData(sourceQuery, provider)
       .pipe(
@@ -77,13 +125,16 @@ export class TorrentSourceService {
         switchMap(torrentSourceDetail => {
           return this.excludeUnwantedHighQuality(torrentSourceDetail.sources)
             .pipe(
+              switchMap(torrents => {
+                return this.applyFileSizeFilter(sourceQuery, torrents);
+              }),
               map(torrents => {
                 torrentSourceDetail.sources = torrents;
                 return torrentSourceDetail;
               })
-            )
-        }),
-      )
+            );
+        })
+      );
   }
 
   private hasBestTorrent(torrents: TorrentSource[]) {

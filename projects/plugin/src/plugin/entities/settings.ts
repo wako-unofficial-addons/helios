@@ -50,6 +50,12 @@ export interface SettingsQuality {
   enabled: boolean;
 }
 
+export interface FileSizeFilter {
+  enabled: boolean;
+  maxSize: number;
+  minSize: number;
+}
+
 export class Settings {
   defaultPlayButtonAction: PlayButtonAction = 'open-kodi';
 
@@ -80,6 +86,18 @@ export class Settings {
 
   openRemoteAfterClickOnPlay = true;
   enableEpisodeAutomaticPlaylist = true;
+
+  fileSizeFilteringMovie: FileSizeFilter = {
+    enabled: false,
+    maxSize: 0,
+    minSize: 0
+  };
+
+  fileSizeFilteringTv: FileSizeFilter = {
+    enabled: false,
+    maxSize: 0,
+    minSize: 0
+  };
 
   constructor(isAndroid: boolean) {
     this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0);

@@ -77,10 +77,14 @@
     </ion-list-header>
     <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
       <ion-item *ngFor="let action of playButtonActionsSettings">
-        <ion-label class="ion-text-wrap">{{ 'actionSheets.open-source.options.' + action.action | translate }}</ion-label>
+        <ion-label
+          class="ion-text-wrap">{{ 'actionSheets.open-source.options.' + action.action | translate }}</ion-label>
         <ion-reorder slot="start"></ion-reorder>
         <ion-toggle [(ngModel)]="action.enabled" (ionChange)="savePlayButtonAction()"></ion-toggle>
       </ion-item>
     </ion-reorder-group>
   </ion-list>
+
+  <wk-file-size-filter category="Movie"></wk-file-size-filter>
+  <wk-file-size-filter category="TV Show"></wk-file-size-filter>
 </div>

@@ -36,6 +36,7 @@ import { DebridAccountComponent } from './components/debrid-account/debrid-accou
 import { PlayButtonComponent } from './components/play-button/play-button.component';
 import { SupportComponent } from './components/support/support.component';
 import { HeliosPlaylistService } from './services/helios-playlist.service';
+import { FileSizeFilterComponent } from './components/file-size-filter/file-size-filter.component';
 
 
 const components = [
@@ -56,7 +57,8 @@ const components = [
   QualityComponent,
   DebridAccountComponent,
   PlayButtonComponent,
-  SupportComponent
+  SupportComponent,
+  FileSizeFilterComponent
 ];
 
 const directives = [HideKeyboardEnterDirective];
