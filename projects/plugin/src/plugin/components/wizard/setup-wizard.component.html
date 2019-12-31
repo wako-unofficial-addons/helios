@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title> {{ 'pages.tuto.title' | translate }}</ion-title>
-    <ion-buttons slot="secondary">
+    <ion-buttons *ngIf="checked" slot="secondary">
       <ion-button (click)="close()">
         {{ 'pages.tuto.skip' | translate }}
       </ion-button>
@@ -19,7 +19,21 @@
         </ion-card-header>
         <ion-card-content [innerHTML]="'pages.tuto.slide1.description' | translate ">
         </ion-card-content>
-        <ion-card-content class="disclaimer" [innerHTML]="'pages.tuto.slide1.disclaimer' | translate ">
+      </ion-card>
+      <ion-card class="disclaimer">
+        <ion-card-header>
+          <ion-card-title>
+            {{'pages.tuto.slide1.titleDisclaimer' | translate}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content [innerHTML]="'pages.tuto.slide1.disclaimer' | translate ">
+        </ion-card-content>
+      </ion-card>
+      <ion-card>
+        <ion-card-content class="accept ion-activatable ion-no-padding" (click)="toggleChecked()">
+          <ion-checkbox [checked]="checked" slot="start"></ion-checkbox>
+          <ion-label class="ion-text-nowrap"> {{'pages.tuto.slide1.accept' | translate}}</ion-label>
+          <ion-ripple-effect></ion-ripple-effect>
         </ion-card-content>
       </ion-card>
     </ion-slide>
