@@ -14,7 +14,8 @@
   "languages": {
     "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
     "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json",
-    "it": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/it.json"
+    "it": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/it.json",
+    "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
     "3.4.7": "Bug fixes",
