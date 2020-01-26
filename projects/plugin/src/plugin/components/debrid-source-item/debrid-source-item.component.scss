@@ -1,0 +1,39 @@
+.row {
+  margin-bottom: 10px;
+  width: 100%;
+  display: inline-flex;
+  background-color: var(--ion-color-dark-tint);
+
+  .ion-activatable {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .download {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 85%;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  border-left: 4px solid var(--ion-color-primary-shade);
+
+  &.isBestTorrent {
+    border-left-color: var(--ion-color-success-shade);
+  }
+
+  .title {
+    font-size: 0.9em;
+  }
+
+  .more {
+    width: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+  }
+}

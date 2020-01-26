@@ -1,0 +1,90 @@
+<wk-support></wk-support>
+
+<ion-list lines="full">
+  <ion-list-header>
+    <ion-label class="ion-text-wrap">
+      <ion-icon name="settings" slot="start"></ion-icon>
+      {{ 'pages.settings.list.wizard.header' | translate }}
+    </ion-label>
+  </ion-list-header>
+  <ion-item button (click)="openSetupWizard()">
+    <ion-label class="ion-text-wrap">{{ 'pages.settings.list.wizard.item' | translate }}</ion-label>
+  </ion-item>
+</ion-list>
+
+<ion-list lines="full">
+  <ion-list-header>
+    <ion-label class="ion-text-wrap">
+      <ion-icon name="people" slot="start"></ion-icon>
+      {{ 'pages.settings.list.debrid-account.header' | translate }}
+    </ion-label>
+  </ion-list-header>
+  <ion-item button (click)="openCloudAccount()">
+    <ion-label class="ion-text-wrap">{{ 'pages.settings.list.debrid-account.item' | translate }}</ion-label>
+  </ion-item>
+</ion-list>
+
+<ion-list lines="full">
+  <ion-list-header>
+    <ion-label class="ion-text-wrap">
+      <ion-icon name="wifi" slot="start"></ion-icon>
+      {{ 'pages.settings.list.provider.header' | translate }}
+    </ion-label>
+  </ion-list-header>
+  <ion-item button (click)="openProviders()">
+    <ion-label class="ion-text-wrap">{{ 'pages.settings.list.provider.item' | translate }}</ion-label>
+  </ion-item>
+</ion-list>
+
+
+<div *ngIf="settings">
+
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label class="ion-text-wrap">
+        <ion-icon name="list" slot="start"></ion-icon>
+        {{ 'pages.settings.list.playlist.header' | translate }}
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label class="ion-text-wrap">{{ 'pages.settings.list.playlist.item' | translate }}</ion-label>
+      <ion-toggle [ngModel]="settings.enableEpisodeAutomaticPlaylist"
+                  (ionChange)="setEnableEpisodeAutomaticPlaylist($event.detail.checked)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label class="ion-text-wrap">
+        {{ 'pages.settings.list.openRemoteList.header' | translate }}
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label class="ion-text-wrap"> {{ 'pages.settings.list.openRemoteList.item' | translate }}</ion-label>
+      <ion-toggle [ngModel]="settings.openRemoteAfterClickOnPlay"
+                  (ionChange)="setOpenRemoteAfterClickOnPlaySetting($event.detail.checked)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <wk-play-button></wk-play-button>
+
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label class="ion-text-wrap">
+        <ion-icon name="funnel"></ion-icon>
+        {{ 'pages.settings.list.actions.header' | translate }}
+      </ion-label>
+    </ion-list-header>
+    <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
+      <ion-item *ngFor="let action of playButtonActionsSettings">
+        <ion-label
+          class="ion-text-wrap">{{ 'actionSheets.open-source.options.' + action.action | translate }}</ion-label>
+        <ion-reorder slot="start"></ion-reorder>
+        <ion-toggle [(ngModel)]="action.enabled" (ionChange)="savePlayButtonAction()"></ion-toggle>
+      </ion-item>
+    </ion-reorder-group>
+  </ion-list>
+
+  <wk-file-size-filter category="Movie"></wk-file-size-filter>
+  <wk-file-size-filter category="TV Show"></wk-file-size-filter>
+</div>

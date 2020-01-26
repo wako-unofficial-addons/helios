@@ -1,0 +1,44 @@
+<ng-container *ngIf="type === 'button'">
+  <ion-grid *ngIf="settings" class="ion-no-padding">
+    <ion-row class="ion-justify-content-end">
+      <ion-col size="8" class="col-left">
+        <ion-button color="primary" expand="block" (click)="play()">
+          <ion-icon name="play" color="light" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col class="col-right">
+        <ion-button color="light" expand="block" fill="outline" (click)="openSourceModal()">
+          <ion-icon mode="ios" name="list" color="light" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="bestSource">
+      <ion-col>
+        <ion-text class="best-source ion-text-center">
+          {{ bestSource.title }} - {{ bestSource.provider }} - {{ bestSource.size | bsFileSize }} - {{ elapsedTime }} ms
+        </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ng-container>
+
+<ng-container *ngIf="type === 'item-option'">
+  <div class="ion-item-options">
+    <ion-item-option (click)="play()">
+      <div class="ion-item-detail">
+        <ion-icon name="play"></ion-icon>
+        <ion-text>
+          Helios Play
+        </ion-text>
+      </div>
+    </ion-item-option>
+    <ion-item-option color="dark" (click)="openSourceModal()">
+      <div class="ion-item-detail">
+        <ion-icon mode="ios" name="list"></ion-icon>
+        <ion-text>
+          Helios Sources
+        </ion-text>
+      </div>
+    </ion-item-option>
+  </div>
+</ng-container>

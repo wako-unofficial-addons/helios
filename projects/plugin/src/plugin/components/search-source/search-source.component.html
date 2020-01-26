@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title *ngIf="!manualSearch">
+      {{ title }}
+    </ion-title>
+    <ion-title *ngIf="manualSearch">
+      {{ 'modals.search-source.manual'|translate }}
+    </ion-title>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="manualSearch = !manualSearch">
+        <ion-icon slot="icon-only" [name]="!manualSearch ? 'search' : 'list'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <wk-source-list *ngIf="!manualSearch" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
+  <helios-plugin-detail
+    *ngIf="manualSearch"
+    [searchInput]="manualSearchValue"
+    [category]="sourceQuery.category"
+    [kodiOpenMedia]="kodiOpenMedia"
+  ></helios-plugin-detail>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-title>
+      {{ 'shared.cancel' | translate }}
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-button color="light" (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

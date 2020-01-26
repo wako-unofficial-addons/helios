@@ -1,0 +1,29 @@
+ion-slides {
+  height: 100%;
+
+  .first-card {
+  }
+
+  ion-slide {
+    text-align: inherit;
+    overflow: auto;
+  }
+}
+
+.swiper-slide {
+  display: block;
+}
+
+.disclaimer {
+  max-height: 60%;
+  overflow: scroll;
+}
+
+.accept {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+}
