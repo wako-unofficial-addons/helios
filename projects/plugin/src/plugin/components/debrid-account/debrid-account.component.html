@@ -15,8 +15,12 @@
         <ion-toggle [(ngModel)]="isPremiumizeEnabled" (ngModelChange)="toggleEnabledPM($event)"></ion-toggle>
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
-        <ion-label>{{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}</ion-label>
+        <ion-label class="ion-text-wrap">{{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}</ion-label>
         <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)"></ion-toggle>
+      </ion-item>
+      <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
+        <ion-label class="ion-text-wrap">{{ 'pages.debrid-account.list.premiumize.preferTranscodedFilesChromecast' | translate }}</ion-label>
+        <ion-toggle [(ngModel)]="preferTranscodedFilesChromecast" (ngModelChange)="togglePreferTranscodedChromecast($event)"></ion-toggle>
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged" button (click)="logoutPremiumize()">
         <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>

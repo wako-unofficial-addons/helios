@@ -202,6 +202,7 @@ export interface PremiumizeSettings {
   disabled: boolean;
   apiKey: string;
   preferTranscodedFiles: boolean;
+  preferTranscodedFilesChromecast: boolean;
 }
 
 export interface RealDebridSettings {

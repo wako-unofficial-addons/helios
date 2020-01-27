@@ -398,25 +398,26 @@ export class OpenSourceService {
       buttons.push(buttonOptions);
     });
 
+    if (buttons.length === 1) {
+      buttons[0].handler();
+      return;
+    }
+
     buttons.forEach(button => {
       if (!button.icon) {
         button.icon = 'arrow-dropright';
       }
     });
 
-    if (buttons.length === 1) {
-      buttons[0].handler();
-      return;
-    }
-
     const actionSheet = await this.actionSheetController.create({
       header: this.translateService.instant('actionSheets.open-source.openTitle'),
       buttons: buttons
     });
 
+    this.setImages();
+
     await actionSheet.present();
 
-    this.setImages();
 
     const copyEl = document.querySelector('.action-sheet-copy-url');
     if (!copyEl) {
@@ -786,7 +787,7 @@ export class OpenSourceService {
     return urls;
   }
 
-  private handleWakoPlaylist(source: StreamLinkSource | TorrentSource, kodiOpenMedia?: KodiOpenMedia, isAutomatic = true) {
+  private handleWakoPlaylist(source: StreamLinkSource | TorrentSource, kodiOpenMedia?: KodiOpenMedia, isAutomatic = true, getTranscoded = false) {
     let obs = of(null);
     if (kodiOpenMedia) {
       obs = SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia);
@@ -797,17 +798,25 @@ export class OpenSourceService {
         return from(this.heliosPlaylistService.setPlaylist(source, kodiOpenMedia)).pipe(
           switchMap(playlist => {
             if (kodiOpenMedia && kodiOpenMedia.episode) {
+
+              let streamUrl;
+              let fallBackUrl = null;
+              if (source.type === 'torrent') {
+                streamUrl = getElementumUrlBySourceUrl((source as TorrentSource).url, sourceQuery);
+              } else {
+                const streamLink = (source as StreamLinkSource).streamLinks[0];
+                streamUrl = getTranscoded ? streamLink.transcodedUrl : streamLink.url;
+                fallBackUrl = getTranscoded ? streamLink.url : streamLink.transcodedUrl;
+              }
+
               playlist.items.push({
                 label: sourceQuery.episode.episodeCode,
-                url:
-                  source.type === 'torrent'
-                    ? getElementumUrlBySourceUrl((source as TorrentSource).url, sourceQuery)
-                    : (source as StreamLinkSource).streamLinks[0].url,
+                url: streamUrl,
                 currentSeconds: 0,
                 pluginId: 'plugin.helios',
                 openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
                 customData: {
-                  fallbackUrl: source.type !== 'torrent' ? (source as StreamLinkSource).streamLinks[0].transcodedUrl : null
+                  fallbackUrl: fallBackUrl
                 }
               });
 
@@ -825,6 +834,12 @@ export class OpenSourceService {
                     const _sourceQuery = JSON.parse(JSON.stringify(sourceQuery));
                     episodeCode = incrementEpisodeCode(episodeCode);
 
+                    const transcodedUrl = data.transcodedUrls[index] ? data.transcodedUrls[index] : url;
+
+                    const _streamUrl = getTranscoded ? transcodedUrl : url;
+                    const _fallBackUrl = getTranscoded ? url : transcodedUrl;
+
+
                     if (episodeAbsoluteNumber) {
                       episodeAbsoluteNumber++;
                       _sourceQuery.episode.absoluteNumber = episodeAbsoluteNumber;
@@ -838,12 +853,12 @@ export class OpenSourceService {
 
                     playlist.items.push({
                       label: _sourceQuery.episode.episodeCode,
-                      url: url,
+                      url: _streamUrl,
                       currentSeconds: 0,
                       pluginId: 'plugin.helios',
                       openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null,
                       customData: {
-                        fallbackUrl: data.transcodedUrls[index] ? data.transcodedUrls[index] : null
+                        fallbackUrl: _fallBackUrl
                       }
                     });
                   });
@@ -864,15 +879,20 @@ export class OpenSourceService {
                   customData: {}
                 });
               } else if (source instanceof StreamLinkSource) {
+
                 source.streamLinks.forEach(link => {
+
+                  const streamUrl = getTranscoded ? link.transcodedUrl : link.url;
+                  const fallBackUrl = getTranscoded ? link.url : link.transcodedUrl;
+
                   playlist.items.push({
                     label: link.title,
-                    url: link.url,
+                    url: streamUrl,
                     currentSeconds: 0,
                     pluginId: 'plugin.helios',
                     openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
                     customData: {
-                      fallbackUrl: link.transcodedUrl
+                      fallbackUrl: fallBackUrl
                     }
                   });
                 });
@@ -887,7 +907,10 @@ export class OpenSourceService {
             return from(this.heliosPlaylistService.savePlaylist(playlist))
               .pipe(
                 tap(() => {
-                  this.toastService.simpleMessage('toasts.playlist', { playlistName: playlist.label, items: playlist.items.length }, 5000);
+                  this.toastService.simpleMessage('toasts.playlist', {
+                    playlistName: playlist.label,
+                    items: playlist.items.length
+                  }, 5000);
                 })
               );
           })
@@ -961,6 +984,9 @@ export class OpenSourceService {
       const premiumizeSettings = await this.debridAccountService.getPremiumizeSettings();
 
       const preferTranscodedFiles = premiumizeSettings ? premiumizeSettings.preferTranscodedFiles : false;
+      const preferTranscodedFilesChromecast = premiumizeSettings ? premiumizeSettings.preferTranscodedFilesChromecast : false;
+
+      let getTranscoded = preferTranscodedFiles;
 
       let title = '';
       let posterUrl = '';
@@ -1025,7 +1051,7 @@ export class OpenSourceService {
           break;
 
         case 'add-to-playlist':
-          this.handleWakoPlaylist(source, kodiOpenMedia, false).subscribe();
+          this.handleWakoPlaylist(source, kodiOpenMedia, false, getTranscoded).subscribe();
           break;
 
 
@@ -1037,11 +1063,13 @@ export class OpenSourceService {
         case 'cast':
           let videoUrl1 = streamLink.url;
           let videoUrl2 = streamLink.transcodedUrl;
-          if (preferTranscodedFiles) {
+          if (preferTranscodedFilesChromecast) {
             videoUrl1 = streamLink.transcodedUrl;
             videoUrl2 = streamLink.url;
+
+            getTranscoded = true;
           }
-          this.cast(preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url, kodiOpenMedia, null, null, videoUrl2);
+          this.cast(preferTranscodedFilesChromecast && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url, kodiOpenMedia, null, null, videoUrl2);
           playVideo = true;
           break;
 
@@ -1067,7 +1095,7 @@ export class OpenSourceService {
         }
 
         if (settings.enableEpisodeAutomaticPlaylist) {
-          this.handleWakoPlaylist(source, kodiOpenMedia).subscribe();
+          this.handleWakoPlaylist(source, kodiOpenMedia, true, getTranscoded).subscribe();
         }
       }
     }
@@ -1194,25 +1222,27 @@ export class OpenSourceService {
       buttons.push(buttonOptions);
     });
 
+    if (buttons.length === 1) {
+      buttons[0].handler();
+      return;
+    }
+
     buttons.forEach(button => {
       if (!button.icon) {
         button.icon = 'arrow-dropright';
       }
     });
 
-    if (buttons.length === 1) {
-      buttons[0].handler();
-      return;
-    }
 
     const actionSheet = await this.actionSheetController.create({
       header: this.translateService.instant('actionSheets.open-source.openTitle'),
       buttons: buttons
     });
 
+    this.setImages();
+
     await actionSheet.present();
 
-    this.setImages();
 
     const copyEl = document.querySelector('.action-sheet-copy-url');
     if (!copyEl) {

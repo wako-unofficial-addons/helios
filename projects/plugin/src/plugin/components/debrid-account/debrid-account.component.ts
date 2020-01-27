@@ -20,6 +20,7 @@ export class DebridAccountComponent implements OnInit {
   isPremiumizeLogged = false;
   isLoadingPremiumize = false;
   preferTranscoded = false;
+  preferTranscodedFilesChromecast = false;
 
   isPremiumizeEnabled = true;
   isRealDebridEnabled = true;
@@ -43,6 +44,7 @@ export class DebridAccountComponent implements OnInit {
       this.isPremiumizeLogged = !!settings;
       console.log('this.isPremiumizeLogged', this.isPremiumizeLogged);
       this.preferTranscoded = settings ? settings.preferTranscodedFiles : false;
+      this.preferTranscodedFilesChromecast = settings ? settings.preferTranscodedFilesChromecast : false;
       this.isPremiumizeEnabled = settings ? settings.disabled !== true : false;
       PremiumizeApiService.setApiKey(settings ? settings.apiKey : null);
     });
@@ -101,7 +103,8 @@ export class DebridAccountComponent implements OnInit {
                       settings = {
                         disabled: false,
                         apiKey: '',
-                        preferTranscodedFiles: this.preferTranscoded
+                        preferTranscodedFiles: this.preferTranscoded,
+                        preferTranscodedFilesChromecast: this.preferTranscodedFilesChromecast
                       };
                     }
                     settings.apiKey = data.apikey;
@@ -132,6 +135,19 @@ export class DebridAccountComponent implements OnInit {
         return;
       }
       settings.preferTranscodedFiles = enabled;
+
+      this.debridAccountService.setPremiumizeSettings(settings).then(() => {
+        this.ngOnInit();
+      });
+    });
+  }
+
+  togglePreferTranscodedChromecast(enabled: boolean) {
+    this.debridAccountService.getPremiumizeSettings().then(settings => {
+      if (!settings) {
+        return;
+      }
+      settings.preferTranscodedFilesChromecast = enabled;
 
       this.debridAccountService.setPremiumizeSettings(settings).then(() => {
         this.ngOnInit();

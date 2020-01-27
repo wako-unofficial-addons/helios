@@ -98,6 +98,7 @@
         "premiumize": {
           "explain": "Premiumize.me is an unrestricted downloader (and more) that allows you to quickly download files hosted on the internet.<br><br>Moreover Premiumize let you test their service for free (you can play one file with a maximum filesize of 5 GB every 120 minutes)",
           "preferTranscoded": "Prefer transcoded files",
+          "preferTranscodedFilesChromecast": "Prefer transcoded files for Chromecast",
           "noAccount": "No Premiumize account? Click here"
         }
       }
