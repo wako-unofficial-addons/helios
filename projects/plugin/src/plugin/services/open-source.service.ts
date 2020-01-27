@@ -1069,7 +1069,7 @@ export class OpenSourceService {
 
             getTranscoded = true;
           }
-          this.cast(preferTranscodedFilesChromecast && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url, kodiOpenMedia, null, null, videoUrl2);
+          this.cast(videoUrl1, kodiOpenMedia, null, null, videoUrl2);
           playVideo = true;
           break;
 
