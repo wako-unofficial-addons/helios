@@ -6,7 +6,8 @@ declare const Keyboard: any;
   selector: '[wkHideKeyboardEnter]'
 })
 export class HideKeyboardEnterDirective {
-  constructor( private element: ElementRef) {}
+  constructor(private element: ElementRef) {
+  }
 
   @HostListener('keypress.enter')
   keyPressEnter() {
@@ -21,7 +22,9 @@ export class HideKeyboardEnterDirective {
   }
 
   private hideKeyboard() {
-    Keyboard.hide();
+    if (Keyboard && Keyboard.hide) {
+      Keyboard.hide();
+    }
     if (this.element) {
       this.element.nativeElement.querySelector('input').blur();
     }

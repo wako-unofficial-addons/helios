@@ -1,9 +1,8 @@
 <ion-toolbar>
   <ion-searchbar
     wkHideKeyboardEnter
-    (ionChange)="onSearch($event)"
+    (keypress)="onSearch($event)"
     [value]="searchInput"
-    debounce="1000"
     [placeholder]="'modals.search-manual.search' | translate"
     mode="ios"
     [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
@@ -20,4 +19,4 @@
   </ion-item>
 </ion-toolbar>
 
-<wk-source-list [manualSearchCategory]="category" [manualSearchValue]="searchInput" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
+<wk-source-list [manualSearchCategory]="category" [manualSearchValue]="searchInput" [kodiOpenMedia]="kodiOpenMedia" [searchOnOpen]="searchOnOpen"></wk-source-list>

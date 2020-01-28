@@ -15,9 +15,16 @@ export class PluginDetailComponent {
   @Input()
   kodiOpenMedia: KodiOpenMedia;
 
-  constructor() {}
+  @Input()
+  searchOnOpen = false;
+
+  constructor() {
+  }
 
   onSearch(event: any) {
-    this.searchInput = event.target.value ? event.target.value : '';
+    console.log('HELIOS', event, event.key.toLowerCase().match('enter'));
+    if (event.key.toLowerCase().match('enter')) {
+      this.searchInput = event.target.value ? event.target.value : '';
+    }
   }
 }

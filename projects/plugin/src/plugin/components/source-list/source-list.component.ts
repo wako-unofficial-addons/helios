@@ -38,6 +38,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   kodiOpenMedia: KodiOpenMedia;
 
+  @Input()
+  searchOnOpen = true;
+
   totalStreamLinkSource = 0;
   totalTorrentSource = 0;
 
@@ -99,7 +102,10 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.ready = true;
 
-    this.search();
+    if (this.searchOnOpen) {
+      this.search();
+    }
+    this.searchOnOpen = true;
   }
 
   ngOnDestroy() {
