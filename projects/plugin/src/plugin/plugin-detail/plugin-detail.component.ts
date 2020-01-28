@@ -22,7 +22,6 @@ export class PluginDetailComponent {
   }
 
   onSearch(event: any) {
-    console.log('HELIOS', event, event.key.toLowerCase().match('enter'));
     if (event.key.toLowerCase().match('enter')) {
       this.searchInput = event.target.value ? event.target.value : '';
     }
