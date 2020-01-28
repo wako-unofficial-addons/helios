@@ -1,10 +1,13 @@
 import { RealDebridApiService } from '../../services/real-debrid-api.service';
 import { RealDebridTorrentsInstantAvailabilityDto } from '../../dtos/torrents/real-debrid-torrents-instant-availability.dto';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export class RealDebridTorrentsInstantAvailabilityForm {
   static submit(hashList: string[]) {
+    if (hashList.length === 0) {
+      return of(null);
+    }
 
     const allGroups = [];
     let hashGroup = [];
