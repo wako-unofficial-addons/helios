@@ -27,8 +27,8 @@ export class TorrentGetUrlQuery {
           return null;
         }
 
-        if (_html.match(/(href=["]+magnet[^"]+)/)) {
-          return _html.match(/(href=["]+magnet[^"]+)/).shift();
+        if (_html.match(/href=["|']?(magnet[^"|']+)/)) {
+          return _html.match(/href=["|']?(magnet[^"|']+)/)[1];
         }
         if (_html.match(/http(.*?).torrent["\']/)) {
           return _html.match(/http(.*?).torrent["\']/).shift();
