@@ -2,6 +2,7 @@
   <ion-searchbar
     wkHideKeyboardEnter
     (keypress)="onSearch($event)"
+    (ionCancel)="searchInput = ''"
     [value]="searchInput"
     [placeholder]="'modals.search-manual.search' | translate"
     mode="ios"
