@@ -674,7 +674,12 @@ export class OpenSourceService {
     RealDebridCacheUrlCommand.handle(url)
       .pipe(
         catchError(err => {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err });
+          let error = err;
+          if (err.response) {
+            error = err.response;
+          }
+
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: JSON.stringify(error) });
           return EMPTY;
         }),
         finalize(() => loader.dismiss())
@@ -684,6 +689,7 @@ export class OpenSourceService {
           this.toastService.simpleMessage('toasts.open-source.addedToRD');
         },
         err => {
+          debugger;
           this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err.toString() });
         }
       );
