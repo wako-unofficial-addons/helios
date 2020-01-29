@@ -28,7 +28,7 @@ export class PremiumizeSourcesFromTorrentsQuery {
   }
 
   private static getShortMagnet(url: string) {
-    if (url.match('magnet')) {
+    if (url && url.match('magnet')) {
       const splits = url.split('&');
       if (splits.length > 1) {
         return splits[0] + '&' + splits[1];

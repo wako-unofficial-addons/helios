@@ -504,11 +504,6 @@ export abstract class TorrentsFromProviderBaseQuery {
                   size: 0
                 };
 
-                if (!torrent.url && torrent.subPageUrl) {
-                  torrent.url = torrent.subPageUrl;
-                  torrent.subPageUrl = null;
-                }
-
                 if (!torrent.url && !torrent.subPageUrl) {
                   return;
                 }
@@ -547,10 +542,6 @@ export abstract class TorrentsFromProviderBaseQuery {
             quality: SourceUtils.getQuality(quality)
           };
 
-          if (!torrent.url && torrent.subPageUrl) {
-            torrent.url = torrent.subPageUrl;
-            torrent.subPageUrl = null;
-          }
 
           if (!torrent.url && !torrent.subPageUrl) {
             return;
@@ -602,11 +593,6 @@ export abstract class TorrentsFromProviderBaseQuery {
             quality: SourceUtils.getQuality(title),
             size: 0
           };
-
-          if (!torrent.url && torrent.subPageUrl) {
-            torrent.url = torrent.subPageUrl;
-            torrent.subPageUrl = null;
-          }
 
           if (!torrent.url && !torrent.subPageUrl) {
             return;

@@ -958,10 +958,14 @@ export class OpenSourceService {
       const torrent = source as TorrentSource;
       switch (action) {
         case 'add-to-pm':
-          this.addToPM(torrent.url);
+          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(url => {
+            this.addToPM(url);
+          });
           break;
         case 'add-to-rd':
-          this.addToRD(torrent.url);
+          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(url => {
+            this.addToRD(url);
+          });
           break;
         case 'open-elementum':
           this.openElementum(torrent, kodiOpenMedia);
