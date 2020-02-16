@@ -2,7 +2,7 @@
   <ion-ripple-effect></ion-ripple-effect>
   <p class="title">
     {{ source.title }}
-    <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy"></ion-icon>
+    <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy-outline"></ion-icon>
     <br/>
   </p>
   <p>
@@ -14,7 +14,7 @@
 
           <ion-badge *ngIf="source.size !== null" color="light"> {{ source.size | bsFileSize }}</ion-badge>
           <ion-badge *ngIf="source.size === null" color="warning"> ? MB</ion-badge>
-          <ion-icon *ngIf="source.isPackage" name="cube" class="ion-margin-start"></ion-icon>
+          <ion-icon *ngIf="source.isPackage" name="cube-outline" class="ion-margin-start"></ion-icon>
         </ion-col>
 
 

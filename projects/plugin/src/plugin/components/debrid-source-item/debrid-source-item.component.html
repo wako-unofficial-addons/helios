@@ -3,7 +3,7 @@
     <ion-ripple-effect></ion-ripple-effect>
     <p class="title">
       {{ source.title }}
-      <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy"></ion-icon>
+      <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy-outline"></ion-icon>
       <br/>
     </p>
     <p>
@@ -13,7 +13,7 @@
             <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality}}</ion-badge>
 
             <ion-badge color="light"> {{ source.size | bsFileSize }}</ion-badge>
-            <ion-icon *ngIf="source.isPackage" name="cube" class="ion-margin-start"></ion-icon>
+            <ion-icon *ngIf="source.isPackage" name="cube-outline" class="ion-margin-start"></ion-icon>
           </ion-col>
 
 
@@ -32,6 +32,6 @@
   </div>
   <div class="ion-activatable more" (click)="more()">
     <ion-ripple-effect></ion-ripple-effect>
-    <ion-icon name="more"></ion-icon>
+    <ion-icon name="ellipsis-vertical-outline"></ion-icon>
   </div>
 </div>

@@ -12,7 +12,7 @@
     </ion-item>
     <ion-item-options side="end">
       <ion-item-option color="danger" (click)="deleteProvider(providerUrl)">
-        <ion-icon slot="icon-only" name="trash"></ion-icon>
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
       </ion-item-option>
     </ion-item-options>
   </ion-item-sliding>
@@ -24,7 +24,7 @@
 <ion-list lines="full" *ngIf="providerArray.length > 0">
   <ion-list-header>
     <ion-label>
-      <ion-icon name="list" slot="start"></ion-icon>
+      <ion-icon name="list-outline" slot="start"></ion-icon>
       {{ 'pages.providers.providerList.header' | translate }}
     </ion-label>
   </ion-list-header>
