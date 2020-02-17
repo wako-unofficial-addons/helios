@@ -80,8 +80,7 @@ export class OpenSourceService {
     let actions = action === 'default' ? [settings.defaultPlayButtonAction] : settings.availablePlayButtonActions;
 
     if (actions.length === 1 && actions[0].length === 0) { // Let me choose
-      const _settings = new Settings(this.platform.is('android'));
-      actions = _settings.availablePlayButtonActions;
+      actions = settings.availablePlayButtonActions;
     }
 
     loader.present();
