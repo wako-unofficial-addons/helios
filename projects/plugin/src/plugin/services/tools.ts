@@ -424,3 +424,22 @@ export function episodeFoundInStreamLinks(streamLinks: StreamLink[], sourceQuery
 
   return currentEpisodeFound;
 }
+
+
+export function setKodiOpenMediaLang(kodiOpenMedia: KodiOpenMedia, lang: string) {
+  if (kodiOpenMedia.titleLang === lang) {
+    return kodiOpenMedia;
+  }
+
+  if (kodiOpenMedia.movie && kodiOpenMedia.movie.alternativeTitles && kodiOpenMedia.movie.alternativeTitles[lang]) {
+    kodiOpenMedia.movie.title = kodiOpenMedia.movie.alternativeTitles[lang];
+  }
+
+  if (kodiOpenMedia.show && kodiOpenMedia.show.alternativeTitles && kodiOpenMedia.show.alternativeTitles[lang]) {
+    kodiOpenMedia.show.title = kodiOpenMedia.show.alternativeTitles[lang];
+  }
+
+  kodiOpenMedia.titleLang = lang;
+
+  return kodiOpenMedia;
+}

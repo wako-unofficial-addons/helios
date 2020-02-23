@@ -1,8 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
+import { ActionSheetController, ModalController } from '@ionic/angular';
 import { KodiOpenMedia } from '../../entities/kodi-open-media';
 import { SourceQuery } from '../../entities/source-query';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
+import { TranslateService } from '@ngx-translate/core';
+import { countryCodeToEmoji, setKodiOpenMediaLang } from '../../services/tools';
 
 @Component({
   templateUrl: './search-source.component.html'
@@ -17,7 +19,10 @@ export class SearchSourceComponent implements OnInit {
   manualSearchValue: string;
   manualSearch = false;
 
-  constructor(private modalCtrl: ModalController) {
+  lang: string;
+  showContent = true;
+
+  constructor(private modalCtrl: ModalController, private actionSheetController: ActionSheetController, private translateService: TranslateService, private ngZone: NgZone) {
   }
 
   async ngOnInit() {
@@ -25,7 +30,13 @@ export class SearchSourceComponent implements OnInit {
       return;
     }
 
+    this.lang = this.kodiOpenMedia.titleLang;
 
+    this.setProperties();
+
+  }
+
+  private async setProperties() {
     this.manualSearchValue = '';
 
     if (this.kodiOpenMedia.movie || this.kodiOpenMedia.episode) {
@@ -34,16 +45,81 @@ export class SearchSourceComponent implements OnInit {
         this.title = this.sourceQuery.movie.title + ' ' + (this.sourceQuery.movie.year || '');
         this.manualSearchValue = this.title;
       } else if (this.sourceQuery.episode.isAnime) {
-        this.title = `${this.sourceQuery.episode.episodeCode} (${this.sourceQuery.episode.absoluteNumber}) - ${this.sourceQuery.episode.title}`
+        this.title = `${this.sourceQuery.episode.episodeCode} (${this.sourceQuery.episode.absoluteNumber}) - ${this.sourceQuery.episode.title}`;
         this.manualSearchValue = this.sourceQuery.episode.title + ' ' + this.sourceQuery.episode.absoluteNumber;
       } else {
-        this.title = `${this.sourceQuery.episode.episodeCode} - ${this.sourceQuery.episode.title}`
+        this.title = `${this.sourceQuery.episode.episodeCode} - ${this.sourceQuery.episode.title}`;
         this.manualSearchValue = this.sourceQuery.episode.title + ' ' + this.sourceQuery.episode.episodeCode;
       }
     }
-
   }
 
+  async selectLang() {
+    const buttons = [];
+
+    let titles = {};
+
+    if (this.kodiOpenMedia.movie) {
+      titles = this.kodiOpenMedia.movie.alternativeTitles;
+    }
+
+    if (this.kodiOpenMedia.show) {
+      titles = this.kodiOpenMedia.show.alternativeTitles;
+    }
+
+
+    Object.keys(titles).forEach(lang => {
+      if (lang === 'original') {
+        buttons.unshift({
+          text: 'Original - ' + titles[lang],
+          handler: () => {
+            this.setLang(lang);
+          }
+        });
+        return;
+      }
+
+      const flag = countryCodeToEmoji(lang === 'en' ? 'us' : lang);
+      buttons.push({
+        text: flag + ' - ' + titles[lang],
+        handler: () => {
+          this.setLang(lang);
+        }
+      });
+    });
+
+    buttons.push({
+      text: this.translateService.instant('shared.cancel'),
+      icon: 'close',
+      role: 'cancel',
+      handler: () => {
+        console.log('Cancel clicked');
+      }
+    });
+
+    const action = await this.actionSheetController.create({
+      header: this.translateService.instant('actionSheets.search-source.selectTitle'),
+      buttons: buttons
+    });
+
+
+    action.present();
+  }
+
+
+  private async setLang(lang: string) {
+    this.ngZone.run(() => {
+      this.kodiOpenMedia = setKodiOpenMediaLang(this.kodiOpenMedia, lang);
+      this.showContent = false;
+
+      this.setProperties();
+
+      setTimeout(async () => {
+        this.showContent = true;
+      }, 100);
+    });
+
+  }
 
   dismiss() {
     this.modalCtrl.dismiss();

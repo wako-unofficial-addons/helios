@@ -7,6 +7,9 @@
       {{ 'modals.search-source.manual'|translate }}
     </ion-title>
     <ion-buttons slot="secondary">
+      <ion-button (click)="selectLang()">
+        <ion-icon name="flag-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="manualSearch = !manualSearch">
         <ion-icon slot="icon-only" [name]="!manualSearch ? 'search-outline' : 'list-outline'"></ion-icon>
       </ion-button>
@@ -15,14 +18,16 @@
 </ion-header>
 
 <ion-content>
-  <wk-source-list *ngIf="!manualSearch" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
-  <helios-plugin-detail
-    *ngIf="manualSearch"
-    [searchInput]="manualSearchValue"
-    [category]="sourceQuery.category"
-    [kodiOpenMedia]="kodiOpenMedia"
-    [searchOnOpen]="false"
-  ></helios-plugin-detail>
+  <ng-container *ngIf="showContent">
+    <wk-source-list *ngIf="!manualSearch" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
+    <helios-plugin-detail
+      *ngIf="manualSearch"
+      [searchInput]="manualSearchValue"
+      [category]="sourceQuery.category"
+      [kodiOpenMedia]="kodiOpenMedia"
+      [searchOnOpen]="false"
+    ></helios-plugin-detail>
+  </ng-container>
 </ion-content>
 
 <ion-footer>

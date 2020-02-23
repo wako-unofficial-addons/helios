@@ -167,6 +167,9 @@
       "selectLink": {
         "openTitle": "This source has multiple links, which one you want to open?"
       }
+    },
+    "search-source": {
+      "selectTitle": "Select title"
     }
   },
   "alerts": {

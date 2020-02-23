@@ -102,6 +102,8 @@ export class Settings {
     minSize: 0
   };
 
+  defaultTitleLang = 'en';
+
   constructor(isAndroid: boolean) {
     this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0);
   }

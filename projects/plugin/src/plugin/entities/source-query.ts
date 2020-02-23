@@ -4,6 +4,7 @@ export class SourceMovieQuery {
   tmdbId: number;
   year: number;
   title: string;
+  defaultTitleLang: string;
   alternativeTitles?: { [key: string]: string };
   originalTitle?: string;
 }

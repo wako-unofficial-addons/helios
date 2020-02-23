@@ -8,7 +8,7 @@ import { SearchSourceComponent } from '../components/search-source/search-source
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { OpenSourceService } from '../services/open-source.service';
 import { ProviderService } from '../services/provider.service';
-import { logData } from '../services/tools';
+import { logData, setKodiOpenMediaLang } from '../services/tools';
 import { NEVER } from 'rxjs';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
@@ -47,14 +47,55 @@ export class OpenButtonComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.setKodiOpenMedia();
+  }
+
+  private async setKodiOpenMedia() {
     this.settings = await this.settingsService.get();
 
-    this.kodiOpenMedia = {
+    // TODO Handle language
+
+    const traktDefaultTitleLang = 'en';
+
+    const userTitleLang = this.settings.defaultTitleLang || traktDefaultTitleLang;
+
+    const kodiOpenMedia = {
       movie: this.movie,
       show: this.show,
-      episode: this.episode
-    };
+      episode: this.episode,
+      titleLang: traktDefaultTitleLang
+    } as KodiOpenMedia;
 
+    const kodiOpenMediaCopy = JSON.parse(JSON.stringify(kodiOpenMedia)) as KodiOpenMedia;
+
+    if (kodiOpenMediaCopy.movie) {
+      const defaultTitle = kodiOpenMediaCopy.movie.title;
+      if (!kodiOpenMediaCopy.movie.alternativeTitles) {
+        kodiOpenMediaCopy.movie.alternativeTitles = {};
+      }
+      if (!kodiOpenMediaCopy.movie.alternativeTitles['original']) {
+        kodiOpenMediaCopy.movie.alternativeTitles['original'] = defaultTitle;
+      }
+      if (!kodiOpenMediaCopy.movie.alternativeTitles[traktDefaultTitleLang]) {
+        kodiOpenMediaCopy.movie.alternativeTitles[traktDefaultTitleLang] = defaultTitle;
+      }
+    }
+
+    if (kodiOpenMediaCopy.show) {
+      const defaultTitle = kodiOpenMediaCopy.show.title;
+      if (!kodiOpenMediaCopy.show.alternativeTitles) {
+        kodiOpenMediaCopy.show.alternativeTitles = {};
+      }
+
+      if (!kodiOpenMediaCopy.show.alternativeTitles['original']) {
+        kodiOpenMediaCopy.show.alternativeTitles['original'] = defaultTitle;
+      }
+      if (!kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang]) {
+        kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang] = defaultTitle;
+      }
+    }
+
+    this.kodiOpenMedia = setKodiOpenMediaLang(kodiOpenMediaCopy, userTitleLang);
 
   }
 

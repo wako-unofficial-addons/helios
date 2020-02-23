@@ -1118,7 +1118,8 @@ export class OpenSourceService {
       kodiOpenMedia = {
         movie: playlistVideo.customData.movie,
         show: playlistVideo.customData.show,
-        episode: playlistVideo.customData.episode
+        episode: playlistVideo.customData.episode,
+        titleLang: playlistVideo.customData.titleLang
       };
     }
 
