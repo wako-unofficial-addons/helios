@@ -74,7 +74,7 @@ export class OpenButtonComponent implements OnInit {
         kodiOpenMediaCopy.movie.alternativeTitles = {};
       }
       if (!kodiOpenMediaCopy.movie.alternativeTitles['original']) {
-        kodiOpenMediaCopy.movie.alternativeTitles['original'] = defaultTitle;
+        kodiOpenMediaCopy.movie.alternativeTitles['original'] = kodiOpenMediaCopy.movie.originalTitle;
       }
       if (!kodiOpenMediaCopy.movie.alternativeTitles[traktDefaultTitleLang]) {
         kodiOpenMediaCopy.movie.alternativeTitles[traktDefaultTitleLang] = defaultTitle;
@@ -91,7 +91,7 @@ export class OpenButtonComponent implements OnInit {
         kodiOpenMediaCopy.show.alternativeTitles['original'] = defaultTitle;
       }
       if (!kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang]) {
-        kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang] = defaultTitle;
+        kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang] = kodiOpenMediaCopy.show.originalTitle;
       }
     }
 
