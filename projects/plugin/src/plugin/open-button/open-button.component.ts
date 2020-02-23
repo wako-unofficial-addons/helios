@@ -88,10 +88,10 @@ export class OpenButtonComponent implements OnInit {
       }
 
       if (!kodiOpenMediaCopy.show.alternativeTitles['original']) {
-        kodiOpenMediaCopy.show.alternativeTitles['original'] = defaultTitle;
+        kodiOpenMediaCopy.show.alternativeTitles['original'] = kodiOpenMediaCopy.show.originalTitle;
       }
       if (!kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang]) {
-        kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang] = kodiOpenMediaCopy.show.originalTitle;
+        kodiOpenMediaCopy.show.alternativeTitles[traktDefaultTitleLang] = defaultTitle;
       }
     }
 
