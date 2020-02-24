@@ -55,7 +55,7 @@ export class OpenButtonComponent implements OnInit {
 
     // TODO Handle language
 
-    const traktDefaultTitleLang = 'en';
+    const traktDefaultTitleLang = 'us';
 
     const userTitleLang = this.settings.defaultTitleLang || traktDefaultTitleLang;
 
