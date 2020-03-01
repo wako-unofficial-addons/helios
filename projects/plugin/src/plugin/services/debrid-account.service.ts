@@ -10,6 +10,7 @@ import { RealDebridOauthTokenForm } from './real-debrid/forms/oauth/real-debrid-
 import { RealDebridOauthCodeDto } from './real-debrid/dtos/oauth/real-debrid-oauth-code.dto';
 import { RealDebridOauthCredentialsForm } from './real-debrid/forms/oauth/real-debrid-oauth-credentials.form';
 import { WakoHttpError } from '@wako-app/mobile-sdk';
+import { AllDebridApiService } from './all-debrid/services/all-debrid-api.service';
 
 export const REAL_DEBRID_CLIENT_ID = 'X245A4XAIBGVM';
 
@@ -44,16 +45,27 @@ export class DebridAccountService {
     }
 
     RealDebridApiService.handle401 = this.realDebridRefreshToken();
+
+    const allDebridSettings = await this.getAllDebridSettings();
+    if (allDebridSettings && allDebridSettings.disabled !== true) {
+      AllDebridApiService.setApiKey(allDebridSettings.apiKey);
+      AllDebridApiService.setName(allDebridSettings.name);
+    }
+
+
   }
 
   async hasAtLeastOneAccount() {
     const premiumizeSettings = await this.getPremiumizeSettings();
     const realDebridSettings = await this.getRealDebridSettings();
+    const alllDebridSettings = await this.getAllDebridSettings();
 
     let has = false;
     if (premiumizeSettings && premiumizeSettings.disabled !== true) {
       has = true;
     } else if (realDebridSettings && realDebridSettings.disabled !== true) {
+      has = true;
+    } else if (alllDebridSettings && alllDebridSettings.disabled !== true) {
       has = true;
     }
 
@@ -196,6 +208,30 @@ export class DebridAccountService {
       }, data.interval * 1000);
     });
   }
+
+  //
+  //
+  // ALL DEBRID
+  //
+  //
+
+  getAllDebridSettings(): Promise<AllDebridSettings> {
+    return this.storage.get('alldebrid_settings');
+  }
+
+  setAllDebridSettings(settings: AllDebridSettings) {
+    return this.storage.set('alldebrid_settings', settings).then(d => {
+      this.hasAtLeastOneAccount();
+      return d;
+    });
+  }
+
+  deleteAllDebridSettings() {
+    return this.storage.remove('alldebrid_settings').then(d => {
+      this.hasAtLeastOneAccount();
+      return d;
+    });
+  }
 }
 
 export interface PremiumizeSettings {
@@ -212,4 +248,10 @@ export interface RealDebridSettings {
   refresh_token: string;
   expires_in: number;
   client_secret: string;
+}
+
+export interface AllDebridSettings {
+  disabled: boolean;
+  apiKey: string;
+  name: string;
 }

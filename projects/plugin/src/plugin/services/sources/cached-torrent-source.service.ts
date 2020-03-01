@@ -1,23 +1,25 @@
 import { Injectable } from '@angular/core';
 import { SourceQuery } from '../../entities/source-query';
-import { RealDebridSourcesFromTorrentsQuery } from '../../queries/debrids/real-debrid-sources-from-torrents.query';
+import { RealDebridSourcesFromTorrentsQuery } from '../../queries/debrids/real-debrid/real-debrid-sources-from-torrents.query';
 import { catchError, concatMap, last, map, switchMap } from 'rxjs/operators';
-import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiumize-sources-from-torrents.query';
+import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiumize/premiumize-sources-from-torrents.query';
 import { TorrentSource } from '../../entities/torrent-source';
 import { from, Observable, of } from 'rxjs';
 import {
   episodeFoundInStreamLinks,
   getScoreMatchingName,
   getSourcesByQuality,
-  isEpisodeCodeMatchesFileName, removeDuplicates,
+  removeDuplicates,
   sortTorrentsByPackage,
   sortTorrentsBySize
 } from '../tools';
 import { PremiumizeAccountInfoForm } from '../premiumize/forms/account/premiumize-account-info.form';
 import { StreamLink, StreamLinkSource } from '../../entities/stream-link-source';
-import { PremiumizeGetStreamLinkQuery } from '../../queries/debrids/premiumize-get-stream-link.query';
-import { RealDebridGetStreamLinkQuery } from '../../queries/debrids/real-debrid-get-stream-link.query';
+import { PremiumizeGetStreamLinkQuery } from '../../queries/debrids/premiumize/premiumize-get-stream-link.query';
+import { RealDebridGetStreamLinkQuery } from '../../queries/debrids/real-debrid/real-debrid-get-stream-link.query';
 import { LastPlayedSource } from '../../entities/last-played-source';
+import { AllDebridSourcesFromTorrentsQuery } from '../../queries/debrids/all-debrid/all-debrid-sources-from-torrents.query';
+import { AllDebridGetStreamLinkQuery } from '../../queries/debrids/all-debrid/all-debrid-get-stream-link.query';
 
 @Injectable()
 export class CachedTorrentSourceService {
@@ -28,8 +30,12 @@ export class CachedTorrentSourceService {
     return PremiumizeSourcesFromTorrentsQuery.getData(torrents).pipe(
       switchMap(pmSources => {
         return RealDebridSourcesFromTorrentsQuery.getData(torrents, sourceQuery).pipe(
-          map(rdSources => {
-            return rdSources.concat(...pmSources);
+          switchMap(rdSources => {
+            return AllDebridSourcesFromTorrentsQuery.getData(torrents).pipe(
+              map(adSources => {
+                return adSources.concat(...pmSources, ...rdSources);
+              })
+            );
           })
         );
       })
@@ -46,6 +52,8 @@ export class CachedTorrentSourceService {
       obs = PremiumizeGetStreamLinkQuery.getData(source, sourceQuery);
     } else if (source.realDebridLinks) {
       obs = RealDebridGetStreamLinkQuery.getData(source, sourceQuery);
+    } else if (source.allDebridMagnetStatusMagnet) {
+      obs = AllDebridGetStreamLinkQuery.getData(source, sourceQuery);
     }
     return obs;
   }

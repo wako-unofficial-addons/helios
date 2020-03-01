@@ -95,6 +95,10 @@
           "explain": "RealDebrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
           "noAccount": "No RealDebrid account? Click here"
         },
+        "allDebrid": {
+          "explain": "All Debrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
+          "noAccount": "No All Debrid account? Click here"
+        },
         "premiumize": {
           "explain": "Premiumize.me is an unrestricted downloader (and more) that allows you to quickly download files hosted on the internet.<br><br>Moreover Premiumize let you test their service for free (you can play one file with a maximum filesize of 5 GB every 120 minutes)",
           "preferTranscoded": "Prefer transcoded files",
@@ -131,6 +135,9 @@
     "real-debrid": {
       "failedToLogin": "Failed to login"
     },
+    "all-debrid": {
+      "invalidCredentials": "Invalid credentials"
+    },
     "copyToClipboard": "{{element}} has been copied to your clipboard",
     "open-source": {
       "cannotRetrieveUrl": "This source is unplayable, cannot retrieve its URL",
@@ -138,6 +145,8 @@
       "failedToAddToPM": "Failed to add the source to your PM account: {{error}}",
       "addedToRD": "Source has been added to you RD account",
       "failedToAddToRD": "Failed to add the source to your RD account: {{error}}",
+      "addedToAD": "Source has been added to you AD account",
+      "failedToAddToAD": "Failed to add the source to your AD account: {{error}}",
       "sourceNotCached": "Failed to retrieved the video URL",
       "permissionDenied": "Permission Denied - Please check you account"
     },

@@ -1,13 +1,13 @@
 import { forkJoin, from, Observable, of, throwError } from 'rxjs';
-import { RealDebridUnrestrictLinkDto } from '../dtos/unrestrict/real-debrid-unrestrict-link.dto';
+import { RealDebridUnrestrictLinkDto } from '../../../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
 import { finalize, map, mapTo, switchMap } from 'rxjs/operators';
-import { RealDebridTorrentsAddMagnetForm } from '../forms/torrents/real-debrid-torrents-add-magnet.form';
-import { RealDebridTorrentsSelectFilesForm } from '../forms/torrents/real-debrid-torrents-select-files.form';
-import { RealDebridTorrentsDeleteForm } from '../forms/torrents/real-debrid-torrents-delete.form';
-import { RealDebridTorrentsInfoForm } from '../forms/torrents/real-debrid-torrents-info.form';
-import { RealDebridUnrestrictLinkForm } from '../forms/unrestrict/real-debrid-unrestrict-link.form';
-import { RealDebridTorrentsAddMagnetDto } from '../dtos/torrents/real-debrid-torrents-add-magnet.dto';
-import { HeliosCacheService } from '../../provider-cache.service';
+import { RealDebridTorrentsAddMagnetForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-add-magnet.form';
+import { RealDebridTorrentsSelectFilesForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-select-files.form';
+import { RealDebridTorrentsDeleteForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-delete.form';
+import { RealDebridTorrentsInfoForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-info.form';
+import { RealDebridUnrestrictLinkForm } from '../../../services/real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
+import { RealDebridTorrentsAddMagnetDto } from '../../../services/real-debrid/dtos/torrents/real-debrid-torrents-add-magnet.dto';
+import { HeliosCacheService } from '../../../services/provider-cache.service';
 
 export class RealDebridGetCachedUrlQuery {
   static getData(url: string, fileId: string, isPackage: boolean): Observable<RealDebridUnrestrictLinkDto[]> {

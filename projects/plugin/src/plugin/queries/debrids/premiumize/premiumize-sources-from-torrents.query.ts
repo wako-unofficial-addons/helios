@@ -1,11 +1,11 @@
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, mapTo } from 'rxjs/operators';
-import { logData } from '../../services/tools';
-import { PremiumizeApiService } from '../../services/premiumize/services/premiumize-api.service';
-import { PremiumizeTransferDirectdlForm } from '../../services/premiumize/forms/transfer/premiumize-transfer-directdl.form';
-import { TorrentSource } from '../../entities/torrent-source';
-import { StreamLinkSource } from '../../entities/stream-link-source';
-import { PremiumizeCacheCheckForm } from '../../services/premiumize/forms/cache/premiumize-cache-check.form';
+import { logData } from '../../../services/tools';
+import { PremiumizeApiService } from '../../../services/premiumize/services/premiumize-api.service';
+import { PremiumizeTransferDirectdlForm } from '../../../services/premiumize/forms/transfer/premiumize-transfer-directdl.form';
+import { TorrentSource } from '../../../entities/torrent-source';
+import { StreamLinkSource } from '../../../entities/stream-link-source';
+import { PremiumizeCacheCheckForm } from '../../../services/premiumize/forms/cache/premiumize-cache-check.form';
 
 export class PremiumizeSourcesFromTorrentsQuery {
   private static hasPremiumize() {
@@ -30,9 +30,7 @@ export class PremiumizeSourcesFromTorrentsQuery {
   private static getShortMagnet(url: string) {
     if (url && url.match('magnet')) {
       const splits = url.split('&');
-      if (splits.length > 1) {
-        return splits[0] + '&' + splits[1];
-      }
+      return splits.shift();
     }
     return null;
   }
@@ -101,7 +99,8 @@ export class PremiumizeSourcesFromTorrentsQuery {
           }
 
           if (isCachedMap.has(hash)) {
-            torrent.isOnPM = true;
+            torrent.isCached = true;
+            torrent.cachedService = 'PM';
 
             const debridSource = new StreamLinkSource(
               'PM-' + torrent.hash,

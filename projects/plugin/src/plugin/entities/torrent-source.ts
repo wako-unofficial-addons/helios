@@ -13,6 +13,6 @@ export interface TorrentSource extends BaseSource {
   subPageUrl?: string;
   isPackage: boolean;
   hash: string;
-  isOnPM: boolean;
-  isOnRD: boolean;
+  isCached: boolean;
+  cachedService?: 'PM' | 'RD' | 'AD';
 }

@@ -1,8 +1,8 @@
-import { SourceQuery } from '../../entities/source-query';
-import { StreamLinkSource } from '../../entities/stream-link-source';
+import { SourceQuery } from '../../../entities/source-query';
+import { StreamLinkSource } from '../../../entities/stream-link-source';
 import { map } from 'rxjs/operators';
-import { Link } from '../../entities/link';
-import { StreamLinksFromLinksQuery } from './stream-links-from-links.query';
+import { Link } from '../../../entities/link';
+import { StreamLinksFromLinksQuery } from '../stream-links-from-links.query';
 
 export class RealDebridGetStreamLinkQuery {
 

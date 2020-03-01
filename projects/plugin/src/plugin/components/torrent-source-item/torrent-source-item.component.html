@@ -33,8 +33,8 @@
           <ion-badge color="dark">{{ source.provider }}</ion-badge>
         </ion-col>
 
-        <ion-col *ngIf="source.isOnPM || source.isOnRD" class="ion-text-right ion-no-margin ion-no-padding">
-          <ion-badge> Cached {{ source.isOnPM ? 'PM ' : '' }} {{ source.isOnRD ? 'RD' : '' }} </ion-badge>
+        <ion-col *ngIf="source.isCached" class="ion-text-right ion-no-margin ion-no-padding">
+          <ion-badge> Cached {{ source.cachedService}} </ion-badge>
         </ion-col>
       </ion-row>
     </ion-grid>

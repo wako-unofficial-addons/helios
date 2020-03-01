@@ -643,8 +643,7 @@ export abstract class TorrentsFromProviderBaseQuery {
       subPageUrl: providerTorrentResult.subPageUrl,
       isPackage: false,
       hash: hash,
-      isOnPM: false,
-      isOnRD: false,
+      isCached: false,
       type: 'torrent'
     };
 

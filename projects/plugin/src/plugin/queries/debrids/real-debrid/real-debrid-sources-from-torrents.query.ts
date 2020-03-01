@@ -1,12 +1,12 @@
 import { of } from 'rxjs';
-import { RealDebridTorrentsInstantAvailabilityForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
+import { RealDebridTorrentsInstantAvailabilityForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { RealDebridGetCachedUrlQuery } from '../../services/real-debrid/queries/real-debrid-get-cached-url.query';
-import { SourceQuery } from '../../entities/source-query';
-import { getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../services/tools';
-import { RealDebridApiService } from '../../services/real-debrid/services/real-debrid-api.service';
-import { TorrentSource } from '../../entities/torrent-source';
-import { StreamLinkSource } from '../../entities/stream-link-source';
+import { RealDebridGetCachedUrlQuery } from './real-debrid-get-cached-url.query';
+import { SourceQuery } from '../../../entities/source-query';
+import { getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../../services/tools';
+import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
+import { TorrentSource } from '../../../entities/torrent-source';
+import { StreamLinkSource } from '../../../entities/stream-link-source';
 
 export class RealDebridSourcesFromTorrentsQuery {
   private static hasRealDebrid() {
@@ -82,7 +82,8 @@ export class RealDebridSourcesFromTorrentsQuery {
             }
           }
 
-          torrent.isOnRD = true;
+          torrent.isCached = true;
+          torrent.cachedService = 'RD';
 
           const debridSource = new StreamLinkSource(
             'RD-' + torrent.hash,

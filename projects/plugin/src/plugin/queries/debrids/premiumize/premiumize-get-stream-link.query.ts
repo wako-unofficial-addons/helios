@@ -1,9 +1,9 @@
-import { SourceQuery } from '../../entities/source-query';
-import { getSupportedMedia } from '../../services/tools';
+import { SourceQuery } from '../../../entities/source-query';
+import { getSupportedMedia } from '../../../services/tools';
 import { map } from 'rxjs/operators';
-import { StreamLinkSource } from '../../entities/stream-link-source';
-import { Link } from '../../entities/link';
-import { StreamLinksFromLinksQuery } from './stream-links-from-links.query';
+import { StreamLinkSource } from '../../../entities/stream-link-source';
+import { Link } from '../../../entities/link';
+import { StreamLinksFromLinksQuery } from '../stream-links-from-links.query';
 
 export class PremiumizeGetStreamLinkQuery {
   static getData(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery) {

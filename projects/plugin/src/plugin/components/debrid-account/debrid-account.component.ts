@@ -10,6 +10,8 @@ import { ProviderService } from '../../services/provider.service';
 import { ClipboardService } from 'ngx-clipboard';
 import { PremiumizeApiService } from '../../services/premiumize/services/premiumize-api.service';
 import { RealDebridApiService } from '../../services/real-debrid/services/real-debrid-api.service';
+import { AllDebridUserForm } from '../../services/all-debrid/forms/user/all-debrid-user.form';
+import { AllDebridApiService } from '../../services/all-debrid/services/all-debrid-api.service';
 
 @Component({
   selector: 'wk-debrid-account',
@@ -17,15 +19,20 @@ import { RealDebridApiService } from '../../services/real-debrid/services/real-d
   styleUrls: ['./debrid-account.component.scss']
 })
 export class DebridAccountComponent implements OnInit {
-  isPremiumizeLogged = false;
+
   isLoadingPremiumize = false;
+  isLoadingAllDebrid = false;
+
   preferTranscoded = false;
   preferTranscodedFilesChromecast = false;
 
   isPremiumizeEnabled = true;
   isRealDebridEnabled = true;
+  isAllDebridEnabled = true;
 
+  isPremiumizeLogged = false;
   isRealDebridLogged = false;
+  isAllDebridLogged = false;
 
   constructor(
     private debridAccountService: DebridAccountService,
@@ -42,7 +49,6 @@ export class DebridAccountComponent implements OnInit {
   ngOnInit() {
     this.debridAccountService.getPremiumizeSettings().then(settings => {
       this.isPremiumizeLogged = !!settings;
-      console.log('this.isPremiumizeLogged', this.isPremiumizeLogged);
       this.preferTranscoded = settings ? settings.preferTranscodedFiles : false;
       this.preferTranscodedFilesChromecast = settings ? settings.preferTranscodedFilesChromecast : false;
       this.isPremiumizeEnabled = settings ? settings.disabled !== true : false;
@@ -53,6 +59,14 @@ export class DebridAccountComponent implements OnInit {
       this.isRealDebridLogged = !!settings;
       this.isRealDebridEnabled = settings ? settings.disabled !== true : false;
       RealDebridApiService.setToken(settings ? settings.access_token : null);
+    });
+
+
+    this.debridAccountService.getAllDebridSettings().then(settings => {
+      this.isAllDebridLogged = !!settings;
+      this.isAllDebridEnabled = settings ? settings.disabled !== true : false;
+      AllDebridApiService.setApiKey(settings ? settings.apiKey : null);
+      AllDebridApiService.setName(settings ? settings.name : null);
     });
   }
 
@@ -254,5 +268,95 @@ export class DebridAccountComponent implements OnInit {
 
   openRealDebrid() {
     this.browserService.open('http://real-debrid.com/?id=4105935');
+  }
+
+  toggleEnabledAD(enabled: any) {
+    this.debridAccountService.getAllDebridSettings().then(settings => {
+      if (!settings) {
+        return;
+      }
+
+      this.debridAccountService.setAllDebridSettings(settings).then(() => {
+        this.ngOnInit();
+      });
+    });
+  }
+
+  logoutAllDebrid() {
+    this.debridAccountService.deleteAllDebridSettings().then(() => {
+      this.ngOnInit();
+    });
+  }
+
+  async loginAllDebrid() {
+    const alert = await this.alertController
+      .create({
+        header: 'Enter your API-Key and Name',
+        subHeader: 'You can generate keys here: https://alldebrid.com/apikeys',
+        inputs: [
+          {
+            name: 'apikey',
+            type: 'text',
+            placeholder: 'API-Key',
+            value: ''
+          },
+          {
+            name: 'name',
+            type: 'text',
+            placeholder: 'Name (i.e. Helios)',
+            value: ''
+          }
+        ],
+        buttons: [
+          {
+            text: this.translateService.instant('alerts.cancelButton'),
+            role: 'cancel',
+            cssClass: 'secondary'
+          },
+          {
+            text: 'Ok',
+            handler: data => {
+              this.isLoadingAllDebrid = true;
+              AllDebridUserForm.submit(data.apikey, data.name)
+                .pipe(finalize(() => (this.isLoadingAllDebrid = false)))
+                .subscribe(res => {
+                  if (res.status === 'error') {
+                    this.toastService.simpleMessage('toasts.all-debrid.invalidCredentials');
+                    return;
+                  }
+                  this.providerService.getAll(false).then(providers => {
+                    if (providers.length === 0) {
+                      this.toastService.simpleMessage('toasts.cloud-account.needToAddProviders', null, 4000);
+                    }
+                  });
+
+                  this.debridAccountService.getAllDebridSettings().then(settings => {
+                    if (!settings) {
+                      settings = {
+                        disabled: false,
+                        apiKey: '',
+                        name: ''
+                      };
+                    }
+                    settings.apiKey = data.apikey;
+                    settings.name = data.name;
+
+                    this.debridAccountService.setAllDebridSettings(settings).then(() => {
+                      this.ngZone.run(() => {
+                        this.ngOnInit();
+                      });
+                    });
+                  });
+                });
+            }
+          }
+        ]
+      });
+
+    alert.present();
+  }
+
+  openAllDebrid() {
+    this.browserService.open('https://alldebrid.com/?uid=2e70s&lang=en');
   }
 }
