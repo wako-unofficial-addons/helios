@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.6.8",
+  "version": "3.6.9",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -18,6 +18,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "3.6.9": "Fix translation",
     "3.6.8": "All Debrid support",
     "3.6.7": "Allow to search for a video's title in another lang than english",
     "3.6.3": "Let me choose option will only display enabled actions",
