@@ -13,6 +13,9 @@
       <ion-button (click)="manualSearch = !manualSearch">
         <ion-icon slot="icon-only" [name]="!manualSearch ? 'search-outline' : 'list-outline'"></ion-icon>
       </ion-button>
+      <ion-button (click)="openFilterPopover($event)">
+        <ion-icon name="funnel-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -26,6 +29,7 @@
       [category]="sourceQuery.category"
       [kodiOpenMedia]="kodiOpenMedia"
       [searchOnOpen]="false"
+      [showSourceFilter]="false"
     ></helios-plugin-detail>
   </ng-container>
 </ion-content>

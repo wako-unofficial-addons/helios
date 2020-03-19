@@ -6,7 +6,7 @@ import { SourceByQuality } from '../../entities/source-by-quality';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceByProvider } from '../../entities/source-by-provider';
 import { StreamLinkSource } from '../../entities/stream-link-source';
-import { getSourcesByQuality, removeDuplicates, sortTorrentsBalanced, sortTorrentsBySize } from '../../services/tools';
+import { getSourcesByQuality, removeDuplicates, sortTorrentsBalanced, sortTorrentsBySize, sortTorrentsBySeeds } from '../../services/tools';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SourceQuery } from '../../entities/source-query';
 import { ProviderService } from '../../services/provider.service';
@@ -18,6 +18,8 @@ import { CloudAccountListComponent } from '../../settings/cloud-account/cloud-ac
 import { ProvidersComponent } from '../../settings/providers/providers.component';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
 import { SourceUtils } from '../../services/source-utils';
+import { SettingsService } from '../../services/settings.service';
+import { Settings } from '../../entities/settings';
 
 @Component({
   selector: 'wk-source-list',
@@ -46,6 +48,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   private streamLinkSourcesByQualityCopy: SourceByQuality<StreamLinkSource>;
   private torrentSourcesByQualityCopy: SourceByQuality<TorrentSource>;
+
+  streamLinkSources: StreamLinkSource[] = [];
+  torrentSources: TorrentSource[] = [];
 
   streamLinkSourcesByQuality: SourceByQuality<StreamLinkSource> = {
     sources2160p: [],
@@ -85,13 +90,15 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   private ready = false;
   searchInput = '';
 
+  settings: Settings;
+
   constructor(
     private sourceService: SourceService,
     private debridAccountService: DebridAccountService,
     private providerService: ProviderService,
-    private modalController: ModalController
-  ) {
-  }
+    private modalController: ModalController,
+    private settingsService: SettingsService
+  ) {}
 
   async ngOnInit() {
     this.hasDebridAccount = await this.debridAccountService.hasAtLeastOneAccount();
@@ -106,6 +113,11 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
       this.search();
     }
     this.searchOnOpen = true;
+
+    this.settingsService.settings$.subscribe(settings => {
+      this.settings = settings;
+      this.filterSources(this.streamLinkSources, this.torrentSources, settings);
+    });
   }
 
   ngOnDestroy() {
@@ -142,6 +154,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
       sourcesOther: []
     };
 
+    this.streamLinkSources = [];
+    this.torrentSources = [];
+
     this.sourceByProviders = [];
 
     this.providerIsLoading = {};
@@ -149,6 +164,8 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.hasProvider = (await this.providerService.getAll(true)).length > 0;
 
     this.stopSearch$.next(true);
+    
+    this.settings = await this.settingsService.get();
 
     this.initialized = true;
 
@@ -179,6 +196,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.providers = await this.providerService.getAll(true, this.sourceQuery.category);
 
+
     this.providers.forEach(provider => {
       this.providerIsLoading[provider.name] = provider;
     });
@@ -199,13 +217,13 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
         delete this.providerIsLoading[sourceByProvider.provider];
 
-        this.setSources(sourceByProvider);
+        this.setSources(sourceByProvider, this.settings);
 
         this.progressBarValue = total / this.providers.length;
       });
   }
 
-  private setSources(sourceByProvider: SourceByProvider) {
+  private setSources(sourceByProvider: SourceByProvider, settings: Settings) {
     const sources = this.sourceByProviders.slice(0);
     sources.push(sourceByProvider);
 
@@ -236,8 +254,27 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     streamLinkSources = removeDuplicates<StreamLinkSource>(streamLinkSources, 'id');
     torrentSources = removeDuplicates<TorrentSource>(torrentSources, 'hash');
 
-    this.streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, sortTorrentsBySize);
-    this.torrentSourcesByQuality = getSourcesByQuality<TorrentSource>(torrentSources, sortTorrentsBalanced);
+    this.filterSources(streamLinkSources, torrentSources, settings);
+  }
+
+  private filterSources(streamLinkSources: StreamLinkSource[], torrentSources: TorrentSource[], settings: Settings) {
+    const streamSortMethod: (source) => void = sortTorrentsBySize;
+    let torrentSortMethod: (source) => void = sortTorrentsBalanced;
+
+    if (settings.sourceFilter.sortTorrentsBy === 'seeds') {
+      torrentSortMethod = sortTorrentsBySeeds;
+    } else if (settings.sourceFilter.sortTorrentsBy === 'size') {
+      torrentSortMethod = sortTorrentsBySize;
+    }
+
+    streamSortMethod(streamLinkSources);
+    torrentSortMethod(torrentSources);
+
+    this.streamLinkSources = streamLinkSources;
+    this.torrentSources = torrentSources;
+
+    this.streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, streamSortMethod);
+    this.torrentSourcesByQuality = getSourcesByQuality<TorrentSource>(torrentSources, torrentSortMethod);
 
     this.streamLinkSourcesByQualityCopy = Object.assign(this.streamLinkSourcesByQuality);
     this.torrentSourcesByQualityCopy = Object.assign(this.torrentSourcesByQuality);

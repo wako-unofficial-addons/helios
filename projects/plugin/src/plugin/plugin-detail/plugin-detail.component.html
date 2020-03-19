@@ -8,6 +8,11 @@
     mode="ios"
     [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
   ></ion-searchbar>
+  <ion-buttons *ngIf="showSourceFilter" slot="end">
+    <ion-button (click)="openFilterPopover($event)">
+      <ion-icon name="funnel-outline"></ion-icon>
+    </ion-button>
+  </ion-buttons>
 </ion-toolbar>
 <ion-toolbar>
   <ion-item>

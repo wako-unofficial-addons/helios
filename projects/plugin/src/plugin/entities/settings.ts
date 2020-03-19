@@ -15,8 +15,7 @@ export declare type PlayButtonAction =
   | 'add-to-ad'
   | 'add-to-playlist'
   | 'open-infuse'
-  | 'cast'
-  ;
+  | 'cast';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -62,6 +61,14 @@ export interface FileSizeFilter {
   minSize: number;
 }
 
+export interface SourceFilter {
+  sortStreamsBy: 'size';
+  sortTorrentsBy: 'balanced' | 'size' | 'seeds';
+  groupStreamsByQuality: boolean;
+  groupTorrentsByQuality: boolean;
+  excludeTags: string[];
+}
+
 export class Settings {
   defaultPlayButtonAction: PlayButtonAction = 'open-kodi';
 
@@ -71,7 +78,7 @@ export class Settings {
     {
       quality: '2160p',
       displayName: '2160p/4k',
-      enabled: true
+      enabled: false
     },
     {
       quality: '1080p',
@@ -107,9 +114,16 @@ export class Settings {
 
   defaultTitleLang = 'en';
 
-  constructor(isAndroid: boolean) {
-    this.availablePlayButtonActions = isAndroid ? PlayButtonActionAndroid.slice(0) : PlayButtonActionIos.slice(0);
+  sourceFilter: SourceFilter = {
+    sortStreamsBy: 'size',
+    sortTorrentsBy: 'balanced',
+    groupStreamsByQuality: true,
+    groupTorrentsByQuality: true,
+    excludeTags: []
+  };
+
+  constructor() {
+    // default actions
+    this.availablePlayButtonActions = ['open-kodi', 'cast', 'open-vlc', 'share-url'];
   }
-
-
 }

@@ -60,12 +60,10 @@
           </ion-card-content>
         </ion-card>
 
-        <div *ngIf="streamLinkSourcesByQuality.sources2160p.length > 0">
-          <ion-list-header>
-            <ion-label> 2160p/4k ({{ streamLinkSourcesByQuality.sources2160p.length }})</ion-label>
-          </ion-list-header>
+
+        <div *ngIf="!settings.sourceFilter.groupStreamsByQuality">
           <wk-debrid-source-item
-            *ngFor="let source of streamLinkSourcesByQuality.sources2160p"
+            *ngFor="let source of streamLinkSources"
             [kodiOpenMedia]="kodiOpenMedia"
             [sourceQuery]="sourceQuery"
             [source]="source"
@@ -73,43 +71,58 @@
           ></wk-debrid-source-item>
         </div>
 
-        <div *ngIf="streamLinkSourcesByQuality.sources1080p.length > 0">
-          <ion-list-header>
-            <ion-label> 1080p ({{ streamLinkSourcesByQuality.sources1080p.length }})</ion-label>
-          </ion-list-header>
-          <wk-debrid-source-item
-            *ngFor="let source of streamLinkSourcesByQuality.sources1080p"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [sourceQuery]="sourceQuery"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-debrid-source-item>
-        </div>
+        <div *ngIf="settings.sourceFilter.groupStreamsByQuality">
+          <div *ngIf="streamLinkSourcesByQuality.sources2160p.length > 0">
+            <ion-list-header>
+              <ion-label> 2160p/4k ({{ streamLinkSourcesByQuality.sources2160p.length }})</ion-label>
+            </ion-list-header>
+            <wk-debrid-source-item
+              *ngFor="let source of streamLinkSourcesByQuality.sources2160p"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [sourceQuery]="sourceQuery"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-debrid-source-item>
+          </div>
 
-        <div *ngIf="streamLinkSourcesByQuality.sources720p.length > 0">
-          <ion-list-header>
-            <ion-label> 720p ({{ streamLinkSourcesByQuality.sources720p.length }})</ion-label>
-          </ion-list-header>
-          <wk-debrid-source-item
-            *ngFor="let source of streamLinkSourcesByQuality.sources720p"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [sourceQuery]="sourceQuery"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-debrid-source-item>
-        </div>
+          <div *ngIf="streamLinkSourcesByQuality.sources1080p.length > 0">
+            <ion-list-header>
+              <ion-label> 1080p ({{ streamLinkSourcesByQuality.sources1080p.length }})</ion-label>
+            </ion-list-header>
+            <wk-debrid-source-item
+              *ngFor="let source of streamLinkSourcesByQuality.sources1080p"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [sourceQuery]="sourceQuery"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-debrid-source-item>
+          </div>
 
-        <div *ngIf="streamLinkSourcesByQuality.sourcesOther.length > 0">
-          <ion-list-header>
-            <ion-label> Other ({{ streamLinkSourcesByQuality.sourcesOther.length }})</ion-label>
-          </ion-list-header>
-          <wk-debrid-source-item
-            *ngFor="let source of streamLinkSourcesByQuality.sourcesOther"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [sourceQuery]="sourceQuery"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-debrid-source-item>
+          <div *ngIf="streamLinkSourcesByQuality.sources720p.length > 0">
+            <ion-list-header>
+              <ion-label> 720p ({{ streamLinkSourcesByQuality.sources720p.length }})</ion-label>
+            </ion-list-header>
+            <wk-debrid-source-item
+              *ngFor="let source of streamLinkSourcesByQuality.sources720p"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [sourceQuery]="sourceQuery"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-debrid-source-item>
+          </div>
+
+          <div *ngIf="streamLinkSourcesByQuality.sourcesOther.length > 0">
+            <ion-list-header>
+              <ion-label> Other ({{ streamLinkSourcesByQuality.sourcesOther.length }})</ion-label>
+            </ion-list-header>
+            <wk-debrid-source-item
+              *ngFor="let source of streamLinkSourcesByQuality.sourcesOther"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [sourceQuery]="sourceQuery"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-debrid-source-item>
+          </div>
         </div>
       </ion-list>
 
@@ -118,52 +131,65 @@
           <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
         </ion-card>
 
-        <div *ngIf="torrentSourcesByQuality.sources2160p.length > 0">
-          <ion-list-header>
-            <ion-label> 2160p/4k ({{ torrentSourcesByQuality.sources2160p.length }})</ion-label>
-          </ion-list-header>
+
+
+        <div *ngIf="!settings.sourceFilter.groupTorrentsByQuality">
           <wk-torrent-source-item
-            *ngFor="let source of torrentSourcesByQuality.sources2160p"
+            *ngFor="let source of torrentSources"
             [kodiOpenMedia]="kodiOpenMedia"
             [source]="source"
             [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
           ></wk-torrent-source-item>
         </div>
 
-        <div *ngIf="torrentSourcesByQuality.sources1080p.length > 0">
-          <ion-list-header>
-            <ion-label> 1080p ({{ torrentSourcesByQuality.sources1080p.length }})</ion-label>
-          </ion-list-header>
-          <wk-torrent-source-item
-            *ngFor="let source of torrentSourcesByQuality.sources1080p"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-torrent-source-item>
-        </div>
+        <div *ngIf="settings.sourceFilter.groupTorrentsByQuality">
+          <div *ngIf="torrentSourcesByQuality.sources2160p.length > 0">
+            <ion-list-header>
+              <ion-label> 2160p/4k ({{ torrentSourcesByQuality.sources2160p.length }})</ion-label>
+            </ion-list-header>
+            <wk-torrent-source-item
+              *ngFor="let source of torrentSourcesByQuality.sources2160p"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-torrent-source-item>
+          </div>
 
-        <div *ngIf="torrentSourcesByQuality.sources720p.length > 0">
-          <ion-list-header>
-            <ion-label> 720p ({{ torrentSourcesByQuality.sources720p.length }})</ion-label>
-          </ion-list-header>
-          <wk-torrent-source-item
-            *ngFor="let source of torrentSourcesByQuality.sources720p"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-torrent-source-item>
-        </div>
+          <div *ngIf="torrentSourcesByQuality.sources1080p.length > 0">
+            <ion-list-header>
+              <ion-label> 1080p ({{ torrentSourcesByQuality.sources1080p.length }})</ion-label>
+            </ion-list-header>
+            <wk-torrent-source-item
+              *ngFor="let source of torrentSourcesByQuality.sources1080p"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-torrent-source-item>
+          </div>
 
-        <div *ngIf="torrentSourcesByQuality.sourcesOther.length > 0">
-          <ion-list-header>
-            <ion-label> Other ({{ torrentSourcesByQuality.sourcesOther.length }})</ion-label>
-          </ion-list-header>
-          <wk-torrent-source-item
-            *ngFor="let source of torrentSourcesByQuality.sourcesOther"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-torrent-source-item>
+          <div *ngIf="torrentSourcesByQuality.sources720p.length > 0">
+            <ion-list-header>
+              <ion-label> 720p ({{ torrentSourcesByQuality.sources720p.length }})</ion-label>
+            </ion-list-header>
+            <wk-torrent-source-item
+              *ngFor="let source of torrentSourcesByQuality.sources720p"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-torrent-source-item>
+          </div>
+
+          <div *ngIf="torrentSourcesByQuality.sourcesOther.length > 0">
+            <ion-list-header>
+              <ion-label> Other ({{ torrentSourcesByQuality.sourcesOther.length }})</ion-label>
+            </ion-list-header>
+            <wk-torrent-source-item
+              *ngFor="let source of torrentSourcesByQuality.sourcesOther"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [source]="source"
+              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
+            ></wk-torrent-source-item>
+          </div>
         </div>
       </ion-list>
 

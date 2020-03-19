@@ -370,7 +370,7 @@ export class SourceService {
   }
 
   private isFastModeEnabled() {
-    if (this.platform.is('android') && device && device['version']) {
+    if (this.platform.is('android') && typeof device !== 'undefined' && device['version']) {
       const deviceVersion = +device['version'];
       if (deviceVersion < 7) {
         return of(false);

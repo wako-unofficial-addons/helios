@@ -1,7 +1,23 @@
-div {
+.row {
+  margin-bottom: 10px;
+  width: 100%;
+  display: inline-flex;
   background-color: var(--ion-color-dark-tint);
-  padding-left: 10px;
-  padding-right: 10px;
+
+
+  .ion-activatable {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .download {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
 
   border-left: 4px solid var(--ion-color-primary-shade);
 
@@ -9,11 +25,8 @@ div {
     border-left-color: var(--ion-color-success-shade);
   }
 
-  margin-left: 17px;
-
   .title {
-    padding-top: 5px;
     font-size: 0.9em;
-    padding-right: 5px;
   }
+
 }

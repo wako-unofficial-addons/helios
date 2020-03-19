@@ -1,10 +1,12 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core';
-import { ActionSheetController, ModalController } from '@ionic/angular';
+import { ActionSheetController, ModalController, PopoverController } from '@ionic/angular';
 import { KodiOpenMedia } from '../../entities/kodi-open-media';
 import { SourceQuery } from '../../entities/source-query';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
 import { TranslateService } from '@ngx-translate/core';
 import { countryCodeToEmoji, setKodiOpenMediaLang } from '../../services/tools';
+import { SourcePopoverFilterComponent } from '../source-popover-filter/source-popover-filter.component';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
   templateUrl: './search-source.component.html'
@@ -22,8 +24,13 @@ export class SearchSourceComponent implements OnInit {
   lang: string;
   showContent = true;
 
-  constructor(private modalCtrl: ModalController, private actionSheetController: ActionSheetController, private translateService: TranslateService, private ngZone: NgZone) {
-  }
+  constructor(
+    private modalCtrl: ModalController,
+    private actionSheetController: ActionSheetController,
+    private translateService: TranslateService,
+    private ngZone: NgZone,
+    private popoverCtrl: PopoverController
+  ) {}
 
   async ngOnInit() {
     if (!this.kodiOpenMedia) {
@@ -33,7 +40,6 @@ export class SearchSourceComponent implements OnInit {
     this.lang = this.kodiOpenMedia.titleLang;
 
     this.setProperties();
-
   }
 
   private async setProperties() {
@@ -66,7 +72,6 @@ export class SearchSourceComponent implements OnInit {
     if (this.kodiOpenMedia.show) {
       titles = this.kodiOpenMedia.show.alternativeTitles;
     }
-
 
     Object.keys(titles).forEach(lang => {
       if (lang === 'original') {
@@ -102,10 +107,8 @@ export class SearchSourceComponent implements OnInit {
       buttons: buttons
     });
 
-
     action.present();
   }
-
 
   private async setLang(lang: string) {
     this.ngZone.run(() => {
@@ -118,7 +121,15 @@ export class SearchSourceComponent implements OnInit {
         this.showContent = true;
       }, 100);
     });
+  }
 
+  async openFilterPopover(event) {
+    const popover = await this.popoverCtrl.create({
+      component: SourcePopoverFilterComponent,
+      event: event
+    });
+
+    await popover.present();
   }
 
   dismiss() {

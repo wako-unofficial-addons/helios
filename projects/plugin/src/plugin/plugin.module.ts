@@ -37,6 +37,7 @@ import { PlayButtonComponent } from './components/play-button/play-button.compon
 import { SupportComponent } from './components/support/support.component';
 import { HeliosPlaylistService } from './services/helios-playlist.service';
 import { FileSizeFilterComponent } from './components/file-size-filter/file-size-filter.component';
+import { SourcePopoverFilterComponent } from './components/source-popover-filter/source-popover-filter.component';
 
 
 const components = [
@@ -58,7 +59,8 @@ const components = [
   DebridAccountComponent,
   PlayButtonComponent,
   SupportComponent,
-  FileSizeFilterComponent
+  FileSizeFilterComponent,
+  SourcePopoverFilterComponent
 ];
 
 const directives = [HideKeyboardEnterDirective];

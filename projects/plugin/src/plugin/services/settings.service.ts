@@ -1,22 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Settings } from '../entities/settings';
-import { Platform } from '@ionic/angular';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class SettingsService {
-
   readonly heliosSettingsKey = 'helios-settings-key';
 
-  constructor(private storage: Storage, private platform: Platform) {
+  settings$ = new Subject<Settings>();
 
-  }
-
+  constructor(private storage: Storage) {}
 
   async get() {
     let settings: Settings = await this.storage.get(this.heliosSettingsKey);
 
-    const defaultSettings = new Settings(this.platform.is('android'));
+    const defaultSettings = new Settings();
     if (!settings) {
       settings = defaultSettings;
     }
@@ -27,11 +25,14 @@ export class SettingsService {
       }
     });
 
-
     return settings;
   }
 
   async set(settings: Settings) {
-    return await this.storage.set(this.heliosSettingsKey, settings);
+    const res = await this.storage.set(this.heliosSettingsKey, settings);
+
+    this.settings$.next(settings);
+
+    return res;
   }
 }

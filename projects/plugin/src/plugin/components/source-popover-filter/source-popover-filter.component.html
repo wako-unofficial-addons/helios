@@ -1,0 +1,52 @@
+<ion-list>
+  <!-- <ion-radio-group [value]="filter.sortStreamsBy">
+    <ion-list-header>
+      <ion-label>Sort Streams By</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>Default</ion-label>
+      <ion-radio slot="start" value="default"></ion-radio>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Size</ion-label>
+      <ion-radio slot="start" value="size"></ion-radio>
+    </ion-item>
+  </ion-radio-group> -->
+  <ion-item>
+    <ion-label class="ion-text-wrap">Group Streams By Quality</ion-label>
+    <ion-toggle [(ngModel)]="filter.groupStreamsByQuality"></ion-toggle>
+  </ion-item>
+
+  <ion-radio-group [(ngModel)]="filter.sortTorrentsBy">
+    <ion-list-header>
+      <ion-label>Sort Torrents By</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>Balanced</ion-label>
+      <ion-radio slot="start" value="balanced"></ion-radio>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Size</ion-label>
+      <ion-radio slot="start" value="size"></ion-radio>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Seeds</ion-label>
+      <ion-radio slot="start" value="seeds"></ion-radio>
+    </ion-item>
+  </ion-radio-group>
+  <ion-item>
+    <ion-label class="ion-text-wrap">Group Torrents By Quality</ion-label>
+    <ion-toggle [(ngModel)]="filter.groupTorrentsByQuality"></ion-toggle>
+  </ion-item>
+
+  <ion-item button (click)="close()">
+    <ion-label>
+      Close
+    </ion-label>
+  </ion-item>
+</ion-list>
