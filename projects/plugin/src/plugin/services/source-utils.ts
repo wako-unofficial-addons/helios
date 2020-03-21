@@ -65,7 +65,7 @@ export class SourceUtils {
   static cleanTitle(title: string, apostropheReplacement: 's' | '' | ' s' = 's') {
     title = title.toLowerCase();
     title = this.stripAccents(title);
-    title = this.stripNonAsciiAndUnprintable(title);
+  //  title = this.stripNonAsciiAndUnprintable(title);
 
     title = title.replace(`\\'s`, apostropheReplacement);
     title = title.replace(`'s`, apostropheReplacement);
