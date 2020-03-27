@@ -17,7 +17,6 @@ import { ModalController } from '@ionic/angular';
 import { CloudAccountListComponent } from '../../settings/cloud-account/cloud-account-list/cloud-account-list.component';
 import { ProvidersComponent } from '../../settings/providers/providers.component';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
-import { SourceUtils } from '../../services/source-utils';
 import { SettingsService } from '../../services/settings.service';
 import { Settings } from '../../entities/settings';
 
@@ -48,6 +47,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   private streamLinkSourcesByQualityCopy: SourceByQuality<StreamLinkSource>;
   private torrentSourcesByQualityCopy: SourceByQuality<TorrentSource>;
+
+  private streamLinkSourcesCopy: StreamLinkSource[] = [];
+  private torrentSourcesCopy: TorrentSource[] = [];
 
   streamLinkSources: StreamLinkSource[] = [];
   torrentSources: TorrentSource[] = [];
@@ -114,7 +116,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.searchOnOpen = true;
 
-    this.settingsService.settings$.subscribe(settings => {
+    this.settingsService.settings$.subscribe((settings) => {
       this.settings = settings;
       this.filterSources(this.streamLinkSources, this.torrentSources, settings);
     });
@@ -164,7 +166,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.hasProvider = (await this.providerService.getAll(true)).length > 0;
 
     this.stopSearch$.next(true);
-    
+
     this.settings = await this.settingsService.get();
 
     this.initialized = true;
@@ -196,8 +198,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.providers = await this.providerService.getAll(true, this.sourceQuery.category);
 
-
-    this.providers.forEach(provider => {
+    this.providers.forEach((provider) => {
       this.providerIsLoading[provider.name] = provider;
     });
 
@@ -212,7 +213,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
           this.totalTimeElapsed = endTime - startTime;
         })
       )
-      .subscribe(sourceByProvider => {
+      .subscribe((sourceByProvider) => {
         total++;
 
         delete this.providerIsLoading[sourceByProvider.provider];
@@ -235,15 +236,15 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     const streamIds = [];
     const torrentIds = [];
 
-    this.sourceByProviders.forEach(sourceByProviders => {
-      sourceByProviders.cachedTorrentDetail.sources.forEach(source => {
+    this.sourceByProviders.forEach((sourceByProviders) => {
+      sourceByProviders.cachedTorrentDetail.sources.forEach((source) => {
         if (!streamIds.includes(source.id)) {
           streamIds.push(source.id);
           streamLinkSources.push(source);
         }
       });
 
-      sourceByProviders.torrentSourceDetail.sources.forEach(source => {
+      sourceByProviders.torrentSourceDetail.sources.forEach((source) => {
         if (!torrentIds.includes(source.id)) {
           torrentIds.push(source.id);
           torrentSources.push(source);
@@ -279,6 +280,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.streamLinkSourcesByQualityCopy = Object.assign(this.streamLinkSourcesByQuality);
     this.torrentSourcesByQualityCopy = Object.assign(this.torrentSourcesByQuality);
 
+    this.streamLinkSourcesCopy = Object.assign(this.streamLinkSources);
+    this.torrentSourcesCopy = Object.assign(this.torrentSources);
+
     this.totalStreamLinkSource = streamLinkSources.length;
     this.totalTorrentSource = torrentSources.length;
 
@@ -288,18 +292,18 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getProviderStatus(name: string) {
-    return this.providers.find(provider => provider.name === name).enabled;
+    return this.providers.find((provider) => provider.name === name).enabled;
   }
 
   async toggleProvider(name: string, enabled: boolean) {
     const providerList = await this.providerService.getProviders();
-    Object.keys(providerList).forEach(key => {
+    Object.keys(providerList).forEach((key) => {
       if (providerList[key].name === name) {
         providerList[key].enabled = enabled;
       }
     });
 
-    this.providers.find(provider => provider.name === name).enabled = enabled;
+    this.providers.find((provider) => provider.name === name).enabled = enabled;
 
     await this.providerService.setProviders(providerList);
   }
@@ -348,29 +352,34 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private filterSearch() {
-    const streamLinkSource: SourceByQuality<StreamLinkSource> = {
+    const streamLinkSourceByQuality: SourceByQuality<StreamLinkSource> = {
       sources2160p: [],
       sources1080p: [],
       sources720p: [],
       sourcesOther: []
     };
 
-    const torrentSource: SourceByQuality<TorrentSource> = {
+    const torrentSourceByQuality: SourceByQuality<TorrentSource> = {
       sources2160p: [],
       sources1080p: [],
       sources720p: [],
       sourcesOther: []
     };
-    this.streamLinkSourcesByQuality = this.getSourcesFiltered<StreamLinkSource>(
-      streamLinkSource,
+
+    this.streamLinkSourcesByQuality = this.getSourcesFilteredByQuality<StreamLinkSource>(
+      streamLinkSourceByQuality,
       this.streamLinkSourcesByQualityCopy,
       this.searchInput
     );
-    this.torrentSourcesByQuality = this.getSourcesFiltered<TorrentSource>(
-      torrentSource,
+
+    this.torrentSourcesByQuality = this.getSourcesFilteredByQuality<TorrentSource>(
+      torrentSourceByQuality,
       this.torrentSourcesByQualityCopy,
       this.searchInput
     );
+
+    this.streamLinkSources = this.getSourcesFiltered<StreamLinkSource>(this.streamLinkSourcesCopy, this.searchInput);
+    this.torrentSources = this.getSourcesFiltered<TorrentSource>(this.torrentSourcesCopy, this.searchInput);
 
     this.resetCounter();
   }
@@ -380,17 +389,30 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.streamLinkSourcesByQuality = Object.assign(this.streamLinkSourcesByQualityCopy);
     this.torrentSourcesByQuality = Object.assign(this.torrentSourcesByQualityCopy);
 
+    this.streamLinkSources = Object.assign(this.streamLinkSourcesCopy);
+    this.torrentSources = Object.assign(this.torrentSourcesCopy);
+
     this.resetCounter();
   }
 
-  private getSourcesFiltered<T>(targets: SourceByQuality<T>, sources: SourceByQuality<T>, filter: string) {
-    Object.keys(targets).forEach(key => {
+  private getSourcesFilteredByQuality<T>(targets: SourceByQuality<T>, sources: SourceByQuality<T>, filter: string) {
+    Object.keys(targets).forEach((key) => {
       if (sources.hasOwnProperty(key)) {
         targets[key] = sources[key].filter((source: StreamLinkSource | TorrentSource) => {
-          return SourceUtils.isWordMatching(source.title + ' ' + source.provider, filter, 0);
+          return this.isMatching(source.title + ' ' + source.provider, filter);
         });
       }
     });
     return targets;
+  }
+
+  private getSourcesFiltered<T>(sources: T[], filter: string) {
+    return sources.filter((source: any) => {
+      return this.isMatching(source.title + ' ' + source.provider, filter);
+    });
+  }
+
+  private isMatching(str: string, filter: string) {
+    return str.toLowerCase().match(filter.toLowerCase()) !== null;
   }
 }

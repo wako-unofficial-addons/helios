@@ -35,7 +35,6 @@
       *ngIf="segment === 'debrid' || segment === 'torrents'"
       (ionChange)="onSearch($event)"
       [value]="searchInput"
-      debounce="1000"
       [placeholder]="'source-list.manualFilter' | translate"
       mode="ios"
       [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
