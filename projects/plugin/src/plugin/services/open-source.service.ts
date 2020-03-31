@@ -54,11 +54,10 @@ export class OpenSourceService {
     private cachedTorrentService: CachedTorrentSourceService,
     private sourceService: SourceService,
     private heliosPlaylistService: HeliosPlaylistService
-  ) {
-  }
+  ) {}
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
-    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
+    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((torrentUrl) => {
       if (!torrentUrl) {
         this.toastService.simpleMessage('toasts.open-source.cannotRetrieveUrl');
         return;
@@ -96,7 +95,7 @@ export class OpenSourceService {
       .getStreamLinks(streamLinkSource, sourceQuery)
       .pipe(finalize(() => loader.dismiss()))
       .subscribe(
-        streamLinks => {
+        (streamLinks) => {
           streamLinkSource.streamLinks = streamLinks;
 
           let selectStreamLinks = sourceQuery.query && streamLinks.length > 1;
@@ -119,7 +118,7 @@ export class OpenSourceService {
             this._openStreamLinkSource(streamLinkSource, actions, kodiOpenMedia);
           }
         },
-        err => {
+        (err) => {
           if (err && err instanceof WakoHttpError) {
             if (err.status === 403) {
               this.toastService.simpleMessage('toasts.open-source.permissionDenied', null, 4000);
@@ -137,7 +136,7 @@ export class OpenSourceService {
 
   private async selectStreamLink(streamLinkSource: StreamLinkSource, actions: PlayButtonAction[], kodiOpenMedia?: KodiOpenMedia) {
     const buttons = [];
-    streamLinkSource.streamLinks.forEach(link => {
+    streamLinkSource.streamLinks.forEach((link) => {
       buttons.push({
         text: link.filename,
         handler: () => {
@@ -157,7 +156,7 @@ export class OpenSourceService {
 
           if (kodiOpenMedia && kodiOpenMedia.episode) {
             let addFromHere = false;
-            streamLinkSource.streamLinks.forEach(l => {
+            streamLinkSource.streamLinks.forEach((l) => {
               if (link.filename === l.filename) {
                 addFromHere = true;
               } else if (addFromHere) {
@@ -276,7 +275,7 @@ export class OpenSourceService {
       return;
     }
 
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       if (!button.icon) {
         button.icon = 'arrow-dropright';
       }
@@ -303,7 +302,7 @@ export class OpenSourceService {
 
     const streamLink = streamLinkSource.streamLinks[0];
 
-    actions.forEach(action => {
+    actions.forEach((action) => {
       if (action.match('elementum')) {
         return;
       }
@@ -424,7 +423,7 @@ export class OpenSourceService {
       return;
     }
 
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       if (!button.icon) {
         button.icon = 'arrow-dropright';
       }
@@ -493,7 +492,7 @@ export class OpenSourceService {
       }
     ];
 
-    data.forEach(d => {
+    data.forEach((d) => {
       const node = document.querySelector(d.class + ' .action-sheet-button-inner');
       if (node) {
         node.innerHTML = `<img style="width: 24px; height: 24px;  margin-inline-end: 32px;" src="${d.imgUrl}"> ` + node.innerHTML;
@@ -517,7 +516,7 @@ export class OpenSourceService {
     let settings: Settings;
     return KodiAppService.checkAndConnectToCurrentHost()
       .pipe(
-        catchError(err => {
+        catchError((err) => {
           if (err === 'hostUnreachable') {
             this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
           } else {
@@ -537,7 +536,7 @@ export class OpenSourceService {
           }
 
           return from(this.settingsService.get()).pipe(
-            switchMap(_settings => {
+            switchMap((_settings) => {
               settings = _settings;
               return KodiAppService.openUrl(firstVideoUrl, openMedia, settings.openRemoteAfterClickOnPlay);
             })
@@ -570,7 +569,7 @@ export class OpenSourceService {
       )
       .subscribe(() => {
         if (seekTo) {
-          const sub = KodiApiService.wsMessage$.subscribe(data => {
+          const sub = KodiApiService.wsMessage$.subscribe((data) => {
             if (data.method === 'Player.OnAVStart') {
               sub.unsubscribe();
 
@@ -633,15 +632,15 @@ export class OpenSourceService {
     const title = !kodiOpenMedia
       ? ''
       : (kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title + ' - ' + kodiOpenMedia.episode.code).replace(
-        /\./g,
-        ' '
-      );
+          /\./g,
+          ' '
+        );
 
     const poster = !kodiOpenMedia
       ? null
       : kodiOpenMedia.movie
-        ? kodiOpenMedia.movie.images_url.poster
-        : kodiOpenMedia.show.images_url.poster;
+      ? kodiOpenMedia.movie.images_url.poster
+      : kodiOpenMedia.show.images_url.poster;
 
     if (kodiOpenMedia) {
       openMedia = getOpenMediaFromKodiOpenMedia(kodiOpenMedia);
@@ -652,7 +651,7 @@ export class OpenSourceService {
           ChromecastService.seek(seekTo);
         }
       },
-      err => {
+      (err) => {
         if (fallBacVideoUrl) {
           ChromecastService.openUrl(title, fallBacVideoUrl, poster, openMedia).subscribe(() => {
             if (seekTo > 0 && ChromecastService.media) {
@@ -683,7 +682,7 @@ export class OpenSourceService {
 
     PremiumizeTransferCreateForm.submit(url)
       .pipe(finalize(() => loader.dismiss()))
-      .subscribe(data => {
+      .subscribe((data) => {
         if (data.status === 'success') {
           this.toastService.simpleMessage('toasts.open-source.addedToPM');
         } else {
@@ -702,7 +701,7 @@ export class OpenSourceService {
 
     AllDebridMagnetUploadForm.submit([url])
       .pipe(finalize(() => loader.dismiss()))
-      .subscribe(data => {
+      .subscribe((data) => {
         if (data.status === 'success') {
           this.toastService.simpleMessage('toasts.open-source.addedToAD');
         } else {
@@ -721,7 +720,7 @@ export class OpenSourceService {
 
     RealDebridCacheUrlCommand.handle(url)
       .pipe(
-        catchError(err => {
+        catchError((err) => {
           let error = err;
           if (err.response) {
             error = err.response;
@@ -736,7 +735,7 @@ export class OpenSourceService {
         () => {
           this.toastService.simpleMessage('toasts.open-source.addedToRD');
         },
-        err => {
+        (err) => {
           this.toastService.simpleMessage('toasts.open-source.failedToAddToRD', { error: err.toString() });
         }
       );
@@ -747,7 +746,7 @@ export class OpenSourceService {
     if (kodiOpenMedia) {
       _obs = SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia);
     }
-    _obs.subscribe(sourceQuery => {
+    _obs.subscribe((sourceQuery) => {
       this.openKodi(
         [getElementumUrlBySourceUrl(torrent.url, sourceQuery)],
         kodiOpenMedia,
@@ -760,7 +759,7 @@ export class OpenSourceService {
   private getElementumCheckObservable() {
     return of(true).pipe(
       switchMap(() => this.isElementumAddonInstalled()),
-      switchMap(isInstalled => {
+      switchMap((isInstalled) => {
         if (!isInstalled) {
           this.toastService.simpleMessage('toasts.elementumNotInstalled');
 
@@ -777,7 +776,7 @@ export class OpenSourceService {
 
   private isPluginInstalled(plugin: string) {
     return KodiGetAddonDetailsForm.submit(plugin).pipe(
-      map(data => {
+      map((data) => {
         return !!data;
       })
     );
@@ -806,7 +805,7 @@ export class OpenSourceService {
           }
         },
         () => console.log('intentShim success'),
-        err => console.log('intentShim err', err)
+        (err) => console.log('intentShim err', err)
       );
     }
   }
@@ -852,9 +851,9 @@ export class OpenSourceService {
     }
 
     return obs.pipe(
-      switchMap(sourceQuery => {
+      switchMap((sourceQuery) => {
         return from(this.heliosPlaylistService.setPlaylist(source, kodiOpenMedia)).pipe(
-          switchMap(playlist => {
+          switchMap((playlist) => {
             if (kodiOpenMedia && kodiOpenMedia.episode) {
               let streamUrl;
               let fallBackUrl = null;
@@ -880,7 +879,7 @@ export class OpenSourceService {
               playlist.currentItem = playlist.items.length - 1;
 
               return this.getNextEpisodeVideoUrls(source, sourceQuery).pipe(
-                map(data => {
+                map((data) => {
                   let episodeCode = sourceQuery.episode.episodeCode;
                   let episodeAbsoluteNumber = sourceQuery.episode.absoluteNumber;
                   let episodeNumber = sourceQuery.episode.episodeNumber;
@@ -935,7 +934,7 @@ export class OpenSourceService {
                   customData: {}
                 });
               } else if (source instanceof StreamLinkSource) {
-                source.streamLinks.forEach(link => {
+                source.streamLinks.forEach((link) => {
                   const streamUrl = getTranscoded ? link.transcodedUrl : link.url;
                   const fallBackUrl = getTranscoded ? link.url : link.transcodedUrl;
 
@@ -954,7 +953,7 @@ export class OpenSourceService {
             }
             return of(playlist);
           }),
-          switchMap(playlist => {
+          switchMap((playlist) => {
             if (playlist.items.length === 0) {
               return EMPTY;
             }
@@ -993,7 +992,7 @@ export class OpenSourceService {
         const links = source.streamLinks;
         links.shift();
 
-        links.forEach(link => {
+        links.forEach((link) => {
           urls.push(link.url);
           transcodedUrls.push(link.transcodedUrl);
         });
@@ -1015,17 +1014,17 @@ export class OpenSourceService {
       const torrent = source as TorrentSource;
       switch (action) {
         case 'add-to-pm':
-          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(url => {
+          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((url) => {
             this.addToPM(url);
           });
           break;
         case 'add-to-rd':
-          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(url => {
+          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((url) => {
             this.addToRD(url);
           });
           break;
         case 'add-to-ad':
-          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(url => {
+          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((url) => {
             this.addToAD(url);
           });
           break;
@@ -1112,7 +1111,7 @@ export class OpenSourceService {
 
         case 'open-kodi':
           const videoUrls = [];
-          streamLinkSource.streamLinks.forEach(_streamLink => {
+          streamLinkSource.streamLinks.forEach((_streamLink) => {
             videoUrls.push(preferTranscodedFiles && _streamLink.transcodedUrl ? _streamLink.transcodedUrl : _streamLink.url);
           });
           this.openKodi(videoUrls, kodiOpenMedia);
@@ -1142,7 +1141,7 @@ export class OpenSourceService {
           break;
 
         default:
-          SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).subscribe(sourceQuery => {
+          SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).subscribe((sourceQuery) => {
             this.openStreamLinkSource(streamLinkSource, sourceQuery, kodiOpenMedia);
           });
           return;
@@ -1200,7 +1199,7 @@ export class OpenSourceService {
 
     const buttons = [];
 
-    settings.availablePlayButtonActions.forEach(action => {
+    settings.availablePlayButtonActions.forEach((action) => {
       if (action.match('elementum')) {
         return;
       }
@@ -1299,7 +1298,7 @@ export class OpenSourceService {
       return;
     }
 
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       if (!button.icon) {
         button.icon = 'arrow-dropright';
       }
