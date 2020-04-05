@@ -1,16 +1,16 @@
-<div *ngIf="folder">
-  <ion-card button="true" *ngFor="let item of folder.content">
+<div *ngIf="response">
+  <ion-card *ngFor="let item of response.content">
     <ion-card-header *ngIf="item.type === 'folder'">
-      <ion-card-title (click)="listAll(item.id)">
-        {{ item.name }}
-      </ion-card-title>
+      <ion-item button="true">
+        <ion-icon name="folder-open-outline" slot="start"></ion-icon>
+        <ion-card-title (click)="listAll(item.id)"> {{ item.name }} </ion-card-title>
+      </ion-item>
     </ion-card-header>
     <ion-card-header *ngIf="item.type === 'file'">
       <ion-item>
-        <ion-card-title>
-          {{ item.name }}
-        </ion-card-title>
+        <ion-icon name="document-outline" slot="start"></ion-icon>
         <ion-button (click)="openLink(item.link)" fill="outline" slot="end"><ion-icon name="play"></ion-icon></ion-button>
+        <ion-label> {{ item.name }} </ion-label>
       </ion-item>
     </ion-card-header>
   </ion-card>

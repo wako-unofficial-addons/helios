@@ -41,8 +41,6 @@ import { HeliosPlaylistService } from './services/helios-playlist.service';
 import { FileSizeFilterComponent } from './components/file-size-filter/file-size-filter.component';
 import { SourcePopoverFilterComponent } from './components/source-popover-filter/source-popover-filter.component';
 
-import { HttpClientModule } from '@angular/common/http';
-
 const components = [
   MovieButtonComponent,
   EpisodeButtonComponent,
@@ -71,7 +69,7 @@ const components = [
 const directives = [HideKeyboardEnterDirective];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule.forRoot(), TranslateModule.forRoot(), ClipboardModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, IonicModule.forRoot(), TranslateModule.forRoot(), ClipboardModule],
   declarations: [...components, FileSizePipe, ...directives],
   entryComponents: [...components],
   providers: [

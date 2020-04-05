@@ -57,7 +57,7 @@ export class OpenSourceService {
   ) {}
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
-    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((torrentUrl) => {
+    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
       if (!torrentUrl) {
         this.toastService.simpleMessage('toasts.open-source.cannotRetrieveUrl');
         return;
