@@ -7,4 +7,10 @@ export class PremiumizeFolderListForm {
       id: folderId
     });
   }
+
+  static remove(itemId: string) {
+    return PremiumizeApiService.get<PremiumizeFolderListDto>('/item/delete', {
+      id: itemId
+    });
+  }
 }
