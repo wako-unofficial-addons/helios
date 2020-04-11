@@ -9,7 +9,7 @@
     <ion-card-header *ngIf="item.type === 'file'">
       <ion-item>
         <ion-icon name="document-outline" slot="start"></ion-icon>
-        <ion-button (click)="openLink(item.link)" fill="outline" slot="end"><ion-icon name="play"></ion-icon></ion-button>
+        <ion-button (click)="openLink(item)" fill="outline" slot="end"><ion-icon name="play"></ion-icon></ion-button>
         <ion-button (click)="removeItemAlert(item.id, item.name)" fill="outline" slot="end"><ion-icon name="trash"></ion-icon></ion-button>
         <ion-label> {{ item.name }} </ion-label>
       </ion-item>
