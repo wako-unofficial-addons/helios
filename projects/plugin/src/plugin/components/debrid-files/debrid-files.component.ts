@@ -32,8 +32,6 @@ export class DebridFilesComponent implements OnInit {
 
     streamLinkSource.streamLinks = [streamLink];
 
-    console.log(streamLinkSource);
-
     this.openSourceService.openStreamLinkSource(streamLinkSource, sourceQuery);
   }
 
