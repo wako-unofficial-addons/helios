@@ -10,7 +10,8 @@
     "episodes",
     "episodes-item-option"
   ],
-  "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
+  "entryPointV2": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
+  "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/old-wako/dist/plugin.js",
   "languages": {
     "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
     "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json",

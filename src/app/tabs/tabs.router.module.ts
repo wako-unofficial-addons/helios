@@ -12,7 +12,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../movie/movie.module#MoviePageModule'
+            loadChildren: () => import('../movie/movie.module').then((m) => m.MoviePageModule)
           }
         ]
       },
@@ -21,7 +21,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../episode/episode.module#EpisodePageModule'
+            loadChildren: () => import('../episode/episode.module').then((m) => m.EpisodePageModule)
           }
         ]
       },
@@ -30,7 +30,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../settings/settings.module#SettingsPageModule'
+            loadChildren: () => import('../settings/settings.module').then((m) => m.SettingsPageModule)
           }
         ]
       },
@@ -49,9 +49,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class TabsPageRoutingModule {}

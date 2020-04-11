@@ -3,10 +3,17 @@ import { EventCategory, EventName, EventService, OpenMedia, Playlist, PlaylistSe
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
+import { Storage } from '@ionic/storage';
 
 @Injectable()
 export class HeliosPlaylistService {
-  constructor(private playListService: PlaylistService) {}
+  private playListService: PlaylistService;
+
+  constructor(private storage: Storage) {
+    PlaylistService.initialize(this.storage);
+
+    this.playListService = PlaylistService.getInstance();
+  }
 
   getPlaylist(sourceId: string, label: string, kodiOpenMedia?: KodiOpenMedia) {
     let id = sourceId;
@@ -78,7 +85,7 @@ export class HeliosPlaylistService {
   private removeDuplicateEntries(playlist: Playlist) {
     const items = [];
     const ids = [];
-    playlist.items.forEach(item => {
+    playlist.items.forEach((item) => {
       const id = this.getId(item.url, item.openMedia);
       if (ids.includes(id)) {
         return;

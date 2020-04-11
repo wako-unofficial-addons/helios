@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { PluginService } from './services/plugin.service';
 import { MovieButtonComponent } from './movie-button/movie-button.component';
 
-import { BrowserService, PlaylistService, PluginBaseModule, ToastService } from '@wako-app/mobile-sdk';
+import { BrowserService, PluginBaseModule } from '@wako-app/mobile-sdk';
 import { SettingsComponent } from './settings/settings.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { EpisodeButtonComponent } from './episode-button/episode-button.component';
@@ -22,7 +22,6 @@ import { OpenSourceService } from './services/open-source.service';
 import { SearchSourceComponent } from './components/search-source/search-source.component';
 import { TorrentSourceItemComponent } from './components/torrent-source-item/torrent-source-item.component';
 import { FileSizePipe } from './services/file-size.pipe';
-import { ClipboardModule } from 'ngx-clipboard';
 import { SourceService } from './services/sources/source.service';
 import { SettingsService } from './services/settings.service';
 import { CachedTorrentSourceService } from './services/sources/cached-torrent-source.service';
@@ -38,7 +37,7 @@ import { SupportComponent } from './components/support/support.component';
 import { HeliosPlaylistService } from './services/helios-playlist.service';
 import { FileSizeFilterComponent } from './components/file-size-filter/file-size-filter.component';
 import { SourcePopoverFilterComponent } from './components/source-popover-filter/source-popover-filter.component';
-
+import { ToastService } from './services/toast.service';
 
 const components = [
   MovieButtonComponent,
@@ -65,9 +64,8 @@ const components = [
 
 const directives = [HideKeyboardEnterDirective];
 
-
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule.forRoot(), TranslateModule.forRoot(), ClipboardModule],
+  imports: [CommonModule, FormsModule, IonicModule.forRoot(), TranslateModule.forRoot()],
   declarations: [...components, FileSizePipe, ...directives],
   entryComponents: [...components],
   providers: [
@@ -82,7 +80,6 @@ const directives = [HideKeyboardEnterDirective];
     SourceService,
     SettingsService,
     CachedTorrentSourceService,
-    PlaylistService,
     HeliosPlaylistService
   ] // Add your services here. Do not use provideIn: 'root' in your services
 })

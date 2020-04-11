@@ -7,14 +7,11 @@ import { BrowserService } from '@wako-app/mobile-sdk';
   styleUrls: ['./support.component.scss']
 })
 export class SupportComponent implements OnInit {
+  constructor() {}
 
-  constructor(private browserService: BrowserService) {
-  }
-
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   openBrowser(url: string) {
-    this.browserService.open(url, false);
+    BrowserService.open(url, false);
   }
 }

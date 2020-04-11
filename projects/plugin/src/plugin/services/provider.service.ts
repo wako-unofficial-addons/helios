@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { catchError, last, map, switchMap } from 'rxjs/operators';
 import { concat, EMPTY, from, of, throwError } from 'rxjs';
-import { ToastService, WakoHttpRequestService } from '@wako-app/mobile-sdk';
+import { WakoHttpRequestService } from '@wako-app/mobile-sdk';
 import { Provider, ProviderList } from '../entities/provider';
 import { countryCodeToEmoji } from './tools';
 import { HeliosCacheService } from './provider-cache.service';
+import { ToastService } from './toast.service';
 
 const CACHE_KEY_PROVIDERS = 'CACHE_KEY_PROVIDERS';
 const CACHE_TIMEOUT_PROVIDERS = '1d';
@@ -16,8 +17,7 @@ export class ProviderService {
   private providerUrlStorageKey = 'provider_url';
   private providerUrlsStorageKey = 'provider_urls';
 
-  constructor(private storage: Storage, private toastService: ToastService) {
-  }
+  constructor(private storage: Storage, private toastService: ToastService) {}
 
   async initialize() {
     setTimeout(() => {
@@ -34,7 +34,7 @@ export class ProviderService {
 
   static getNameWithEmojiFlag(provider: Provider) {
     const emojiLanguages = [];
-    provider.languages.forEach(country => {
+    provider.languages.forEach((country) => {
       try {
         const emoji = countryCodeToEmoji(country === 'en' ? 'us' : country);
         emojiLanguages.push(emoji);
@@ -46,23 +46,23 @@ export class ProviderService {
   }
 
   getAll(enabledOnly = true, category?: 'movie' | 'tv' | 'anime') {
-    return this.getProviders().then(providers => {
+    return this.getProviders().then((providers) => {
       if (!providers) {
         return [];
       }
 
       let _providers: Provider[] = [];
 
-      Object.keys(providers).forEach(key => {
+      Object.keys(providers).forEach((key) => {
         _providers.push(providers[key]);
       });
 
       if (enabledOnly) {
-        _providers = _providers.filter(provider => provider.enabled === true);
+        _providers = _providers.filter((provider) => provider.enabled === true);
       }
 
       if (category) {
-        _providers = _providers.filter(provider => {
+        _providers = _providers.filter((provider) => {
           if (category === 'movie' && provider.movie) {
             return true;
           }
@@ -81,7 +81,7 @@ export class ProviderService {
   }
 
   async getProviderUrls(): Promise<string[]> {
-    return await this.storage.get(this.providerUrlsStorageKey).then(urls => {
+    return await this.storage.get(this.providerUrlsStorageKey).then((urls) => {
       if (!urls) {
         return [];
       }
@@ -103,7 +103,7 @@ export class ProviderService {
 
   addProviderUrl(url: string) {
     return this.isValidUrlProvider(url).pipe(
-      switchMap(isValid => {
+      switchMap((isValid) => {
         if (!isValid) {
           return throwError('Invalid URL');
         }
@@ -111,20 +111,19 @@ export class ProviderService {
           switchMap(() => {
             return from(this.getProviderUrls());
           }),
-          switchMap(urls => {
+          switchMap((urls) => {
             return this.setProvidersFromUrls(urls, false);
           })
         );
       })
-    )
-
+    );
   }
 
   deleteProviderUrl(url: string) {
     return from(this.getProviderUrls()).pipe(
-      switchMap(urls => {
+      switchMap((urls) => {
         const newUrls = [];
-        urls.forEach(_url => {
+        urls.forEach((_url) => {
           if (_url === url) {
             return;
           }
@@ -154,11 +153,10 @@ export class ProviderService {
     const oldProviders = await this.getProviders();
 
     if (oldProviders && isAutomatic) {
-
       let areEquals = Object.keys(oldProviders).length === Object.keys(providers).length;
 
       if (areEquals) {
-        Object.keys(oldProviders).forEach(key => {
+        Object.keys(oldProviders).forEach((key) => {
           const _old = Object.assign({}, oldProviders[key]);
           const _new = Object.assign({}, providers[key]);
           _old.enabled = true;
@@ -176,7 +174,7 @@ export class ProviderService {
         console.log('no changes');
       }
 
-      Object.keys(oldProviders).forEach(key => {
+      Object.keys(oldProviders).forEach((key) => {
         if (providers.hasOwnProperty(key)) {
           providers[key].enabled = oldProviders[key].enabled;
         }
@@ -193,7 +191,7 @@ export class ProviderService {
   private setProvidersFromUrls(urls: string[], isAutomatic = false) {
     const invalidUrls = [];
     const obss = [];
-    urls.forEach(url => {
+    urls.forEach((url) => {
       obss.push(
         WakoHttpRequestService.request<ProviderList>(
           {
@@ -218,8 +216,8 @@ export class ProviderService {
 
     const list: ProviderList = {};
     return concat(...obss).pipe(
-      map(data => {
-        Object.keys(data).forEach(key => {
+      map((data) => {
+        Object.keys(data).forEach((key) => {
           if (!list.hasOwnProperty(key)) {
             list[key] = data[key];
           }
@@ -227,7 +225,7 @@ export class ProviderService {
         return list;
       }),
       last(),
-      switchMap(providerList => {
+      switchMap((providerList) => {
         if (typeof providerList === 'string') {
           return of(false);
         }
@@ -235,7 +233,7 @@ export class ProviderService {
         return from(this.setProviders(providerList, isAutomatic)).pipe(
           switchMap(() => {
             const newUrls = [];
-            urls.forEach(url => {
+            urls.forEach((url) => {
               if (!invalidUrls.includes(url)) {
                 newUrls.push(url);
               }
@@ -254,7 +252,7 @@ export class ProviderService {
   }
 
   private refreshProviders() {
-    HeliosCacheService.get<boolean>(CACHE_KEY_PROVIDERS).subscribe(async cache => {
+    HeliosCacheService.get<boolean>(CACHE_KEY_PROVIDERS).subscribe(async (cache) => {
       if (cache) {
         console.log('check providers later');
         return;
@@ -280,10 +278,10 @@ export class ProviderService {
       catchError(() => {
         return of(false);
       }),
-      map(data => {
+      map((data) => {
         let valid = false;
         if (typeof data === 'object') {
-          Object.keys(data).forEach(key => {
+          Object.keys(data).forEach((key) => {
             if (data[key].base_url) {
               valid = true;
             }

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { PluginLoaderService } from '@wako-app/mobile-sdk';
 import { AddonSettingsComponent } from './addon-settings/addon-settings.component';
 import { ModalController } from '@ionic/angular';
+import { PluginLoaderService } from '../services/plugin-loader.service';
 
 @Component({
   selector: 'app-tab2',
@@ -9,14 +9,12 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['settings.page.scss']
 })
 export class SettingsPage implements OnInit {
-  @ViewChild('settingsRef', {read: ViewContainerRef, static: true})
+  @ViewChild('settingsRef', { read: ViewContainerRef, static: true })
   settingsRef: ViewContainerRef;
 
-  constructor(private pluginLoader: PluginLoaderService, private modalCtrl: ModalController) {
-  }
+  constructor(private pluginLoader: PluginLoaderService, private modalCtrl: ModalController) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   async addonSettings() {
     const modal = await this.modalCtrl.create({
