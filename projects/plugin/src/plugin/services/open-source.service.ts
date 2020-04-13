@@ -1268,7 +1268,19 @@ export class OpenSourceService {
         case 'open-kodi':
           buttonOptions.cssClass = 'kodi';
           buttonOptions.handler = () => {
-            this.openKodi([playlistVideo.url], kodiOpenMedia, null, null, playlistVideo.openMedia, seek);
+            KodiAppService.checkAndConnectToCurrentHost()
+              .pipe(
+                catchError((err) => {
+                  if (err === 'hostUnreachable') {
+                    this.toastService.simpleMessage('toasts.kodi.hostUnreachable', { hostName: KodiAppService.currentHost.name }, 2000);
+                  } else {
+                    this.toastService.simpleMessage('toasts.kodi.noHost');
+                  }
+                  return NEVER;
+                }),
+                switchMap(() => KodiAppService.resumePlaylistVideo(playlistVideo))
+              )
+              .subscribe();
           };
           break;
 
