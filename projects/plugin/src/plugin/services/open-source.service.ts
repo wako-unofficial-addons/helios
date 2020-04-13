@@ -1268,6 +1268,14 @@ export class OpenSourceService {
         case 'open-kodi':
           buttonOptions.cssClass = 'kodi';
           buttonOptions.handler = () => {
+            // Set metadata
+            const originalVideoUrl = playlistVideo.url;
+
+            if (kodiOpenMedia) {
+              const openMedia = getOpenMediaFromKodiOpenMedia(kodiOpenMedia);
+              playlistVideo.url += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
+            }
+
             KodiAppService.checkAndConnectToCurrentHost()
               .pipe(
                 catchError((err) => {
@@ -1280,7 +1288,9 @@ export class OpenSourceService {
                 }),
                 switchMap(() => KodiAppService.resumePlaylistVideo(playlistVideo))
               )
-              .subscribe();
+              .subscribe(() => {
+                playlistVideo.url = originalVideoUrl;
+              });
           };
           break;
 
