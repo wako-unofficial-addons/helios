@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.7.4",
+  "version": "3.7.5",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "3.7.5": "Improve resume on kodi",
     "3.7.4": "Fix clipboard issue on android",
     "3.7.3": "Improve anime search",
     "3.7.2": "Fix search filtering issue",
