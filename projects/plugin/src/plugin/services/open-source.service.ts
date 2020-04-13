@@ -444,6 +444,10 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(streamLink.url);
+      setTimeout(() => {
+        // Need to be done twice to work on android
+        this.clipboardService.copyFromContent(streamLink.url);
+      }, 100);
     });
   }
 
@@ -1319,6 +1323,10 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(playlistVideo.url);
+      setTimeout(() => {
+        // Need to be done twice to work on android
+        this.clipboardService.copyFromContent(playlistVideo.url);
+      }, 100);
     });
   }
 }

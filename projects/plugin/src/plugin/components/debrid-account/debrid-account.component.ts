@@ -241,6 +241,10 @@ export class DebridAccountComponent implements OnInit {
             }
             copyEl.addEventListener('click', () => {
               this.clipboardService.copyFromContent(data.user_code);
+              setTimeout(() => {
+                // Need to be done twice to work on android
+                this.clipboardService.copyFromContent(data.user_code);
+              }, 100);
             });
           });
 
