@@ -2,12 +2,12 @@
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button (click)="listAll(response.parent_id)">
+        <ion-button (click)="listAll(response.parent_id)" fill="solid" *ngIf="response.name !== 'root'">
           <ion-icon name="arrow-back"></ion-icon>
         </ion-button>
       </ion-buttons>
       <ion-buttons slot="end">
-        <ion-button (click)="listAll('')">
+        <ion-button (click)="listAll('')" fill="solid">
           <ion-icon name="home"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -22,8 +22,8 @@
     <ion-item *ngIf="item.type === 'file'">
       <ion-icon name="document-outline" slot="start"></ion-icon>
       <ion-button (click)="openLink(item)" fill="outline" slot="end"><ion-icon name="play"></ion-icon></ion-button>
-      <ion-button (click)="removeItemAlert(item.id, item.name, response.folder_id)" fill="outline" slot="end"
-        ><ion-icon name="trash"></ion-icon
+      <ion-button (click)="removeItemAlert(item.id, item.name, response.folder_id)" fill="outline" slot="end" color="danger"
+        ><ion-icon class="icon-trash" name="trash"></ion-icon
       ></ion-button>
       <ion-card-subtitle class="title"> {{ item.name }} </ion-card-subtitle>
     </ion-item>

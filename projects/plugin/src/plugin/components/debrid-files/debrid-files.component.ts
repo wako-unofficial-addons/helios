@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 import { OpenSourceService } from '../../services/open-source.service';
 import { PremiumizeFolderListForm } from '../../services/premiumize/forms/folder/premiumize-folder-list.form';
@@ -14,7 +15,11 @@ import { SourceQuery } from '../../entities/source-query';
 export class DebridFilesComponent implements OnInit {
   public response;
 
-  constructor(private openSourceService: OpenSourceService, private alertController: AlertController) {}
+  constructor(
+    private openSourceService: OpenSourceService,
+    private alertController: AlertController,
+    private translateService: TranslateService
+  ) {}
 
   ngOnInit() {
     this.listAll('');
@@ -37,17 +42,17 @@ export class DebridFilesComponent implements OnInit {
 
   async removeItemAlert(itemId, itemName, folderId) {
     const alert = await this.alertController.create({
-      header: 'Are you sure you want to delete the following?',
+      header: this.translateService.instant('alerts.removeAlert'),
       message: itemName,
       buttons: [
         {
-          text: 'Cancel',
+          text: this.translateService.instant('alerts.cancelButton'),
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {}
         },
         {
-          text: 'Remove',
+          text: this.translateService.instant('alerts.removeButton'),
           handler: async () => {
             await PremiumizeFolderListForm.remove(itemId)
               .toPromise()
