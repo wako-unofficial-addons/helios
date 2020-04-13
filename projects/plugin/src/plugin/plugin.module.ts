@@ -68,7 +68,6 @@ const directives = [HideKeyboardEnterDirective];
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule.forRoot(), TranslateModule.forRoot(), ClipboardModule],
   declarations: [...components, FileSizePipe, ...directives],
-  entryComponents: [...components],
   providers: [
     PluginService,
     TorrentSourceService,

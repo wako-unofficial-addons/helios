@@ -65,7 +65,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -80,15 +79,6 @@
                   "maximumWarning": "6kb"
                 }
               ]
-            },
-            "ci": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "progress": false
             }
           }
         },
@@ -199,6 +189,7 @@
         "build": {
           "builder": "@wako-app/mobile-sdk/builders:plugin",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "",
             "main": "projects/plugin/src/main.ts",
@@ -216,7 +207,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": false,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -272,8 +262,7 @@
               "node_modules/systemjs/dist/s.js",
               "node_modules/systemjs/dist/extras/named-register.js",
               "node_modules/systemjs/dist/extras/amd.js"
-            ],
-            "es5BrowserSupport": true
+            ]
           },
           "configurations": {
             "production": {

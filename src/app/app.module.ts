@@ -14,7 +14,6 @@ import { PluginLoaderService } from './services/plugin-loader.service';
 
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [],
   imports: [
     BrowserModule,
     IonicModule.forRoot({
