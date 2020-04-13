@@ -35,7 +35,7 @@ export class DebridFilesComponent implements OnInit {
     this.openSourceService.openStreamLinkSource(streamLinkSource, sourceQuery);
   }
 
-  async removeItemAlert(itemId, itemName) {
+  async removeItemAlert(itemId, itemName, folderId) {
     const alert = await this.alertController.create({
       header: 'Are you sure you want to delete the following?',
       message: itemName,
@@ -49,7 +49,9 @@ export class DebridFilesComponent implements OnInit {
         {
           text: 'Remove',
           handler: async () => {
-            await PremiumizeFolderListForm.remove(itemId).toPromise();
+            await PremiumizeFolderListForm.remove(itemId)
+              .toPromise()
+              .then(() => this.listAll(folderId));
           }
         }
       ]
