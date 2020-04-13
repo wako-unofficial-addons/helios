@@ -1,8 +1,23 @@
 <ion-card *ngIf="response">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button (click)="listAll(response.parent_id)">
+          <ion-icon name="arrow-back"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button (click)="listAll('')">
+          <ion-icon name="home"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
   <ion-list inset="true" lines="inset" *ngFor="let item of response.content">
     <ion-item (click)="listAll(item.id)" button="true" *ngIf="item.type === 'folder'">
       <ion-icon name="folder-open-outline" slot="start"></ion-icon>
-      <ion-card-title> {{ item.name }} </ion-card-title>
+      <ion-card-title class="title"> {{ item.name }} </ion-card-title>
     </ion-item>
     <ion-item *ngIf="item.type === 'file'">
       <ion-icon name="document-outline" slot="start"></ion-icon>
@@ -10,7 +25,7 @@
       <ion-button (click)="removeItemAlert(item.id, item.name, response.folder_id)" fill="outline" slot="end"
         ><ion-icon name="trash"></ion-icon
       ></ion-button>
-      <ion-label> {{ item.name }} </ion-label>
+      <ion-card-subtitle class="title"> {{ item.name }} </ion-card-subtitle>
     </ion-item>
   </ion-list>
 </ion-card>
