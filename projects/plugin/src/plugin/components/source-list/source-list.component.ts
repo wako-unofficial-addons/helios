@@ -6,7 +6,7 @@ import { SourceByQuality } from '../../entities/source-by-quality';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceByProvider } from '../../entities/source-by-provider';
 import { StreamLinkSource } from '../../entities/stream-link-source';
-import { getSourcesByQuality, removeDuplicates, sortTorrentsBalanced, sortTorrentsBySize, sortTorrentsBySeeds } from '../../services/tools';
+import { getSourcesByQuality, removeDuplicates, sortTorrentsBalanced, sortTorrentsBySeeds, sortTorrentsBySize } from '../../services/tools';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { SourceQuery } from '../../entities/source-query';
 import { ProviderService } from '../../services/provider.service';
@@ -19,6 +19,7 @@ import { ProvidersComponent } from '../../settings/providers/providers.component
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
 import { SettingsService } from '../../services/settings.service';
 import { Settings } from '../../entities/settings';
+import { SourceUtils } from '../../services/source-utils';
 
 @Component({
   selector: 'wk-source-list',
@@ -413,6 +414,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private isMatching(str: string, filter: string) {
-    return str.toLowerCase().match(filter.toLowerCase()) !== null;
+    return SourceUtils.stripAccents(str.toLowerCase()).match(SourceUtils.stripAccents(filter.toLowerCase())) !== null;
   }
 }
