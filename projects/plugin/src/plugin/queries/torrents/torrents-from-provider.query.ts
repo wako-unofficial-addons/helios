@@ -18,7 +18,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
     let episodeTorrents: TorrentSource[] = [];
     // Get episodes
     return super.getTorrents(provider, sourceQuery, provider.episode).pipe(
-      switchMap(torrents => {
+      switchMap((torrents) => {
         episodeTorrents = episodeTorrents.concat(torrents);
         // Get season pack
         if (!provider.season) {
@@ -26,16 +26,28 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
         }
         return super.getTorrents(provider, sourceQuery, provider.season);
       }),
-      map(packTorrents => {
+      map((packTorrents) => {
         return episodeTorrents.concat(packTorrents);
       })
     );
-
-    return super.getTorrents(provider, sourceQuery, provider.movie);
   }
 
   private static getAnimes(sourceQuery: SourceQuery, provider: Provider) {
-    return super.getTorrents(provider, sourceQuery, provider.anime);
+    let episodeTorrents: TorrentSource[] = [];
+    // Get episodes
+    return super.getTorrents(provider, sourceQuery, provider.anime).pipe(
+      switchMap((torrents) => {
+        episodeTorrents = episodeTorrents.concat(torrents);
+        // Get season pack
+        if (!provider.season) {
+          return of([]);
+        }
+        return super.getTorrents(provider, sourceQuery, provider.season);
+      }),
+      map((packTorrents) => {
+        return episodeTorrents.concat(packTorrents);
+      })
+    );
   }
 
   static getData(sourceQuery: SourceQuery, provider: Provider) {
@@ -55,7 +67,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
 
     const startTime = Date.now();
     return HeliosCacheService.get<TorrentSourceDetail>(cacheKey).pipe(
-      switchMap(cache => {
+      switchMap((cache) => {
         console.log('DOING', provider.name);
 
         if (cache) {
@@ -72,13 +84,11 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
           obs = this.getAnimes(sourceQuery, provider);
         }
 
-
         const torrentSourceDetail = new TorrentSourceDetail();
         torrentSourceDetail.provider = provider.name;
 
         return obs.pipe(
-          catchError(err => {
-
+          catchError((err) => {
             let errorMessage = '';
             if (typeof err === 'string') {
               errorMessage = err;
@@ -92,8 +102,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
             torrentSourceDetail.errorMessage = errorMessage;
             return of([]);
           }),
-          map(torrents => {
-
+          map((torrents) => {
             const endTime = Date.now();
 
             torrentSourceDetail.sources = torrents;
@@ -105,8 +114,10 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
           })
         );
       }),
-      tap(torrentSourceDetail => {
-        logData(`${torrentSourceDetail.provider} - ${torrentSourceDetail.sources.length} torrents found in ${torrentSourceDetail.timeElapsed} ms`);
+      tap((torrentSourceDetail) => {
+        logData(
+          `${torrentSourceDetail.provider} - ${torrentSourceDetail.sources.length} torrents found in ${torrentSourceDetail.timeElapsed} ms`
+        );
       })
     );
   }

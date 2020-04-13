@@ -14,11 +14,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
@@ -42,16 +43,14 @@
               },
               {
                 "input": "src/global.scss"
-              },
-              {
-                "input": "src/app/app.scss"
               }
             ],
             "scripts": [
               "node_modules/systemjs/dist/s.js",
               "node_modules/systemjs/dist/extras/named-register.js",
               "node_modules/systemjs/dist/extras/amd.js"
-            ]
+            ],
+            "es5BrowserSupport": true
           },
           "configurations": {
             "production": {
@@ -66,7 +65,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -75,11 +73,12 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
-            },
-            "ci": {
-              "progress": false
             }
           }
         },
@@ -108,8 +107,8 @@
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
             "styles": [],
             "scripts": [],
             "assets": [
@@ -135,13 +134,23 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "app:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "app:serve:production"
+            },
+            "ci": {
+              "devServerTarget": "app:serve:ci"
+            }
           }
         },
         "ionic-cordova-build": {
@@ -180,6 +189,7 @@
         "build": {
           "builder": "@wako-app/mobile-sdk/builders:plugin",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "",
             "main": "projects/plugin/src/main.ts",
@@ -197,7 +207,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": false,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -223,11 +232,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main-wako-like.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.wako-like.json",
             "assets": [
               {
                 "glob": "**/*",
@@ -246,17 +256,13 @@
               },
               {
                 "input": "src/global.scss"
-              },
-              {
-                "input": "src/app/app.scss"
               }
             ],
             "scripts": [
               "node_modules/systemjs/dist/s.js",
               "node_modules/systemjs/dist/extras/named-register.js",
               "node_modules/systemjs/dist/extras/amd.js"
-            ],
-            "es5BrowserSupport": true
+            ]
           },
           "configurations": {
             "production": {
@@ -280,10 +286,20 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             },
             "ci": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "progress": false
             }
           }
@@ -312,26 +328,16 @@
             "polyfills": "projects/wako-like/src/polyfills.ts",
             "tsConfig": "projects/wako-like/tsconfig.spec.json",
             "karmaConfig": "projects/wako-like/karma.conf.js",
-            "styles": [
-              "projects/wako-like/src/styles.css"
-            ],
+            "styles": ["projects/wako-like/src/styles.css"],
             "scripts": [],
-            "assets": [
-              "projects/wako-like/src/favicon.ico",
-              "projects/wako-like/src/assets"
-            ]
+            "assets": ["projects/wako-like/src/favicon.ico", "projects/wako-like/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "projects/wako-like/tsconfig.app.json",
-              "projects/wako-like/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["projects/wako-like/tsconfig.app.json", "projects/wako-like/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }

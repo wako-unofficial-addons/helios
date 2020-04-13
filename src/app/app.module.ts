@@ -8,13 +8,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonicStorageModule } from '@ionic/storage';
-import { ModuleLoaderService, PluginLoaderService } from '@wako-app/mobile-sdk';
-import { PluginLoaderFakeService } from './services/plugin-loader-fake.service';
 import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
+import { PluginLoaderFakeService } from './services/plugin-loader-fake.service';
+import { PluginLoaderService } from './services/plugin-loader.service';
 
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [],
   imports: [
     BrowserModule,
     IonicModule.forRoot({
@@ -28,9 +27,10 @@ import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
     PluginModule
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    ModuleLoaderService,
-    PluginLoaderService,
+    {
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy
+    },
     {
       provide: PluginLoaderService,
       useClass: PluginLoaderFakeService
@@ -38,5 +38,4 @@ import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}

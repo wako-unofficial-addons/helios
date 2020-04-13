@@ -70,7 +70,7 @@ export interface SourceFilter {
 }
 
 export class Settings {
-  defaultPlayButtonAction: PlayButtonAction = 'open-kodi';
+  defaultPlayButtonAction: PlayButtonAction = null;
 
   availablePlayButtonActions: PlayButtonAction[] = [];
 

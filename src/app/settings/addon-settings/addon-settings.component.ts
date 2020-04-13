@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { PluginLoaderService } from '@wako-app/mobile-sdk';
-import { ModalController } from '@ionic/angular';
+import { PluginLoaderService } from '../../services/plugin-loader.service';
 
 @Component({
   selector: 'wk-addon-settings',

@@ -11,7 +11,6 @@ import {
   KodiSeekToCommand,
   OpenMedia,
   PlaylistVideo,
-  ToastService,
   WakoHttpError
 } from '@wako-app/mobile-sdk';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
@@ -19,7 +18,6 @@ import { EMPTY, from, NEVER, Observable, of } from 'rxjs';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { PremiumizeTransferCreateForm } from './premiumize/forms/transfer/premiumize-transfer-create.form';
 import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-cache-url.command';
-import { ClipboardService } from 'ngx-clipboard';
 import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
 import { TorrentSource } from '../entities/torrent-source';
 import {
@@ -38,6 +36,8 @@ import { HeliosPlaylistService } from './helios-playlist.service';
 import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
 import { PlayButtonAction, Settings } from '../entities/settings';
 import { AllDebridMagnetUploadForm } from './all-debrid/forms/magnet/all-debrid-magnet-upload.form';
+import { ToastService } from './toast.service';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Injectable()
 export class OpenSourceService {
@@ -45,7 +45,6 @@ export class OpenSourceService {
     private actionSheetController: ActionSheetController,
     private translateService: TranslateService,
     private platform: Platform,
-    private browserService: BrowserService,
     private debridAccountService: DebridAccountService,
     private toastService: ToastService,
     private loadingController: LoadingController,
@@ -57,7 +56,7 @@ export class OpenSourceService {
   ) {}
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
-    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe(torrentUrl => {
+    TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((torrentUrl) => {
       if (!torrentUrl) {
         this.toastService.simpleMessage('toasts.open-source.cannotRetrieveUrl');
         return;
@@ -445,6 +444,10 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(streamLink.url);
+      setTimeout(() => {
+        // Need to be done twice to work on android
+        this.clipboardService.copyFromContent(streamLink.url);
+      }, 100);
     });
   }
 
@@ -596,7 +599,7 @@ export class OpenSourceService {
 
   private openBrowserUrl(url: string) {
     if (this.platform.is('ios')) {
-      this.browserService.open(url, true);
+      BrowserService.open(url, true);
     } else {
       window.open(url, '_system', 'location=yes');
     }
@@ -605,10 +608,10 @@ export class OpenSourceService {
   private async openVlc(videoUrl: string) {
     if (this.platform.is('ios')) {
       const url = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(videoUrl)}`;
-      this.browserService.open(url, false);
+      BrowserService.open(url, false);
     } else {
       const url = `vlc://${videoUrl}`;
-      this.browserService.open(url, false);
+      BrowserService.open(url, false);
     }
   }
 
@@ -617,7 +620,7 @@ export class OpenSourceService {
       return;
     }
     const url = `nplayer-${videoUrl}`;
-    this.browserService.open(url, false);
+    BrowserService.open(url, false);
   }
 
   private async openInfuse(videoUrl: string) {
@@ -625,7 +628,7 @@ export class OpenSourceService {
       return;
     }
     const url = `infuse://x-callback-url/play?url=${encodeURIComponent(videoUrl)}`;
-    this.browserService.open(url, false);
+    BrowserService.open(url, false);
   }
 
   private async cast(videoUrl: string, kodiOpenMedia?: KodiOpenMedia, seekTo?: number, openMedia?: OpenMedia, fallBacVideoUrl?: string) {
@@ -668,7 +671,7 @@ export class OpenSourceService {
 
     if (this.platform.is('ios')) {
       const url = `vlc-x-callback://x-callback-url/download?url=${encodeURIComponent(videoUrl)}`;
-      this.browserService.open(url, false);
+      BrowserService.open(url, false);
     }
   }
 
@@ -1320,6 +1323,10 @@ export class OpenSourceService {
 
     copyEl.addEventListener('click', () => {
       this.clipboardService.copyFromContent(playlistVideo.url);
+      setTimeout(() => {
+        // Need to be done twice to work on android
+        this.clipboardService.copyFromContent(playlistVideo.url);
+      }, 100);
     });
   }
 }

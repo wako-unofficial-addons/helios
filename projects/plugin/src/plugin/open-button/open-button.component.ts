@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Episode, Movie, Show, ToastService } from '@wako-app/mobile-sdk';
+import { Episode, Movie, Show } from '@wako-app/mobile-sdk';
 import { LoadingController, ModalController } from '@ionic/angular';
 import { SourceService } from '../services/sources/source.service';
 import { SettingsService } from '../services/settings.service';
@@ -14,6 +14,7 @@ import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
 import { finalize } from 'rxjs/operators';
 import { ProvidersComponent } from '../settings/providers/providers.component';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'wk-open-button',
@@ -43,8 +44,7 @@ export class OpenButtonComponent implements OnInit {
     private providerService: ProviderService,
     private toastService: ToastService,
     private modalController: ModalController
-  ) {
-  }
+  ) {}
 
   async ngOnInit() {
     this.setKodiOpenMedia();
@@ -96,7 +96,6 @@ export class OpenButtonComponent implements OnInit {
     }
 
     this.kodiOpenMedia = setKodiOpenMediaLang(kodiOpenMediaCopy, userTitleLang);
-
   }
 
   private async openProviderModal() {
@@ -134,7 +133,7 @@ export class OpenButtonComponent implements OnInit {
           loader.dismiss();
         })
       )
-      .subscribe(bestSource => {
+      .subscribe((bestSource) => {
         const endTime = Date.now();
 
         this.elapsedTime = endTime - startTime;

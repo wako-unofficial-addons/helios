@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { PluginLoaderService } from '@wako-app/mobile-sdk';
 import { SourceQuery } from '../../../projects/plugin/src/plugin/entities/source-query';
 import { SourceUtils } from '../../../projects/plugin/src/plugin/services/source-utils';
+import { PluginLoaderService } from '../services/plugin-loader.service';
 
 @Component({
   selector: 'app-tab1',
@@ -12,8 +12,7 @@ export class MoviePage implements OnInit {
   @ViewChild('movieRef', { read: ViewContainerRef, static: true })
   movieVCRef: ViewContainerRef;
 
-  constructor(private pluginLoader: PluginLoaderService) {
-  }
+  constructor(private pluginLoader: PluginLoaderService) {}
 
   ngOnInit() {
     this.loadPlugin();
@@ -26,7 +25,7 @@ export class MoviePage implements OnInit {
 
     this.pluginLoader.createComponent('movies', this.movieVCRef, data);
 
-   // this.test();
+    // this.test();
   }
 
   private test() {
@@ -43,6 +42,5 @@ export class MoviePage implements OnInit {
     a = SourceUtils.isMovieTitleMatching(tTitle, originalQuery, sourceQuery.movie);
 
     console.log('test matching', tTitle, a);
-
   }
 }
