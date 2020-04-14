@@ -169,6 +169,8 @@
   },
   "alerts": {
     "cancelButton": "Ακύρωση",
+    "removeButton": "Αφαιρώ",
+    "removeAlert": "Είστε βέβαιοι ότι θέλετε να διαγράψετε τα παρακάτω;",
     "cloud-account": {
       "real-debrid": {
         "authHeader": "Ταυτοποίηση Real-Debrid",

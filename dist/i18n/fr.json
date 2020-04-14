@@ -139,7 +139,7 @@
         "open-with": "Play avec...",
         "add-to-pm": "Ajouter à Premiumize.me",
         "add-to-rd": "Ajouter à RealDebrid",
-        "letMeChoose":"Let Me choose"
+        "letMeChoose": "Let Me choose"
       },
       "selectLink": {
         "openTitle": "Cette source a plusieurs liens, lequel voulez-vous ouvrir ?"
@@ -148,6 +148,8 @@
   },
   "alerts": {
     "cancelButton": "Annuler",
+    "removeButton": "Retirer",
+    "removeAlert": "Voulez-vous vraiment supprimer les éléments suivants?",
     "debrid-account": {
       "real-debrid": {
         "authHeader": "Real Debrid Autentification",
@@ -166,7 +168,7 @@
         "anime": "Anime"
       }
     },
-    "search-source":{
+    "search-source": {
       "manual": "Search Sources Manually"
     }
   },
@@ -182,7 +184,7 @@
       "torrents": "Torrents",
       "all": "Tous"
     },
-    "statsInfo":  "Note : Les torrents dupliqués sont supprimés de la liste des torrents.",
+    "statsInfo": "Note : Les torrents dupliqués sont supprimés de la liste des torrents.",
     "addToQueue": "{{totalEpisode}} prochains épisodes ont été mis en file d'attente."
   },
   "shared": {

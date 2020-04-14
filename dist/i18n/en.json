@@ -184,6 +184,8 @@
   },
   "alerts": {
     "cancelButton": "Cancel",
+    "removeButton": "Remove",
+    "removeAlert": "Are you sure you want to delete the following?",
     "cloud-account": {
       "real-debrid": {
         "authHeader": "Real Debrid Auth",

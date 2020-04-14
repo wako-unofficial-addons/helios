@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.7.7",
+  "version": "3.7.8",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "3.7.8": "Add first version of cloud files view for PM - by @xTiCE",
     "3.7.7": "Fix let me choose action",
     "3.7.6": "Improve resume on kodi",
     "3.7.4": "Fix clipboard issue on android",

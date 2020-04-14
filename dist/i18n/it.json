@@ -159,6 +159,8 @@
   },
   "alerts": {
     "cancelButton": "Cancella",
+    "removeButton": "Rimuovere",
+    "removeAlert": "Sei sicuro di voler eliminare quanto segue?",
     "cloud-account": {
       "real-debrid": {
         "authHeader": "Autenticazione Real Debrid",
