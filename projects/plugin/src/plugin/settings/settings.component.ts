@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ModalController, Platform } from '@ionic/angular';
 import { ProvidersComponent } from './providers/providers.component';
 import { CloudAccountListComponent } from './cloud-account/cloud-account-list/cloud-account-list.component';
+import { CloudFilesComponent } from './cloud-files/cloud-account-files.component';
 import { SettingsService } from '../services/settings.service';
 import { PlayButtonAction, PlayButtonActionAndroid, PlayButtonActionIos, Settings } from '../entities/settings';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
@@ -15,10 +16,14 @@ export class SettingsComponent implements OnInit {
   settings: Settings;
 
   availablePlayButtonActions: PlayButtonAction[] = [];
-  playButtonActionsSettings: { action: PlayButtonAction, enabled: boolean }[] = [];
+  playButtonActionsSettings: { action: PlayButtonAction; enabled: boolean }[] = [];
 
-  constructor(private translate: TranslateService, private modalCtrl: ModalController, private settingsService: SettingsService, private platform: Platform) {
-  }
+  constructor(
+    private translate: TranslateService,
+    private modalCtrl: ModalController,
+    private settingsService: SettingsService,
+    private platform: Platform
+  ) {}
 
   async ngOnInit() {
     this.settings = await this.settingsService.get();
@@ -28,8 +33,7 @@ export class SettingsComponent implements OnInit {
 
     const playActions = this.platform.is('ios') ? PlayButtonActionIos.slice(0) : PlayButtonActionAndroid.slice(0);
 
-
-    this.settings.availablePlayButtonActions.forEach(action => {
+    this.settings.availablePlayButtonActions.forEach((action) => {
       if (playActions.includes(action)) {
         this.playButtonActionsSettings.push({
           action,
@@ -38,8 +42,7 @@ export class SettingsComponent implements OnInit {
       }
     });
 
-
-    playActions.reverse().forEach(action => {
+    playActions.reverse().forEach((action) => {
       if (this.settings.availablePlayButtonActions.includes(action)) {
         this.availablePlayButtonActions.push(action);
       }
@@ -52,7 +55,6 @@ export class SettingsComponent implements OnInit {
       }
     });
   }
-
 
   async openSetupWizard() {
     const modal = await this.modalCtrl.create({
@@ -77,6 +79,14 @@ export class SettingsComponent implements OnInit {
     modal.present();
   }
 
+  async openCloudFiles() {
+    const modal = await this.modalCtrl.create({
+      component: CloudFilesComponent
+    });
+
+    modal.present();
+  }
+
   doReorder(ev: CustomEvent) {
     console.log(this.playButtonActionsSettings);
 
@@ -87,9 +97,9 @@ export class SettingsComponent implements OnInit {
 
   savePlayButtonAction() {
     const actions: PlayButtonAction[] = [];
-    this.playButtonActionsSettings.forEach(action => {
+    this.playButtonActionsSettings.forEach((action) => {
       if (action.enabled) {
-        actions.push(action.action)
+        actions.push(action.action);
       }
     });
 
@@ -97,7 +107,6 @@ export class SettingsComponent implements OnInit {
 
     this.settingsService.set(this.settings);
   }
-
 
   setOpenRemoteAfterClickOnPlaySetting(openRemoteAfterClickOnPlay) {
     this.settings.openRemoteAfterClickOnPlay = openRemoteAfterClickOnPlay;

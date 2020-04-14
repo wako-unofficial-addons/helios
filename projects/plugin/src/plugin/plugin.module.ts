@@ -15,6 +15,7 @@ import { ProviderService } from './services/provider.service';
 import { ProvidersComponent } from './settings/providers/providers.component';
 import { DebridAccountService } from './services/debrid-account.service';
 import { CloudAccountListComponent } from './settings/cloud-account/cloud-account-list/cloud-account-list.component';
+import { CloudFilesComponent } from './settings/cloud-files/cloud-account-files.component';
 import { OpenButtonComponent } from './open-button/open-button.component';
 import { PluginDetailComponent } from './plugin-detail/plugin-detail.component';
 import { SourceListComponent } from './components/source-list/source-list.component';
@@ -32,6 +33,7 @@ import { SetupWizardComponent } from './components/wizard/setup-wizard.component
 import { ProviderComponent } from './components/provider/provider.component';
 import { QualityComponent } from './components/quality/quality.component';
 import { DebridAccountComponent } from './components/debrid-account/debrid-account.component';
+import { DebridFilesComponent } from './components/debrid-files/debrid-files.component';
 import { PlayButtonComponent } from './components/play-button/play-button.component';
 import { SupportComponent } from './components/support/support.component';
 import { HeliosPlaylistService } from './services/helios-playlist.service';
@@ -47,6 +49,7 @@ const components = [
   SettingsComponent,
   ProvidersComponent,
   CloudAccountListComponent,
+  CloudFilesComponent,
   OpenButtonComponent,
   PluginDetailComponent,
   SourceListComponent,
@@ -57,6 +60,7 @@ const components = [
   ProviderComponent,
   QualityComponent,
   DebridAccountComponent,
+  DebridFilesComponent,
   PlayButtonComponent,
   SupportComponent,
   FileSizeFilterComponent,

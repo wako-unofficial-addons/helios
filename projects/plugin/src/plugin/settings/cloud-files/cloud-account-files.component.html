@@ -1,0 +1,13 @@
+<ion-header class="search-list">
+  <ion-toolbar>
+    <ion-title>{{ 'pages.debrid-account.list.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="modalCtrl.dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <wk-debrid-files></wk-debrid-files>
+</ion-content>
