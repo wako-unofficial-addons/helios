@@ -83,8 +83,7 @@ export class OpenSourceService {
 
     let actions = action === 'default' ? [settings.defaultPlayButtonAction] : settings.availablePlayButtonActions;
 
-    if (actions.length === 1 && actions[0].length === 0) {
-      // Let me choose
+    if (actions.length === 1 && actions[0] === 'let-me-choose') {
       actions = settings.availablePlayButtonActions;
     }
 

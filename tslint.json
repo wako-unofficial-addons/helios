@@ -2,6 +2,8 @@
   "extends": "tslint:recommended",
   "rulesDirectory": ["codelyzer"],
   "rules": {
+    "no-string-literal": false,
+    "object-literal-shorthand": false,
     "array-type": false,
     "arrow-parens": false,
     "deprecation": {
@@ -34,6 +36,7 @@
     "trailing-comma": false,
     "no-output-on-prefix": true,
     "no-inputs-metadata-property": true,
+    "no-outputs-metadata-property": true,
     "no-host-metadata-property": true,
     "no-input-rename": true,
     "no-output-rename": true,
@@ -42,7 +45,6 @@
     "one-variable-per-declaration": false,
     "component-class-suffix": [true, "Page", "Component"],
     "directive-class-suffix": true,
-    "directive-selector": [true, "attribute", "app", "camelCase"],
-    "component-selector": [true, "element", "app", "page", "kebab-case"]
+    "variable-name": false
   }
 }

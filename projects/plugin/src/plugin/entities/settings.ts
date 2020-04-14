@@ -15,7 +15,8 @@ export declare type PlayButtonAction =
   | 'add-to-ad'
   | 'add-to-playlist'
   | 'open-infuse'
-  | 'cast';
+  | 'cast'
+  | 'let-me-choose';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -70,7 +71,7 @@ export interface SourceFilter {
 }
 
 export class Settings {
-  defaultPlayButtonAction: PlayButtonAction = null;
+  defaultPlayButtonAction: PlayButtonAction = 'let-me-choose';
 
   availablePlayButtonActions: PlayButtonAction[] = [];
 

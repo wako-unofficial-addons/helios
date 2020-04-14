@@ -14,12 +14,18 @@ export class SettingsService {
   async get() {
     let settings: Settings = await this.storage.get(this.heliosSettingsKey);
 
+    // Patch
+    if (settings && (settings.defaultPlayButtonAction === null || settings.defaultPlayButtonAction.length === 0)) {
+      settings.defaultPlayButtonAction = 'let-me-choose';
+      await this.storage.set(this.heliosSettingsKey, settings);
+    }
+
     const defaultSettings = new Settings();
     if (!settings) {
       settings = defaultSettings;
     }
 
-    Object.keys(defaultSettings).forEach(key => {
+    Object.keys(defaultSettings).forEach((key) => {
       if (settings[key] === undefined) {
         settings[key] = defaultSettings[key];
       }
