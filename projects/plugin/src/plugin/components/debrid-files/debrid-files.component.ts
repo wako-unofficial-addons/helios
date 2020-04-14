@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -16,6 +16,7 @@ export class DebridFilesComponent implements OnInit {
   public response;
 
   constructor(
+    private ngZone: NgZone,
     private openSourceService: OpenSourceService,
     private alertController: AlertController,
     private translateService: TranslateService
@@ -54,9 +55,10 @@ export class DebridFilesComponent implements OnInit {
         {
           text: this.translateService.instant('alerts.removeButton'),
           handler: async () => {
-            await PremiumizeFolderListForm.remove(itemId)
-              .toPromise()
-              .then(() => this.listAll(folderId));
+            await PremiumizeFolderListForm.remove(itemId).toPromise();
+            this.ngZone.run(() => {
+              this.listAll(folderId);
+            });
           }
         }
       ]
