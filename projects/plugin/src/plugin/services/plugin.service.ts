@@ -52,8 +52,12 @@ export class PluginService extends PluginBaseService {
 
   private async runSetupWizard() {
     const wizardSeen = await this.storage.get('helios_setup_wizard_seen_for_dev');
-    if (wizardSeen) { // Only for test purpose
-     return;
+    if (wizardSeen) {
+      // Only for test purpose
+      return;
+    }
+    if (document.location.href.match('localhost:4200')) {
+      await this.storage.set('helios_setup_wizard_seen_for_dev', true);
     }
 
     const modal = await this.modalController.create({
@@ -62,6 +66,5 @@ export class PluginService extends PluginBaseService {
     });
 
     await modal.present();
-
   }
 }
