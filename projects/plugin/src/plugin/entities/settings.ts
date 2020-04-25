@@ -70,7 +70,33 @@ export interface SourceFilter {
   excludeTags: string[];
 }
 
+export interface PremiumizeSettings {
+  disabled: boolean;
+  apiKey: string;
+  preferTranscodedFiles: boolean;
+  preferTranscodedFilesChromecast: boolean;
+}
+
+export interface RealDebridSettings {
+  disabled: boolean;
+  client_id: string;
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  client_secret: string;
+}
+
+export interface AllDebridSettings {
+  disabled: boolean;
+  apiKey: string;
+  name: string;
+}
+
 export class Settings {
+  premiumize: PremiumizeSettings = null;
+  realDebrid: RealDebridSettings = null;
+  allDebrid: AllDebridSettings = null;
+
   defaultPlayButtonAction: PlayButtonAction = 'let-me-choose';
 
   availablePlayButtonActions: PlayButtonAction[] = [];
