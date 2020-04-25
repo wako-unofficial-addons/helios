@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { catchError, last, map, switchMap } from 'rxjs/operators';
 import { concat, EMPTY, from, of, throwError } from 'rxjs';
-import { WakoHttpRequestService } from '@wako-app/mobile-sdk';
+import { WakoHttpRequestService, WakoSettingsService } from '@wako-app/mobile-sdk';
 import { Provider, ProviderList } from '../entities/provider';
-import { countryCodeToEmoji } from './tools';
+import { countryCodeToEmoji, logData } from './tools';
 import { HeliosCacheService } from './provider-cache.service';
 import { ToastService } from './toast.service';
 
@@ -14,8 +14,15 @@ const CACHE_TIMEOUT_PROVIDERS = '1d';
 @Injectable()
 export class ProviderService {
   private providerStorageKey = 'provider_key';
-  private providerUrlStorageKey = 'provider_url';
   private providerUrlsStorageKey = 'provider_urls';
+
+  /**
+   * In latest wako's sdk, it seems wako backups everything that's saved with WakoSettingsService
+   * To avoid to backup the providers' content which can be big, we're gonna backup only their URLs.
+   * As there is no callback once the user has restored its settings, we use 2 storage keys to store the providers URLs.
+   * if 'provider_urls_to_sync' differs from 'provider_urls' it means the users has restored its backup.
+   */
+  private providerUrlsToSyncStorageKey = 'provider_urls_to_sync';
 
   constructor(private storage: Storage, private toastService: ToastService) {}
 
@@ -24,11 +31,28 @@ export class ProviderService {
       this.refreshProviders();
     }, 10000);
 
-    // Patch
-    const oldUrl = await this.getProviderUrl();
-    if (oldUrl) {
-      await this.addProviderUrlToStorage(oldUrl);
-      await this.storage.remove(this.providerUrlStorageKey);
+    await this.restoreProvidersIfNeeded();
+  }
+
+  private async restoreProvidersIfNeeded() {
+    const providerUrls = await this.getProviderUrls();
+
+    const providerUrlsToSync = await WakoSettingsService.getByCategory<string[]>(this.providerUrlsToSyncStorageKey);
+    if (!providerUrlsToSync) {
+      // Not set yet
+      await WakoSettingsService.setByCategory(this.providerUrlsToSyncStorageKey, providerUrls);
+      return;
+    }
+
+    if (JSON.stringify(providerUrlsToSync) !== JSON.stringify(providerUrls)) {
+      logData('Restore providers', providerUrls, providerUrlsToSync);
+      // Restore provider
+      for (const url of providerUrls) {
+        await this.deleteProviderUrl(url).toPromise();
+      }
+      for (const url of providerUrlsToSync) {
+        await this.addProviderUrl(url).toPromise();
+      }
     }
   }
 
@@ -90,6 +114,7 @@ export class ProviderService {
   }
 
   private async setProviderUrls(urls: string[]): Promise<boolean> {
+    await WakoSettingsService.setByCategory(this.providerUrlsToSyncStorageKey, urls);
     return await this.storage.set(this.providerUrlsStorageKey, urls);
   }
 
@@ -136,13 +161,6 @@ export class ProviderService {
         );
       })
     );
-  }
-
-  /**
-   * @deprecated
-   */
-  getProviderUrl(): Promise<string> {
-    return this.storage.get(this.providerUrlStorageKey);
   }
 
   getProviders(): Promise<ProviderList> {

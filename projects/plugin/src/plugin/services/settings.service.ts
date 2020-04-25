@@ -1,24 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { Settings } from '../entities/settings';
-import { Subject } from 'rxjs';
+import { WakoSettingsService } from '@wako-app/mobile-sdk';
 
 @Injectable()
 export class SettingsService {
-  readonly heliosSettingsKey = 'helios-settings-key';
+  private readonly storageCategory = 'plugin.helios_settings';
 
-  settings$ = new Subject<Settings>();
+  settings$ = WakoSettingsService.onChangeByCategory<Settings>(this.storageCategory);
 
-  constructor(private storage: Storage) {}
+  constructor() {}
 
   async get() {
-    let settings: Settings = await this.storage.get(this.heliosSettingsKey);
-
-    // Patch
-    if (settings && (settings.defaultPlayButtonAction === null || settings.defaultPlayButtonAction.length === 0)) {
-      settings.defaultPlayButtonAction = 'let-me-choose';
-      await this.storage.set(this.heliosSettingsKey, settings);
-    }
+    let settings: Settings = await WakoSettingsService.getByCategory<Settings>(this.storageCategory);
 
     const defaultSettings = new Settings();
     if (!settings) {
@@ -35,10 +28,6 @@ export class SettingsService {
   }
 
   async set(settings: Settings) {
-    const res = await this.storage.set(this.heliosSettingsKey, settings);
-
-    this.settings$.next(settings);
-
-    return res;
+    return await WakoSettingsService.setByCategory(this.storageCategory, settings);
   }
 }

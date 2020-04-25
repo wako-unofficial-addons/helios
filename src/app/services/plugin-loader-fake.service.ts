@@ -18,8 +18,8 @@ import { PluginModule } from '../../../projects/plugin/src/plugin/plugin.module'
   providedIn: 'root'
 })
 export class PluginLoaderFakeService extends WakoPluginLoaderService {
-  constructor(storage: Storage, cfr: ComponentFactoryResolver, injector: Injector) {
-    super(storage, cfr, injector);
+  constructor(cfr: ComponentFactoryResolver, injector: Injector) {
+    super(cfr, injector);
   }
 
   install(manifestUrl: string, lang: string, loadIt = true) {

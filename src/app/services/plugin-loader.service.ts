@@ -6,7 +6,7 @@ import { Storage } from '@ionic/storage';
   providedIn: 'root'
 })
 export class PluginLoaderService extends WakoPluginLoaderService {
-  constructor(storage: Storage, cfr: ComponentFactoryResolver, injector: Injector) {
-    super(storage, cfr, injector);
+  constructor(cfr: ComponentFactoryResolver, injector: Injector) {
+    super(cfr, injector);
   }
 }

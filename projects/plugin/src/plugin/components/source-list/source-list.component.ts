@@ -118,8 +118,8 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.searchOnOpen = true;
 
     this.settingsService.settings$.subscribe((settings) => {
-      this.settings = settings;
-      this.filterSources(this.streamLinkSources, this.torrentSources, settings);
+      this.settings = settings.newValue;
+      this.filterSources(this.streamLinkSources, this.torrentSources, this.settings);
     });
   }
 
