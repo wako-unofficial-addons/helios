@@ -9,10 +9,10 @@ import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { OpenSourceService } from '../services/open-source.service';
 import { ProviderService } from '../services/provider.service';
 import { logData, setKodiOpenMediaLang } from '../services/tools';
-import { NEVER } from 'rxjs';
+import { NEVER, of } from 'rxjs';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize, timeout } from 'rxjs/operators';
 import { ProvidersComponent } from '../settings/providers/providers.component';
 import { ToastService } from '../services/toast.service';
 
@@ -119,21 +119,32 @@ export class OpenButtonComponent implements OnInit {
     }
 
     const loader = await this.loadingCtrl.create({
-      message: 'Searching for sources'
+      message: 'Searching for sources',
+      backdropDismiss: true
     });
 
     loader.present();
 
     const startTime = Date.now();
 
-    this.sourceService
+    let complete = false;
+
+    const subscription = this.sourceService
       .getBestSourceFromKodiOpenMedia(this.kodiOpenMedia)
       .pipe(
         finalize(() => {
+          complete = true;
           loader.dismiss();
+        }),
+        timeout(6000),
+        catchError(() => {
+          return of(null);
         })
       )
       .subscribe((bestSource) => {
+        complete = true;
+        loader.dismiss();
+
         const endTime = Date.now();
 
         this.elapsedTime = endTime - startTime;
@@ -154,6 +165,12 @@ export class OpenButtonComponent implements OnInit {
           this.openSourceService.open(bestSource, this.settings.defaultPlayButtonAction, this.kodiOpenMedia);
         }
       });
+
+    loader.onDidDismiss().then(() => {
+      if (!complete) {
+        subscription.unsubscribe();
+      }
+    });
   }
 
   async openSourceModal() {
