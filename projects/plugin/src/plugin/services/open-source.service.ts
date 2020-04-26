@@ -298,8 +298,6 @@ export class OpenSourceService {
 
     const buttons = [];
 
-    const streamLink = streamLinkSource.streamLinks[0];
-
     actions.forEach((action) => {
       if (action.match('elementum')) {
         return;
@@ -442,6 +440,8 @@ export class OpenSourceService {
     }
 
     copyEl.addEventListener('click', () => {
+      const streamLink = streamLinkSource.streamLinks[0];
+
       this.clipboardService.copyFromContent(streamLink.url);
       setTimeout(() => {
         // Need to be done twice to work on android
@@ -991,7 +991,7 @@ export class OpenSourceService {
       if (source.type === 'torrent') {
         urls = this.getElementumNextEpisodeUrlFromPackage(source as TorrentSource, sourceQuery);
       } else if (source instanceof StreamLinkSource) {
-        const links = source.streamLinks;
+        const links = source.streamLinks.slice(); // Copy array
         links.shift();
 
         links.forEach((link) => {
