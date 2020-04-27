@@ -99,7 +99,7 @@ export function torrentCacheStrings(episodeCode: string) {
 }
 
 export function cleanTitleCustom(title: string, replacements: { [key: string]: string }) {
-  Object.keys(replacements).forEach(charToReplace => {
+  Object.keys(replacements).forEach((charToReplace) => {
     title = title.split(charToReplace).join(replacements[charToReplace]);
   });
 
@@ -208,7 +208,7 @@ export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: stri
   }
 
   let match = false;
-  codes.episodeStrings.forEach(str => {
+  codes.episodeStrings.forEach((str) => {
     if (!match && cleanTitle(filename).indexOf(str) !== -1) {
       match = true;
     }
@@ -229,7 +229,7 @@ export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSour
     sourcesOther: []
   };
 
-  sources.forEach(source => {
+  sources.forEach((source) => {
     if (source.quality === '2160p') {
       sourceByQuality.sources2160p.push(source);
     } else if (source.quality === '1080p') {
@@ -249,23 +249,12 @@ export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSour
   return sourceByQuality;
 }
 
-
 export function getScoreMatchingName(sourceFileName: string, targetFileName: string) {
-  let sfs = sourceFileName
-    .toLowerCase()
-    .split('/')
-    .pop()
-    .trim()
-    .replace(/\./g, ' ')
-    .split(' ');
-  let tfs = targetFileName
-    .toLowerCase()
-    .trim()
-    .replace(/\./g, ' ')
-    .split(' ');
+  let sfs = sourceFileName.toLowerCase().split('/').pop().trim().replace(/\./g, ' ').split(' ');
+  let tfs = targetFileName.toLowerCase().trim().replace(/\./g, ' ').split(' ');
 
   let score = 0;
-  sfs.forEach(word => {
+  sfs.forEach((word) => {
     if (tfs.includes(word)) {
       score++;
     }
@@ -323,11 +312,11 @@ export function incrementEpisodeCode(episodeCode: string) {
   throw 'Invalid episode code';
 }
 
-export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia, isPluginUrl = false, addToKodiPlaylist = true) {
+export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia) {
   const items = [];
   let startEpisode = kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null;
 
-  videoUrls.forEach(videoUrl => {
+  videoUrls.forEach((videoUrl) => {
     if (startEpisode) {
       startEpisode++;
     }
@@ -340,8 +329,8 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
         episodeNumber: startEpisode ? startEpisode : null
       };
 
-
-      videoUrl = videoUrl +
+      videoUrl =
+        videoUrl +
         `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
 
       items.push({
@@ -350,17 +339,11 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
     }
   });
 
-
-  if (isPluginUrl || !addToKodiPlaylist) {
-    return of(true);
-  }
-
   return KodiApiService.doHttpAction('Playlist.Add', {
     playlistid: 1,
     item: items
   });
 }
-
 
 export function getElementumUrlBySourceUrl(sourceUrl: string, sourceQuery?: SourceQuery) {
   const url = `plugin://plugin.video.elementum/play`;
@@ -381,14 +364,12 @@ export function getElementumUrlBySourceUrl(sourceUrl: string, sourceQuery?: Sour
     }
   }
 
-
   return url + '?' + urlSearchParams.toString();
 }
 
-
 export function removeDuplicates<T>(data: T[], key: string) {
   const ids = [];
-  return data.filter(d => {
+  return data.filter((d) => {
     if (d[key] === null) {
       return true;
     }
@@ -414,17 +395,15 @@ export function episodeFoundInStreamLinks(streamLinks: StreamLink[], sourceQuery
   if (sourceQuery.episode && streamLinks.length > 1) {
     const episodeCode = sourceQuery.episode.episodeCode;
 
-    streamLinks.forEach(streamLink => {
+    streamLinks.forEach((streamLink) => {
       if (isEpisodeCodeMatchesFileName(episodeCode, streamLink.filename)) {
         currentEpisodeFound = true;
       }
     });
-
   }
 
   return currentEpisodeFound;
 }
-
 
 export function setKodiOpenMediaLang(kodiOpenMedia: KodiOpenMedia, lang: string) {
   if (kodiOpenMedia.titleLang === lang) {

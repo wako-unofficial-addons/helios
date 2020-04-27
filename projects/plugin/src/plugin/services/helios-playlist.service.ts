@@ -15,6 +15,22 @@ export class HeliosPlaylistService {
     this.playListService = PlaylistService.getInstance();
   }
 
+  async getAll() {
+    return await this.playListService.getAllPlaylistsSortedByDateDesc();
+  }
+
+  async getPlaylistFromVideoUrl(videoUrl: string) {
+    const playlists = await this.getAll();
+    for (const playlist of playlists) {
+      for (const item of playlist.items) {
+        if (item.url === videoUrl) {
+          return playlist;
+        }
+      }
+    }
+    return null;
+  }
+
   getPlaylist(sourceId: string, label: string, kodiOpenMedia?: KodiOpenMedia) {
     let id = sourceId;
     let poster = null;
@@ -95,5 +111,9 @@ export class HeliosPlaylistService {
     });
 
     playlist.items = items;
+  }
+
+  delete(playlist: Playlist) {
+    this.playListService.delete(playlist.id);
   }
 }

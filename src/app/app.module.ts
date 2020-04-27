@@ -11,6 +11,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
 import { PluginLoaderFakeService } from './services/plugin-loader-fake.service';
 import { PluginLoaderService } from './services/plugin-loader.service';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,7 +25,8 @@ import { PluginLoaderService } from './services/plugin-loader.service';
     AppRoutingModule,
     TranslateModule.forRoot(),
     IonicStorageModule.forRoot(),
-    PluginModule
+    PluginModule,
+    SharedModule
   ],
   providers: [
     {

@@ -1,0 +1,6 @@
+<ion-list *ngFor="let playlist of playlists">
+  <ion-list-header> Playlist {{ playlist.label }} </ion-list-header>
+  <ion-item *ngFor="let item of playlist.items" (click)="openItem(item)">
+    {{ item.label }}
+  </ion-item>
+</ion-list>
