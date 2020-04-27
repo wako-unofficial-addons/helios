@@ -1,12 +1,12 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.7.8",
+  "version": "3.7.9",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
   "author": "Davy",
   "actions": ["movies", "episodes", "episodes-item-option"],
-  "entryPointV2": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
+  "entryPointV2": "/plugin.js",
   "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/old-wako/dist/plugin.js",
   "languages": {
     "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "3.7.9": "- Bug fixes<br>- Improve resume action from playlist (will work for new playlists only).<br>- Update Greek translation thx to @aexarch<br>- Use the new wako's settings service. Warning wako now seems to backup your settings that use this service on its servers unless you disable this option in wako's settings, this means helios settings, providers URLs (not their content) and your debrid account credentials will be backup.",
     "3.7.8": "Add first version of cloud files view for PM - by @xTiCE",
     "3.7.7": "Fix let me choose action",
     "3.7.6": "Improve resume on kodi",

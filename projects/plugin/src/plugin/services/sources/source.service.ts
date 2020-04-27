@@ -19,7 +19,7 @@ import { KodiOpenMedia } from '../../entities/kodi-open-media';
 import { Platform } from '@ionic/angular';
 import { TmdbSeasonGetByIdForm } from '../tmdb/forms/seasons/tmdb-season-get-by-id.form';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
-import { getElementumUrlBySourceUrl, incrementEpisodeCode } from '../tools';
+import { incrementEpisodeCode } from '../tools';
 import { ToastService } from '../toast.service';
 
 declare const device: any;
@@ -70,51 +70,6 @@ export class SourceService {
         );
       })
     );
-  }
-
-  private getBestSourceFromCache(itemId: string | number, type: 'torrent' | 'stream') {
-    return HeliosCacheService.get<TorrentSource | StreamLinkSource>('helios_getSavedBestSource_' + type + '_' + itemId).pipe(
-      map((_source) => {
-        if (!_source) {
-          return null;
-        }
-        if (_source.type !== 'torrent') {
-          const source = _source as StreamLinkSource;
-
-          const streamLinkSource = new StreamLinkSource(
-            source.id,
-            source.title,
-            source.size,
-            source.quality,
-            source.type,
-            source.isPackage,
-            source.debridService,
-            source.provider,
-            source.originalUrl
-          );
-
-          streamLinkSource.streamLinks = source.streamLinks;
-
-          return streamLinkSource;
-        }
-        return _source;
-      })
-    );
-  }
-
-  private setBestSourceToCache(itemId: string | number, type: 'torrent' | 'stream', bestSource: TorrentSource | StreamLinkSource) {
-    if (!bestSource) {
-      return Promise.resolve();
-    }
-    if (bestSource instanceof StreamLinkSource) {
-      if (bestSource.streamLinks.length === 0) {
-        return Promise.resolve();
-      }
-      // Unset this to avoid circular json encode issue
-      bestSource.premiumizeTransferDirectdlDto = null;
-      bestSource.realDebridLinks = null;
-    }
-    return HeliosCacheService.set('helios_getSavedBestSource_' + type + '_' + itemId, bestSource, '10d');
   }
 
   getLastMoviePlayedSource() {
@@ -261,35 +216,12 @@ export class SourceService {
   }
 
   private getBestSource(sourceQuery: SourceQuery, stopIfFirstSourceIsNull = false, type?: 'torrent' | 'stream') {
-    const itemId = sourceQuery.movie
-      ? sourceQuery.movie.imdbId
-      : sourceQuery.episode
-      ? sourceQuery.episode.showTraktId + '-' + sourceQuery.episode.episodeCode
-      : null;
-
     return from(this.settingsService.get()).pipe(
       switchMap((settings) => {
         if (!type) {
           type = settings.defaultPlayButtonAction === 'open-elementum' ? 'torrent' : 'stream';
         }
-        let obs = of(null);
-        if (itemId) {
-          obs = this.getBestSourceFromCache(itemId, type);
-        }
-
-        return obs.pipe(
-          switchMap((source) => {
-            if (source) {
-              return of(source);
-            }
-            return this.getBestSourceFromProviders(sourceQuery, stopIfFirstSourceIsNull);
-          }),
-          tap((bestSource) => {
-            if (bestSource && itemId) {
-              this.setBestSourceToCache(itemId, type, bestSource);
-            }
-          })
-        );
+        return this.getBestSourceFromProviders(sourceQuery, stopIfFirstSourceIsNull);
       })
     );
   }
@@ -423,7 +355,7 @@ export class SourceService {
     );
   }
 
-  getNextEpisodeVideoUrls(sourceQuery: SourceQuery, type?: 'torrent' | 'stream') {
+  getNextEpisodeSources(sourceQuery: SourceQuery, type?: 'torrent' | 'stream') {
     let limit = sourceQuery.episode.latestAiredEpisode - sourceQuery.episode.episodeNumber;
 
     if (limit > 3) {
@@ -464,13 +396,13 @@ export class SourceService {
 
     let added = false;
 
-    const videoUrls: string[] = [];
-    const videoTranscodedUrls: string[] = [];
+    const nextSources: (TorrentSource | StreamLinkSource)[] = [];
 
     return concat(...obss).pipe(
       takeUntil(stop$),
       switchMap((data: { source: TorrentSource | StreamLinkSource; sourceQuery: SourceQuery }) => {
         const source = data.source;
+
         if (source === null) {
           return of(null);
         }
@@ -478,9 +410,7 @@ export class SourceService {
         if (source.type === 'torrent') {
           added = true;
 
-          const url = getElementumUrlBySourceUrl((source as TorrentSource).url, data.sourceQuery);
-
-          videoUrls.push(url);
+          nextSources.push(data.source);
 
           return of(true);
         } else if (source instanceof StreamLinkSource) {
@@ -491,19 +421,13 @@ export class SourceService {
 
           added = true;
 
-          source.streamLinks.forEach((link) => {
-            videoUrls.push(link.url);
-            videoTranscodedUrls.push(link.transcodedUrl);
-          });
+          nextSources.push(data.source);
         }
 
         return of(true);
       }),
       last(),
-      mapTo({
-        urls: videoUrls,
-        transcodedUrls: videoTranscodedUrls
-      })
+      mapTo(nextSources)
     );
   }
 }
