@@ -3,12 +3,8 @@ import { PremiumizeTransferDirectdlDto } from '../../dtos/transfer/premiumize-tr
 
 export class PremiumizeTransferDirectdlForm {
   static submit(torrentUrl: string) {
-    return PremiumizeApiService.get<PremiumizeTransferDirectdlDto>(
-      '/transfer/directdl',
-      {
-        src: encodeURIComponent(torrentUrl)
-      },
-      '15min'
-    );
+    return PremiumizeApiService.get<PremiumizeTransferDirectdlDto>('/transfer/directdl', {
+      src: encodeURIComponent(torrentUrl)
+    });
   }
 }
