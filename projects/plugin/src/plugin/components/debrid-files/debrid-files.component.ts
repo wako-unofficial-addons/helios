@@ -1,11 +1,17 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-
 import { OpenSourceService } from '../../services/open-source.service';
-import { PremiumizeFolderListForm } from '../../services/premiumize/forms/folder/premiumize-folder-list.form';
 import { StreamLinkSource, StreamLink } from '../../entities/stream-link-source';
 import { SourceQuery } from '../../entities/source-query';
+
+import { PremiumizeFolderListForm } from '../../services/premiumize/forms/folder/premiumize-folder-list.form';
+
+import { RealDebridFolderListForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-list.form';
+import { RealDebridTorrentsInfoForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-info.form';
+import { RealDebridUnrestrictLinkForm } from '../../services/real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
+import { RealDebridTorrentsDeleteForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-delete.form';
+import { RealDebridStreamingTranscodeForm } from '../../services/real-debrid/forms/streaming/real-debrid-streaming-transcode.form';
 
 @Component({
   selector: 'wk-debrid-files',
@@ -13,7 +19,9 @@ import { SourceQuery } from '../../entities/source-query';
   styleUrls: ['./debrid-files.component.scss']
 })
 export class DebridFilesComponent implements OnInit {
-  public response;
+  public init;
+  public responsePM;
+  public responseRD;
 
   constructor(
     private ngZone: NgZone,
@@ -23,11 +31,38 @@ export class DebridFilesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.listAll('');
+    this.listAll('', 'init');
   }
 
-  public async listAll(folderID) {
-    this.response = await PremiumizeFolderListForm.submit(folderID).toPromise();
+  public async listAll(folderID, debrid?) {
+    if (debrid == 'pm') {
+      this.init = false;
+      this.responseRD = null;
+      this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
+    } else if (debrid == 'rd') {
+      this.init = false;
+      this.responsePM = null;
+      this.listAllRD(folderID);
+    } else if (debrid == 'init') {
+      this.init = true;
+      this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
+      this.listAllRD(folderID);
+    }
+  }
+
+  public async listAllRD(folderID) {
+    let listContent;
+
+    if (folderID == '') {
+      listContent = await RealDebridFolderListForm.submit().toPromise();
+      this.responseRD = { item: false, content: listContent };
+    } else {
+      listContent = await RealDebridTorrentsInfoForm.submit(folderID).toPromise();
+      this.responseRD = {
+        item: true,
+        content: [listContent]
+      };
+    }
   }
 
   public openLink(item) {
@@ -41,7 +76,14 @@ export class DebridFilesComponent implements OnInit {
     this.openSourceService.openStreamLinkSource(streamLinkSource, sourceQuery);
   }
 
-  async removeItemAlert(itemId, itemName, folderId) {
+  public async unrestrictLink(item) {
+    let unrestrictedLink = await RealDebridUnrestrictLinkForm.submit(item).toPromise();
+    let transcodeLink = await RealDebridStreamingTranscodeForm.submit(unrestrictedLink.id).toPromise();
+
+    this.openLink(transcodeLink.liveMP4.full);
+  }
+
+  async removeItemAlert(itemId, itemName, folderId, debrid) {
     const alert = await this.alertController.create({
       header: this.translateService.instant('alerts.removeAlert'),
       message: itemName,
@@ -55,10 +97,17 @@ export class DebridFilesComponent implements OnInit {
         {
           text: this.translateService.instant('alerts.removeButton'),
           handler: async () => {
-            await PremiumizeFolderListForm.remove(itemId).toPromise();
-            this.ngZone.run(() => {
-              this.listAll(folderId);
-            });
+            if (debrid == 'pm') {
+              await PremiumizeFolderListForm.remove(itemId).toPromise();
+              this.ngZone.run(() => {
+                this.listAll(folderId);
+              });
+            } else if (debrid == 'rd') {
+              await RealDebridTorrentsDeleteForm.submit(itemId).toPromise();
+              this.ngZone.run(() => {
+                this.listAll(folderId);
+              });
+            }
           }
         }
       ]
