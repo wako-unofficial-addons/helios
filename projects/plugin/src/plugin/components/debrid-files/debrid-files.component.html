@@ -1,7 +1,7 @@
 <ion-card *ngIf="responsePM">
-  <ion-header *ngIf="init !== true">
+  <ion-header *ngIf="status !== 'init'">
     <ion-toolbar>
-      <ion-buttons slot="start">
+      <ion-buttons slot="start" *ngIf="status == 'pm' && rdActive == true">
         <ion-button (click)="listAll('', 'rd')" fill="solid" color="primary">RD</ion-button>
       </ion-buttons>
       <ion-buttons slot="end">
@@ -40,9 +40,9 @@
 </ion-card>
 
 <ion-card *ngIf="responseRD">
-  <ion-header *ngIf="init !== true">
+  <ion-header *ngIf="status !== 'init'">
     <ion-toolbar>
-      <ion-buttons slot="start">
+      <ion-buttons slot="start" *ngIf="status == 'rd' && pmActive == true">
         <ion-button (click)="listAll('', 'pm')" fill="solid" color="primary">PM</ion-button>
       </ion-buttons>
       <ion-buttons slot="end">
