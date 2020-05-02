@@ -65,10 +65,16 @@ export class DebridFilesComponent implements OnInit {
     }
   }
 
-  public openLink(item) {
+  public openLink(item, debrid?) {
     const sourceQuery = { category: 'movie' } as SourceQuery;
 
-    const streamLinkSource = new StreamLinkSource(item.id, item.name, item.size, 'other', 'cached_torrent', false, 'PM', 'PM', item.link);
+    let streamLinkSource;
+    if (debrid == 'rd') {
+      streamLinkSource = new StreamLinkSource(item.id, item.name, item.size, 'other', 'cached_torrent', false, 'RD', 'RD', item.link);
+    } else {
+      streamLinkSource = new StreamLinkSource(item.id, item.name, item.size, 'other', 'cached_torrent', false, 'PM', 'PM', item.link);
+    }
+
     const streamLink = new StreamLink(item.name, item.link, item.name, true, item.stream_link);
 
     streamLinkSource.streamLinks = [streamLink];
@@ -78,9 +84,14 @@ export class DebridFilesComponent implements OnInit {
 
   public async unrestrictLink(item) {
     let unrestrictedLink = await RealDebridUnrestrictLinkForm.submit(item).toPromise();
-    let transcodeLink = await RealDebridStreamingTranscodeForm.submit(unrestrictedLink.id).toPromise();
-
-    this.openLink(transcodeLink.liveMP4.full);
+    item = {
+      id: unrestrictedLink.id,
+      name: unrestrictedLink.filename,
+      size: unrestrictedLink.filesize,
+      link: unrestrictedLink.download,
+      stream_link: unrestrictedLink.download
+    };
+    this.openLink(item, 'rd');
   }
 
   async removeItemAlert(itemId, itemName, folderId, debrid) {
