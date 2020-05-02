@@ -11,7 +11,8 @@ import { RealDebridFolderListForm } from '../../services/real-debrid/forms/torre
 import { RealDebridTorrentsInfoForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-info.form';
 import { RealDebridUnrestrictLinkForm } from '../../services/real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
 import { RealDebridTorrentsDeleteForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-delete.form';
-import { RealDebridStreamingTranscodeForm } from '../../services/real-debrid/forms/streaming/real-debrid-streaming-transcode.form';
+
+import { DebridAccountService } from '../../services/debrid-account.service';
 
 @Component({
   selector: 'wk-debrid-files',
@@ -19,15 +20,20 @@ import { RealDebridStreamingTranscodeForm } from '../../services/real-debrid/for
   styleUrls: ['./debrid-files.component.scss']
 })
 export class DebridFilesComponent implements OnInit {
-  public init;
+  public status;
+
   public responsePM;
   public responseRD;
+
+  public pmActive;
+  public rdActive;
 
   constructor(
     private ngZone: NgZone,
     private openSourceService: OpenSourceService,
     private alertController: AlertController,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private debridAccountService: DebridAccountService
   ) {}
 
   ngOnInit() {
@@ -36,17 +42,31 @@ export class DebridFilesComponent implements OnInit {
 
   public async listAll(folderID, debrid?) {
     if (debrid == 'pm') {
-      this.init = false;
+      this.status = 'pm';
       this.responseRD = null;
+
       this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
     } else if (debrid == 'rd') {
-      this.init = false;
+      this.status = 'rd';
       this.responsePM = null;
+
       this.listAllRD(folderID);
     } else if (debrid == 'init') {
-      this.init = true;
-      this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
-      this.listAllRD(folderID);
+      this.status = 'init';
+
+      this.debridAccountService.getPremiumizeSettings().then(async (settings) => {
+        if (settings !== null) {
+          this.pmActive = true;
+          this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
+        }
+      });
+
+      this.debridAccountService.getRealDebridSettings().then((settings) => {
+        if (settings !== null) {
+          this.rdActive = true;
+          this.listAllRD(folderID);
+        }
+      });
     }
   }
 
