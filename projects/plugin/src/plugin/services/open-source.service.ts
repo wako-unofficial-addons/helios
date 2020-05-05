@@ -610,11 +610,7 @@ export class OpenSourceService {
           ' '
         );
 
-    const poster = !kodiOpenMedia
-      ? null
-      : kodiOpenMedia.movie
-      ? kodiOpenMedia.movie.images_url.poster
-      : kodiOpenMedia.show.images_url.poster;
+    const poster = !kodiOpenMedia ? null : kodiOpenMedia.movie ? kodiOpenMedia.movie.imagesUrl.poster : kodiOpenMedia.show.imagesUrl.poster;
 
     if (kodiOpenMedia) {
       openMedia = getOpenMediaFromKodiOpenMedia(kodiOpenMedia);
@@ -1045,7 +1041,7 @@ export class OpenSourceService {
 
       if (kodiOpenMedia) {
         title = kodiOpenMedia.movie ? kodiOpenMedia.movie.title : kodiOpenMedia.show.title + ' ' + kodiOpenMedia.episode.code;
-        posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.images_url.poster : kodiOpenMedia.show.images_url.poster;
+        posterUrl = kodiOpenMedia.movie ? kodiOpenMedia.movie.imagesUrl.poster : kodiOpenMedia.show.imagesUrl.poster;
       }
 
       let playVideo = false;
