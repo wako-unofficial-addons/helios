@@ -15,7 +15,7 @@ export class RealDebridSourcesFromTorrentsQuery {
 
   private static getAllHash(torrents: TorrentSource[]) {
     const allHashes = [];
-    torrents.forEach(torrent => {
+    torrents.forEach((torrent) => {
       if (torrent.hash && !allHashes.includes(torrent.hash)) {
         allHashes.push(torrent.hash);
       }
@@ -32,9 +32,8 @@ export class RealDebridSourcesFromTorrentsQuery {
     const allHashes = this.getAllHash(torrents);
 
     return RealDebridTorrentsInstantAvailabilityForm.submit(allHashes).pipe(
-      map(realDebridTorrentsInstantAvailabilityDto => {
-
-        torrents.forEach(torrent => {
+      map((realDebridTorrentsInstantAvailabilityDto) => {
+        torrents.forEach((torrent) => {
           if (!torrent.hash) {
             return;
           }
@@ -46,10 +45,8 @@ export class RealDebridSourcesFromTorrentsQuery {
           // Take the group with the most video files
           let groupIndex = 0;
 
-
           if (sourceQuery.episode) {
             const groupWithFile = [];
-
 
             let firstVideoFileIndex = null;
 
@@ -57,7 +54,7 @@ export class RealDebridSourcesFromTorrentsQuery {
 
             let episodeFound = false;
             data.rd.forEach((rd, index) => {
-              Object.keys(rd).forEach(key => {
+              Object.keys(rd).forEach((key) => {
                 const file = rd[key];
 
                 if (!firstVideoFileIndex && file.filename.match(/.mkv|.mp4/)) {
@@ -97,16 +94,10 @@ export class RealDebridSourcesFromTorrentsQuery {
             torrent.url
           );
 
-
           const fileIds = Object.getOwnPropertyNames(data.rd[groupIndex]);
 
-          debridSource.realDebridLinks = RealDebridGetCachedUrlQuery.getData(
-            torrent.url,
-            fileIds.join(','),
-            torrent.isPackage
-          ).pipe(
-            switchMap(links => {
-
+          debridSource.realDebridLinks = RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds).pipe(
+            switchMap((links) => {
               if (sourceQuery.movie && links.length === 1) {
                 const link = links.slice(0).pop();
 
@@ -115,25 +106,19 @@ export class RealDebridSourcesFromTorrentsQuery {
 
                 if (!commonVideoExtensions.includes(ext) || ext === '.rar') {
                   // try to get all files
-                  return RealDebridGetCachedUrlQuery.getData(
-                    torrent.url,
-                    'all',
-                    torrent.isPackage
-                  );
+                  return RealDebridGetCachedUrlQuery.getData(torrent.url, []);
                 }
-
               }
               return of(links);
             })
           );
 
           streamLinkSources.push(debridSource);
-
         });
 
         return streamLinkSources;
       }),
-      catchError(err => {
+      catchError((err) => {
         console.log('RD err', err);
         return of(streamLinkSources);
       })
