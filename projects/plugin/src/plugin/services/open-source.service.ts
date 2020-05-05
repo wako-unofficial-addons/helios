@@ -331,6 +331,9 @@ export class OpenSourceService {
         case 'copy-url':
           buttonOptions.role = 'copy-url';
           buttonOptions.icon = 'copy';
+          buttonOptions.handler = () => {
+            this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
+          };
           break;
 
         case 'share-url':
