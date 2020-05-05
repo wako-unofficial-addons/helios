@@ -39,14 +39,14 @@ export class HeliosPlaylistService {
       if (kodiOpenMedia.movie) {
         id = kodiOpenMedia.movie.traktId.toString();
         label = kodiOpenMedia.movie.title;
-        if (kodiOpenMedia.movie.images_url) {
-          poster = kodiOpenMedia.movie.images_url.poster;
+        if (kodiOpenMedia.movie.imagesUrl) {
+          poster = kodiOpenMedia.movie.imagesUrl.poster;
         }
       } else if (kodiOpenMedia.show) {
         id = kodiOpenMedia.show.traktId.toString();
         label = kodiOpenMedia.show.title + ' S' + kodiOpenMedia.episode.traktSeasonNumber.toString().padStart(2, '0');
-        if (kodiOpenMedia.show.images_url) {
-          poster = kodiOpenMedia.show.images_url.poster;
+        if (kodiOpenMedia.show.imagesUrl) {
+          poster = kodiOpenMedia.show.imagesUrl.poster;
         }
       }
     }
