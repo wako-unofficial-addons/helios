@@ -10,62 +10,33 @@ import { RealDebridTorrentsAddMagnetDto } from '../../../services/real-debrid/dt
 import { HeliosCacheService } from '../../../services/provider-cache.service';
 
 export class RealDebridGetCachedUrlQuery {
-  static getData(url: string, fileId: string, isPackage: boolean): Observable<RealDebridUnrestrictLinkDto[]> {
+  static getData(url: string, fileIds: string[]): Observable<RealDebridUnrestrictLinkDto[]> {
+    const fileId = fileIds.length === 0 ? 'all' : fileIds.join(',');
     const cacheKey = 'setCachedLinksRD_' + url + fileId;
 
     return HeliosCacheService.get<RealDebridUnrestrictLinkDto[]>(cacheKey).pipe(
-      switchMap(cacheLinks => {
+      switchMap((cacheLinks) => {
         if (cacheLinks) {
           return of(cacheLinks);
         }
 
         let torrentInfo: RealDebridTorrentsAddMagnetDto = null;
         return RealDebridTorrentsAddMagnetForm.submit(url).pipe(
-          switchMap(t => {
+          switchMap((t) => {
             torrentInfo = t;
             return RealDebridTorrentsSelectFilesForm.submit(t.id, fileId).pipe(
               switchMap(() => {
                 return RealDebridTorrentsInfoForm.submit(t.id);
               }),
-              switchMap(info => {
+              switchMap((info) => {
                 const links: RealDebridUnrestrictLinkDto[] = [];
 
-                if (info.progress === 100 && info.links.length > 0) {
-                  if (!isPackage) {
-                    let foundLink = null;
-
-                    let fileSize = 0;
-                    let linkIndex = 0;
-
-                    const selectedFiles = info.files.filter(file => file.selected);
-
-                    selectedFiles.forEach((file, index) => {
-                      if (file.selected && file.bytes > fileSize) {
-                        fileSize = file.bytes;
-                        linkIndex = index;
-                      }
-                    });
-                    if (info.links[linkIndex]) {
-                      foundLink = info.links[linkIndex];
-                    } else {
-                      foundLink = info.links.pop();
-                    }
-
-
-                    return RealDebridUnrestrictLinkForm.submit(foundLink).pipe(
-                      map(link => {
-                        links.push(link);
-
-                        return links;
-                      })
-                    );
-                  }
-
+                if (info.links.length > 0) {
                   const obs = [];
-                  info.links.forEach(link => {
+                  info.links.forEach((link) => {
                     obs.push(
                       RealDebridUnrestrictLinkForm.submit(link).pipe(
-                        map(l => {
+                        map((l) => {
                           links.push(l);
                         })
                       )
