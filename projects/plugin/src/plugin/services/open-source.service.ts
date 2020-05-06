@@ -110,7 +110,8 @@ export class OpenSourceService {
   private async getStreamLinksWithLoader(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery) {
     const loader = await this.loadingController.create({
       message: 'Please wait...',
-      spinner: 'crescent'
+      spinner: 'crescent',
+      backdropDismiss: true
     });
 
     loader.present();
