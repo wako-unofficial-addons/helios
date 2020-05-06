@@ -23,16 +23,15 @@ import { AllDebridGetStreamLinkQuery } from '../../queries/debrids/all-debrid/al
 
 @Injectable()
 export class CachedTorrentSourceService {
-  constructor() {
-  }
+  constructor() {}
 
   getFromTorrents(torrents: TorrentSource[], sourceQuery: SourceQuery) {
     return PremiumizeSourcesFromTorrentsQuery.getData(torrents).pipe(
-      switchMap(pmSources => {
+      switchMap((pmSources) => {
         return RealDebridSourcesFromTorrentsQuery.getData(torrents, sourceQuery).pipe(
-          switchMap(rdSources => {
+          switchMap((rdSources) => {
             return AllDebridSourcesFromTorrentsQuery.getData(torrents).pipe(
-              map(adSources => {
+              map((adSources) => {
                 return adSources.concat(...pmSources, ...rdSources);
               })
             );
@@ -43,10 +42,6 @@ export class CachedTorrentSourceService {
   }
 
   getStreamLinks(source: StreamLinkSource, sourceQuery: SourceQuery) {
-    if (source.streamLinks) {
-      return of(source.streamLinks);
-    }
-
     let obs: Observable<StreamLink[]> = of(source.streamLinks);
     if (source.premiumizeTransferDirectdlDto) {
       obs = PremiumizeGetStreamLinkQuery.getData(source, sourceQuery);
@@ -83,7 +78,7 @@ export class CachedTorrentSourceService {
     if (lastPlayedSource) {
       let maxScore = 0;
       let source: StreamLinkSource;
-      streamLinkSources.forEach(d => {
+      streamLinkSources.forEach((d) => {
         const score = getScoreMatchingName(lastPlayedSource.title, d.title);
         if (score > maxScore) {
           source = d;
@@ -98,7 +93,7 @@ export class CachedTorrentSourceService {
     let hasPmSource = false;
     let hasPmPremiumAccount = true;
 
-    allSources.forEach(source => {
+    allSources.forEach((source) => {
       if (source.debridService === 'PM') {
         hasPmSource = true;
       }
@@ -115,7 +110,7 @@ export class CachedTorrentSourceService {
             }
 
             return this.getStreamLinks(source, sourceQuery).pipe(
-              catchError(e => {
+              catchError((e) => {
                 return of([]);
               }),
               map((streamLinks: StreamLink[]) => {
@@ -143,7 +138,7 @@ export class CachedTorrentSourceService {
     let checkPmAccount = of(true);
     if (hasPmSource) {
       checkPmAccount = PremiumizeAccountInfoForm.submit().pipe(
-        map(data => {
+        map((data) => {
           if (data.status === 'success' && data.premium_until === false) {
             hasPmPremiumAccount = false;
           }
@@ -155,12 +150,12 @@ export class CachedTorrentSourceService {
     return checkPmAccount.pipe(
       switchMap(() => {
         return from(bestSourceObss).pipe(
-          concatMap(result => result),
+          concatMap((result) => result),
           last(),
           map(() => {
             if (!bestSource && hasPmSource && !hasPmPremiumAccount && allSources.length > 0) {
               // Free PM account only, since PM sources are almost all reliable, let take the first one < 5gb
-              allSources.forEach(source => {
+              allSources.forEach((source) => {
                 if (!bestSource && source.size < 5 * 1024 * 1024 * 1024) {
                   bestSource = source;
                 }
