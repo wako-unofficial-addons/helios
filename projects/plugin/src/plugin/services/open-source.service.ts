@@ -113,6 +113,8 @@ export class OpenSourceService {
       spinner: 'crescent'
     });
 
+    loader.present();
+
     try {
       return await this.cachedTorrentService.getStreamLinks(streamLinkSource, sourceQuery).toPromise();
     } catch (err) {
