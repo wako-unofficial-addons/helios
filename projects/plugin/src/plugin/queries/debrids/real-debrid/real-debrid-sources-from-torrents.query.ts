@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 import { RealDebridTorrentsInstantAvailabilityForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { SourceQuery } from '../../../entities/source-query';
 import { getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../../services/tools';
 import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
@@ -127,16 +127,17 @@ export class RealDebridSourcesFromTorrentsQuery {
 
             if (groupIndex !== null) {
               const fileIds = Object.getOwnPropertyNames(data.rd[groupIndex]);
-              RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds).subscribe(
-                (links) => {
-                  loader.dismiss();
-                  observer.next(links);
-                  observer.complete();
-                },
-                (err) => {
-                  observer.error(err);
-                }
-              );
+              RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds)
+                .pipe(finalize(() => loader.dismiss()))
+                .subscribe(
+                  (links) => {
+                    observer.next(links);
+                    observer.complete();
+                  },
+                  (err) => {
+                    observer.error(err);
+                  }
+                );
               return;
             }
 
@@ -147,26 +148,43 @@ export class RealDebridSourcesFromTorrentsQuery {
                 if (!file.filename || file.filename.match(/.mkv|.mp4/) === null) {
                   return;
                 }
-                buttons.push({
-                  text: file.filename + ' - ' + this.getSizeStr(file.filesize),
-                  handler: () => {
-                    const fileIds = Object.getOwnPropertyNames(data.rd[index]);
-                    RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds).subscribe(
-                      (links) => {
-                        let foundLink = null;
-                        for (const link of links) {
-                          if (link.filename === file.filename && link.filesize === file.filesize) {
-                            foundLink = link;
-                          }
-                        }
 
-                        observer.next(foundLink ? [foundLink] : links);
-                        observer.complete();
-                      },
-                      (err) => {
-                        observer.error(err);
-                      }
-                    );
+                const filename = file.filename + ' - ' + this.getSizeStr(file.filesize);
+
+                buttons.push({
+                  text: filename,
+                  handler: () => {
+                    let loader2;
+                    loader
+                      .create({
+                        message: 'Please wait...',
+                        spinner: 'crescent',
+                        backdropDismiss: true
+                      })
+                      .then((l) => {
+                        loader2 = l;
+                        loader2.present();
+                      });
+
+                    const fileIds = Object.getOwnPropertyNames(data.rd[index]);
+                    RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds)
+                      .pipe(finalize(() => loader2.dismiss()))
+                      .subscribe(
+                        (links) => {
+                          let foundLink = null;
+                          for (const link of links) {
+                            if (link.filename === file.filename && link.filesize === file.filesize) {
+                              foundLink = link;
+                            }
+                          }
+
+                          observer.next(foundLink ? [foundLink] : links);
+                          observer.complete();
+                        },
+                        (err) => {
+                          observer.error(err);
+                        }
+                      );
                   }
                 });
               });
