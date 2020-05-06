@@ -36,6 +36,7 @@ export class SourceUtils {
     switch (true) {
       case title.match('2160p') !== null:
       case title.match(' 4K') !== null:
+      case title.match('.4K') !== null:
         quality = '2160p';
         break;
       case title.match('1080p') !== null:
