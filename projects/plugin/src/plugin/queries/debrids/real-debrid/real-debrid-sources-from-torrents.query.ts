@@ -1,16 +1,39 @@
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { RealDebridTorrentsInstantAvailabilityForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { RealDebridGetCachedUrlQuery } from './real-debrid-get-cached-url.query';
 import { SourceQuery } from '../../../entities/source-query';
 import { getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../../services/tools';
 import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
 import { TorrentSource } from '../../../entities/torrent-source';
 import { StreamLinkSource } from '../../../entities/stream-link-source';
+import { RealDebridUnrestrictLinkDto } from '../../../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
+import { RealDebridGetCachedUrlQuery } from './real-debrid-get-cached-url.query';
+import { ActionSheetController, LoadingController } from '@ionic/angular';
 
 export class RealDebridSourcesFromTorrentsQuery {
   private static hasRealDebrid() {
     return !!RealDebridApiService.getToken();
+  }
+
+  private static getSizeStr(size: number): string {
+    let res = size;
+    let unit = 'B';
+
+    if (size >= 1099511627776) {
+      res = size / 1099511627776;
+      unit = 'TB';
+    } else if (size >= 1073741824) {
+      res = size / 1073741824;
+      unit = 'GB';
+    } else if (size >= 1048576) {
+      res = size / 1048576;
+      unit = 'MB';
+    } else if (size >= 1024) {
+      res = size / 1024;
+      unit = 'KB';
+    }
+
+    return Math.round(res * 100) / 100 + ' ' + unit;
   }
 
   private static getAllHash(torrents: TorrentSource[]) {
@@ -43,7 +66,7 @@ export class RealDebridSourcesFromTorrentsQuery {
           }
 
           // Take the group with the most video files
-          let groupIndex = 0;
+          let groupIndex = sourceQuery.query ? null : 0;
 
           if (sourceQuery.episode) {
             const groupWithFile = [];
@@ -79,6 +102,10 @@ export class RealDebridSourcesFromTorrentsQuery {
             }
           }
 
+          if (sourceQuery.query && Object.keys(data.rd).length < 2) {
+            groupIndex = 0;
+          }
+
           torrent.isCached = true;
           torrent.cachedService = 'RD';
 
@@ -94,9 +121,80 @@ export class RealDebridSourcesFromTorrentsQuery {
             torrent.url
           );
 
-          const fileIds = Object.getOwnPropertyNames(data.rd[groupIndex]);
+          debridSource.realDebridLinks = new Observable<RealDebridUnrestrictLinkDto[]>((observer) => {
+            // That's ugly, but simplest way to get the loader that will be open in openSourceService.getStreamLinksWithLoader()
+            const loader = new LoadingController();
 
-          debridSource.realDebridLinks = RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds).pipe(
+            if (groupIndex !== null) {
+              const fileIds = Object.getOwnPropertyNames(data.rd[groupIndex]);
+              RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds).subscribe(
+                (links) => {
+                  loader.dismiss();
+                  observer.next(links);
+                  observer.complete();
+                },
+                (err) => {
+                  observer.error(err);
+                }
+              );
+              return;
+            }
+
+            const buttons = [];
+            data.rd.forEach((rd, index) => {
+              Object.keys(rd).forEach((key) => {
+                const file = rd[key];
+                if (!file.filename || file.filename.match(/.mkv|.mp4/) === null) {
+                  return;
+                }
+                buttons.push({
+                  text: file.filename + ' - ' + this.getSizeStr(file.filesize),
+                  handler: () => {
+                    const fileIds = Object.getOwnPropertyNames(data.rd[index]);
+                    RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds).subscribe(
+                      (links) => {
+                        let foundLink = null;
+                        for (const link of links) {
+                          if (link.filename === file.filename && link.filesize === file.filesize) {
+                            foundLink = link;
+                          }
+                        }
+
+                        observer.next(foundLink ? [foundLink] : links);
+                        observer.complete();
+                      },
+                      (err) => {
+                        observer.error(err);
+                      }
+                    );
+                  }
+                });
+              });
+            });
+
+            if (buttons.length > 5) {
+              buttons.push({
+                text: 'Cancel',
+                icon: 'close',
+                role: 'cancel',
+                handler: () => {
+                  console.log('Cancel clicked');
+                }
+              });
+            }
+
+            const action = new ActionSheetController();
+            action
+              .create({
+                header: 'Select a file',
+                buttons
+              })
+              .then((a) => {
+                a.present();
+
+                loader.dismiss();
+              });
+          }).pipe(
             switchMap((links) => {
               if (sourceQuery.movie && links.length === 1) {
                 const link = links.slice(0).pop();
