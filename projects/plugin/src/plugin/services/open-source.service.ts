@@ -114,7 +114,7 @@ export class OpenSourceService {
       backdropDismiss: true
     });
 
-    loader.present();
+    await loader.present();
 
     try {
       return await this.cachedTorrentService.getStreamLinks(streamLinkSource, sourceQuery).toPromise();
@@ -132,7 +132,7 @@ export class OpenSourceService {
       }
       throw err;
     } finally {
-      loader.dismiss();
+      await loader.dismiss();
     }
   }
 
