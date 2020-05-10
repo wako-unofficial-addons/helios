@@ -16,18 +16,21 @@ export class SourceQueryFromKodiOpenMediaQuery {
 
     const sourceQuery = getSourceQueryEpisode(kodiOpenMedia.show, kodiOpenMedia.episode);
 
+    if (!kodiOpenMedia.show.tmdbId) {
+      return of(sourceQuery);
+    }
 
     return TmdbSeasonGetByIdForm.submit(kodiOpenMedia.show.tmdbId, kodiOpenMedia.episode.traktSeasonNumber).pipe(
       catchError(() => {
         return of(null);
       }),
-      map(tmdbSeason => {
+      map((tmdbSeason) => {
         if (!tmdbSeason) {
           return sourceQuery;
         }
         const today = new Date();
         tmdbSeason.episodes.forEach((episode) => {
-          if (episode.episode_number === kodiOpenMedia.episode.traktNumber) {
+          if (!sourceQuery.episode.absoluteNumber && episode.episode_number === kodiOpenMedia.episode.traktNumber) {
             sourceQuery.episode.absoluteNumber = episode.production_code;
           }
 
@@ -37,16 +40,19 @@ export class SourceQueryFromKodiOpenMediaQuery {
           }
         });
 
-
         return sourceQuery;
       }),
-      switchMap(sourceQuery => {
-        if (sourceQuery.episode && sourceQuery.episode.isAnime && !sourceQuery.episode.absoluteNumber) {
-          return TvdbEpisodeForm.submit(sourceQuery.episode.tvdbId)
-            .pipe(map(data => {
+      switchMap((sourceQuery) => {
+        if (sourceQuery.episode && sourceQuery.episode.tvdbId && sourceQuery.episode.isAnime && !sourceQuery.episode.absoluteNumber) {
+          return TvdbEpisodeForm.submit(sourceQuery.episode.tvdbId).pipe(
+            map((data) => {
               sourceQuery.episode.absoluteNumber = data.data.absoluteNumber;
               return sourceQuery;
-            }))
+            }),
+            catchError((err) => {
+              return of(sourceQuery);
+            })
+          );
         }
 
         return of(sourceQuery);
