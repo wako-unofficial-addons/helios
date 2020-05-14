@@ -16,11 +16,10 @@ export class SourceQueryFromKodiOpenMediaQuery {
 
     const sourceQuery = getSourceQueryEpisode(kodiOpenMedia.show, kodiOpenMedia.episode);
 
-    if (!kodiOpenMedia.show.tmdbId) {
+    if (!kodiOpenMedia.show.ids.tmdb) {
       return of(sourceQuery);
     }
-
-    return TmdbSeasonGetByIdForm.submit(kodiOpenMedia.show.tmdbId, kodiOpenMedia.episode.traktSeasonNumber).pipe(
+    return TmdbSeasonGetByIdForm.submit(kodiOpenMedia.show.ids.tmdb, kodiOpenMedia.episode.seasonNumber).pipe(
       catchError(() => {
         return of(null);
       }),
@@ -30,7 +29,7 @@ export class SourceQueryFromKodiOpenMediaQuery {
         }
         const today = new Date();
         tmdbSeason.episodes.forEach((episode) => {
-          if (!sourceQuery.episode.absoluteNumber && episode.episode_number === kodiOpenMedia.episode.traktNumber) {
+          if (!sourceQuery.episode.absoluteNumber && episode.episode_number === kodiOpenMedia.episode.number) {
             sourceQuery.episode.absoluteNumber = episode.production_code;
           }
 

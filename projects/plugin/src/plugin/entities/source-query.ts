@@ -1,4 +1,3 @@
-
 export class SourceMovieQuery {
   imdbId: string;
   tmdbId: number;
@@ -9,8 +8,6 @@ export class SourceMovieQuery {
   originalTitle?: string;
 }
 
-
-
 export class SourceEpisodeQuery extends SourceMovieQuery {
   episodeNumber: number;
   seasonNumber: number;
@@ -20,8 +17,8 @@ export class SourceEpisodeQuery extends SourceMovieQuery {
   absoluteNumber?: number;
   latestAiredEpisode?: number;
   isAnime: boolean;
-  tvdbId: number;
-  showTvdbId: number;
+  tvdbId: string;
+  showTvdbId: string;
   showTraktId: number;
   showTmdbId: number;
 }
