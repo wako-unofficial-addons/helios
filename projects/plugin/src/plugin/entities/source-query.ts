@@ -18,9 +18,12 @@ export class SourceEpisodeQuery extends SourceMovieQuery {
   latestAiredEpisode?: number;
   isAnime: boolean;
   tvdbId: string;
+  trakId: number;
+  simklId: number;
   showTvdbId: string;
   showTraktId: number;
   showTmdbId: number;
+  showSimklId: number;
 }
 
 export interface SourceQuery {

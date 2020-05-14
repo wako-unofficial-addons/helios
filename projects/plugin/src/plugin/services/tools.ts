@@ -283,12 +283,14 @@ export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumb
   sourceEpisodeQuery.seasonNumber = episode.seasonNumber;
   sourceEpisodeQuery.episodeCode = episode.code;
   sourceEpisodeQuery.seasonCode = 'S' + add0(episode.seasonNumber).toString();
+  sourceEpisodeQuery.trakId = episode.ids.trakt;
   sourceEpisodeQuery.imdbId = episode.ids.imdb;
   sourceEpisodeQuery.tvdbId = episode.ids.tvdb;
   sourceEpisodeQuery.tmdbId = episode.ids.tmdb;
   sourceEpisodeQuery.showTvdbId = show.ids.tvdb;
   sourceEpisodeQuery.showTraktId = show.ids.trakt;
   sourceEpisodeQuery.showTmdbId = show.ids.tmdb;
+  sourceEpisodeQuery.showSimklId = show.ids.simkl;
   sourceEpisodeQuery.title = show.title;
   sourceEpisodeQuery.episodeTitle = episode.title;
   sourceEpisodeQuery.alternativeTitles = show.alternativeTitles;
