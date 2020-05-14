@@ -37,13 +37,13 @@ export class HeliosPlaylistService {
 
     if (kodiOpenMedia) {
       if (kodiOpenMedia.movie) {
-        id = kodiOpenMedia.movie.ids.trakt.toString();
+        id = (kodiOpenMedia.movie.ids.trakt ?? kodiOpenMedia.movie.ids.imdb).toString();
         label = kodiOpenMedia.movie.title;
         if (kodiOpenMedia.movie.imagesUrl) {
           poster = kodiOpenMedia.movie.imagesUrl.poster;
         }
       } else if (kodiOpenMedia.show) {
-        id = kodiOpenMedia.show.ids.trakt.toString();
+        id = (kodiOpenMedia.show.ids.trakt ?? kodiOpenMedia.show.ids.simkl).toString();
         label = kodiOpenMedia.show.title + ' S' + kodiOpenMedia.episode.seasonNumber.toString().padStart(2, '0');
         if (kodiOpenMedia.show.imagesUrl) {
           poster = kodiOpenMedia.show.imagesUrl.poster;
@@ -90,10 +90,10 @@ export class HeliosPlaylistService {
       return url;
     }
 
-    if (openMedia.movieTraktId) {
-      return openMedia.movieTraktId;
-    } else if (openMedia.showTraktId) {
-      return openMedia.showTraktId + '-' + openMedia.seasonNumber + '-' + openMedia.episodeNumber;
+    if (openMedia.movieIds) {
+      return JSON.stringify(openMedia.movieIds);
+    } else if (openMedia.showIds) {
+      return JSON.stringify(openMedia.showIds) + '-' + openMedia.seasonNumber + '-' + openMedia.episodeNumber;
     }
     return null;
   }

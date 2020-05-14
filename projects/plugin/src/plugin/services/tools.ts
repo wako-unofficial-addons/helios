@@ -202,11 +202,12 @@ export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: stri
   const ext = '.' + filename.split('.').pop();
   const commonVideoExtensions = getSupportedMedia('video').split('|');
 
-  if (!commonVideoExtensions.includes(ext)) {
+  if (!commonVideoExtensions.includes(ext) || !codes) {
     return false;
   }
 
   let match = false;
+
   codes.episodeStrings.forEach((str) => {
     if (!match && cleanTitle(filename).indexOf(str) !== -1) {
       match = true;
@@ -308,7 +309,10 @@ export function incrementEpisodeCode(episodeCode: string) {
   if (matches) {
     return getEpisodeCode(+matches[1], +matches[2] + 1);
   }
-  throw 'Invalid episode code';
+  if (episodeCode.match('Ep')) {
+    return 'Ep ' + (+episodeCode.replace('Ep ', '') + 1);
+  }
+  throw new Error('Invalid episode code');
 }
 
 export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia) {
