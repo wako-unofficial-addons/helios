@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlaylistVideo, PluginBaseService } from '@wako-app/mobile-sdk';
+import { Episode, Movie, PlaylistVideo, PluginBaseService, Show } from '@wako-app/mobile-sdk';
 import { TranslateService } from '@ngx-translate/core';
 import { logData } from './tools';
 import { DebridAccountService } from './debrid-account.service';
@@ -120,5 +120,29 @@ export class PluginService extends PluginBaseService {
     });
 
     await modal.present();
+  }
+
+  beforeMovieMiddleware(movie: Movie): Promise<Movie> {
+    throw new Error('Method not implemented.');
+  }
+
+  afterMovieMiddleware(movie: Movie): Promise<Movie> {
+    throw new Error('Method not implemented.');
+  }
+
+  beforeShowMiddleware(show: Show): Promise<Show> {
+    throw new Error('Method not implemented.');
+  }
+
+  afterShowMiddleware(show: Show): Promise<Show> {
+    throw new Error('Method not implemented.');
+  }
+
+  beforeEpisodeMiddleware(show: Show, episode: Episode): Promise<Episode> {
+    throw new Error('Method not implemented.');
+  }
+
+  afterEpisodeMiddleware(show: Show, episode: Episode): Promise<Episode> {
+    throw new Error('Method not implemented.');
   }
 }

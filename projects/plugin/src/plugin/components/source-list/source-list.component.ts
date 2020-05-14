@@ -187,7 +187,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
       if (this.kodiOpenMedia.movie) {
         this.lastPlayedSource = await this.sourceService.getLastMoviePlayedSource().toPromise();
       } else if (this.kodiOpenMedia.show && this.kodiOpenMedia.episode) {
-        this.lastPlayedSource = await this.sourceService.getLastEpisodePlayedSource(this.kodiOpenMedia.show.traktId).toPromise();
+        this.lastPlayedSource = await this.sourceService.getLastEpisodePlayedSource(this.kodiOpenMedia.show.ids.trakt).toPromise();
       }
     }
 

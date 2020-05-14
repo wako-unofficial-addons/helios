@@ -4,7 +4,6 @@ import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
 import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
-import { of } from 'rxjs';
 
 export function logData(...data: any) {
   wakoLog('plugin.helios', data);
@@ -266,8 +265,8 @@ export function getScoreMatchingName(sourceFileName: string, targetFileName: str
 export function getSourceQueryMovie(movie: Movie) {
   const sourceMovieQuery = new SourceMovieQuery();
 
-  sourceMovieQuery.imdbId = movie.imdbId;
-  sourceMovieQuery.tmdbId = movie.tmdbId;
+  sourceMovieQuery.imdbId = movie.ids.imdb;
+  sourceMovieQuery.tmdbId = movie.ids.tmdb;
   sourceMovieQuery.title = movie.title;
   sourceMovieQuery.alternativeTitles = movie.alternativeTitles;
   sourceMovieQuery.originalTitle = movie.originalTitle;
@@ -279,22 +278,22 @@ export function getSourceQueryMovie(movie: Movie) {
 export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumber?: number) {
   const sourceEpisodeQuery = new SourceEpisodeQuery();
 
-  sourceEpisodeQuery.episodeNumber = episode.traktNumber;
-  sourceEpisodeQuery.seasonNumber = episode.traktSeasonNumber;
+  sourceEpisodeQuery.episodeNumber = episode.number;
+  sourceEpisodeQuery.seasonNumber = episode.seasonNumber;
   sourceEpisodeQuery.episodeCode = episode.code;
-  sourceEpisodeQuery.seasonCode = 'S' + add0(episode.traktSeasonNumber).toString();
-  sourceEpisodeQuery.imdbId = episode.imdbId;
-  sourceEpisodeQuery.tvdbId = episode.tvdbId;
-  sourceEpisodeQuery.tmdbId = episode.tmdbId;
-  sourceEpisodeQuery.showTvdbId = show.tvdbId;
-  sourceEpisodeQuery.showTraktId = show.traktId;
-  sourceEpisodeQuery.showTmdbId = show.tmdbId;
+  sourceEpisodeQuery.seasonCode = 'S' + add0(episode.seasonNumber).toString();
+  sourceEpisodeQuery.imdbId = episode.ids.imdb;
+  sourceEpisodeQuery.tvdbId = episode.ids.tvdb;
+  sourceEpisodeQuery.tmdbId = episode.ids.tmdb;
+  sourceEpisodeQuery.showTvdbId = show.ids.tvdb;
+  sourceEpisodeQuery.showTraktId = show.ids.trakt;
+  sourceEpisodeQuery.showTmdbId = show.ids.tmdb;
   sourceEpisodeQuery.title = show.title;
   sourceEpisodeQuery.episodeTitle = episode.title;
   sourceEpisodeQuery.alternativeTitles = show.alternativeTitles;
   sourceEpisodeQuery.originalTitle = show.originalTitle;
   sourceEpisodeQuery.year = show.year;
-  sourceEpisodeQuery.absoluteNumber = absoluteNumber;
+  sourceEpisodeQuery.absoluteNumber = episode.absoluteNumber ?? absoluteNumber;
   sourceEpisodeQuery.isAnime = show.genres.includes('anime');
 
   return { episode: sourceEpisodeQuery, category: sourceEpisodeQuery.isAnime ? 'anime' : 'tv' } as SourceQuery;
@@ -314,7 +313,7 @@ export function incrementEpisodeCode(episodeCode: string) {
 
 export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia) {
   const items = [];
-  let startEpisode = kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null;
+  let startEpisode = kodiOpenMedia.episode ? kodiOpenMedia.episode.number : null;
 
   videoUrls.forEach((videoUrl) => {
     if (startEpisode) {
@@ -323,9 +322,11 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
 
     if (kodiOpenMedia) {
       const openMedia = {
-        movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.traktId : null,
-        showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.traktId : null,
-        seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktSeasonNumber : null,
+        movieIds: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids : null,
+        movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids.trakt : null,
+        showIds: kodiOpenMedia.show ? kodiOpenMedia.show : null,
+        showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.ids.trakt : null,
+        seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.seasonNumber : null,
         episodeNumber: startEpisode ? startEpisode : null
       };
 
@@ -383,10 +384,12 @@ export function removeDuplicates<T>(data: T[], key: string) {
 
 export function getOpenMediaFromKodiOpenMedia(kodiOpenMedia: KodiOpenMedia) {
   return {
-    movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.traktId : null,
-    showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.traktId : null,
-    seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktSeasonNumber : null,
-    episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.traktNumber : null
+    movieIds: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids : null,
+    movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids.trakt : null,
+    showIds: kodiOpenMedia.show ? kodiOpenMedia.show.ids : null,
+    showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.ids.trakt : null,
+    seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.seasonNumber : null,
+    episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.number : null
   } as OpenMedia;
 }
 

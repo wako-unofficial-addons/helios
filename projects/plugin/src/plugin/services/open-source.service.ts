@@ -923,7 +923,7 @@ export class OpenSourceService {
 
                       _sourceQuery.episode.episodeCode = episodeCode;
 
-                      kodiOpenMediaCopy.episode.traktNumber++;
+                      kodiOpenMediaCopy.episode.number++;
 
                       playlist.items.push({
                         label: _sourceQuery.episode.episodeCode,
@@ -1143,7 +1143,7 @@ export class OpenSourceService {
               streamLinkSource.id,
               streamLinkSource.title,
               streamLinkSource.provider,
-              kodiOpenMedia.show.traktId
+              kodiOpenMedia.show.ids.trakt
             );
           } else if (kodiOpenMedia.movie) {
             this.sourceService.setLastMoviePlayedSource(streamLinkSource.id, streamLinkSource.title, streamLinkSource.provider);
