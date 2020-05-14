@@ -107,14 +107,16 @@ export class OpenSourceService {
     }
   }
 
-  private async getStreamLinksWithLoader(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery) {
+  private async getStreamLinksWithLoader(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, showLoader = true) {
     const loader = await this.loadingController.create({
       message: 'Please wait...',
       spinner: 'crescent',
       backdropDismiss: true
     });
 
-    await loader.present();
+    if (showLoader) {
+      await loader.present();
+    }
 
     try {
       return await this.cachedTorrentService.getStreamLinks(streamLinkSource, sourceQuery).toPromise();
@@ -1161,7 +1163,7 @@ export class OpenSourceService {
    * As stream links may not work after a certain time, we generate them again
    *
    */
-  private async resetPlaylistVideoUrls(playlistVideo: PlaylistVideo) {
+  private async resetPlaylistVideoUrls(playlistVideo: PlaylistVideo, showLoader = true) {
     const customData: PlaylistVideoHeliosCustomData = playlistVideo.customData;
     if (customData.sourceQuery && customData.torrentSource) {
       if (customData.type === 'torrent') {
@@ -1172,7 +1174,7 @@ export class OpenSourceService {
       } else {
         const sources = await this.cachedTorrentService.getFromTorrents([customData.torrentSource], customData.sourceQuery).toPromise();
         const source = sources.pop();
-        const streamLinks = await this.getStreamLinksWithLoader(source, customData.sourceQuery);
+        const streamLinks = await this.getStreamLinksWithLoader(source, customData.sourceQuery, showLoader);
         if (streamLinks) {
           source.streamLinks = streamLinks;
 
@@ -1208,7 +1210,7 @@ export class OpenSourceService {
         }
 
         for (const item of playlist.items) {
-          await this.resetPlaylistVideoUrls(item);
+          await this.resetPlaylistVideoUrls(item, false);
         }
 
         await this.heliosPlaylistService.savePlaylist(playlist);
