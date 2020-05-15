@@ -73,7 +73,8 @@ export class RealDebridSourcesFromTorrentsQuery {
 
             let firstVideoFileIndex = null;
 
-            const episodeCode = sourceQuery.episode.episodeCode;
+            const episodeCode =
+              sourceQuery.category === 'anime' ? sourceQuery.episode.absoluteNumber.toString() : sourceQuery.episode.episodeCode;
 
             let episodeFound = false;
             data.rd.forEach((rd, index) => {
@@ -84,7 +85,14 @@ export class RealDebridSourcesFromTorrentsQuery {
                   firstVideoFileIndex = index;
                 }
 
-                if (file.filename.match(/.mkv|.mp4/) && isEpisodeCodeMatchesFileName(episodeCode, file.filename)) {
+                let match = false;
+                if (sourceQuery.category === 'anime') {
+                  match = file.filename.match(sourceQuery.episode.title) !== null && file.filename.match(episodeCode) !== null;
+                } else {
+                  match = isEpisodeCodeMatchesFileName(episodeCode, file.filename);
+                }
+
+                if (file.filename.match(/.mkv|.mp4/) && match) {
                   groupWithFile.push(index);
                   episodeFound = true;
                 }
