@@ -336,6 +336,7 @@ export abstract class TorrentsFromProviderBaseQuery {
         rawReplacement.showTraktId = sourceQuery.episode.showTraktId ? sourceQuery.episode.showTraktId.toString() : '';
         rawReplacement.showTmdbId = sourceQuery.episode.showTmdbId ? sourceQuery.episode.showTmdbId.toString() : '';
         rawReplacement.showSimklId = sourceQuery.episode.showSimklId ? sourceQuery.episode.showSimklId.toString() : '';
+        rawReplacement.showImdbId = sourceQuery.episode.showImdbId ? sourceQuery.episode.showImdbId.toString() : '';
       }
 
       cleanedReplacement = Object.assign({}, rawReplacement);
