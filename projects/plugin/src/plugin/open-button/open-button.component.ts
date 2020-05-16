@@ -136,7 +136,7 @@ export class OpenButtonComponent implements OnInit {
           complete = true;
           loader.dismiss();
         }),
-        timeout(6000),
+        timeout(12000),
         catchError(() => {
           return of(null);
         })
