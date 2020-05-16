@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.9.0",
+  "version": "3.9.1",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "3.9.1": "Increase timout for best source",
     "3.9.0": "Fixes #57 - issue with RD matching for anime",
     "3.8.9": "Handle more ids",
     "3.8.8": "Handle more ids",
