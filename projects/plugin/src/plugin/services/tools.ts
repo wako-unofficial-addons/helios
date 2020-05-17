@@ -291,6 +291,7 @@ export function getSourceQueryEpisode(show: Show, episode: Episode, absoluteNumb
   sourceEpisodeQuery.showTraktId = show.ids.trakt;
   sourceEpisodeQuery.showTmdbId = show.ids.tmdb;
   sourceEpisodeQuery.showSimklId = show.ids.simkl;
+  sourceEpisodeQuery.showImdbId = show.ids.imdb;
   sourceEpisodeQuery.title = show.title;
   sourceEpisodeQuery.episodeTitle = episode.title;
   sourceEpisodeQuery.alternativeTitles = show.alternativeTitles;
