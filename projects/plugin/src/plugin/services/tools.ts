@@ -1,4 +1,4 @@
-import { Episode, KodiApiService, Movie, OpenMedia, Show, wakoLog } from '@wako-app/mobile-sdk';
+import { Episode, KodiApiService, KodiAppService, Movie, OpenMedia, Show, wakoLog } from '@wako-app/mobile-sdk';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
@@ -328,21 +328,15 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
     }
 
     if (kodiOpenMedia) {
-      const openMedia = {
+      const openMedia: OpenMedia = {
         movieIds: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids : null,
-        movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids.trakt : null,
-        showIds: kodiOpenMedia.show ? kodiOpenMedia.show : null,
-        showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.ids.trakt : null,
+        showIds: kodiOpenMedia.show.ids ? kodiOpenMedia.show.ids : null,
         seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.seasonNumber : null,
         episodeNumber: startEpisode ? startEpisode : null
       };
 
-      videoUrl =
-        videoUrl +
-        `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
-
       items.push({
-        file: videoUrl
+        file: KodiAppService.prependOpenMediaToUrl(videoUrl, openMedia)
       });
     }
   });
@@ -390,14 +384,13 @@ export function removeDuplicates<T>(data: T[], key: string) {
 }
 
 export function getOpenMediaFromKodiOpenMedia(kodiOpenMedia: KodiOpenMedia) {
-  return {
+  const openMedia: OpenMedia = {
     movieIds: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids : null,
-    movieTraktId: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids.trakt : null,
     showIds: kodiOpenMedia.show ? kodiOpenMedia.show.ids : null,
-    showTraktId: kodiOpenMedia.show ? kodiOpenMedia.show.ids.trakt : null,
     seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.seasonNumber : null,
     episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.number : null
-  } as OpenMedia;
+  };
+  return openMedia;
 }
 
 export function episodeFoundInStreamLinks(streamLinks: StreamLink[], sourceQuery: SourceQuery) {

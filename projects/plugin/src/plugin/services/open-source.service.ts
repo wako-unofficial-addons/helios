@@ -515,7 +515,7 @@ export class OpenSourceService {
 
             if (!pluginId) {
               // tslint:disable-next-line:max-line-length
-              firstVideoUrl += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
+              firstVideoUrl = KodiAppService.prependOpenMediaToUrl(firstVideoUrl, openMedia);
             }
           }
 
@@ -1319,7 +1319,7 @@ export class OpenSourceService {
             if (kodiOpenMedia) {
               const openMedia = getOpenMediaFromKodiOpenMedia(kodiOpenMedia);
               // tslint:disable-next-line:max-line-length
-              playlistVideo.url += `|movieTraktId=${openMedia.movieTraktId}&showTraktId=${openMedia.showTraktId}&seasonNumber=${openMedia.seasonNumber}&episodeNumber=${openMedia.episodeNumber}`;
+              playlistVideo.url = KodiAppService.prependOpenMediaToUrl(playlistVideo.url, openMedia);
             }
 
             KodiAppService.checkAndConnectToCurrentHost()
