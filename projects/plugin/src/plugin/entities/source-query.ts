@@ -24,7 +24,7 @@ export class SourceEpisodeQuery extends SourceMovieQuery {
   showTraktId: number;
   showTmdbId: number;
   showSimklId: number;
-  showImdbId: number;
+  showImdbId: string;
 }
 
 export interface SourceQuery {
