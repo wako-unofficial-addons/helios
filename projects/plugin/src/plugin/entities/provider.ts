@@ -14,6 +14,7 @@ export interface ProviderQueryReplacement {
   season: string;
   episode: string;
   query: string;
+
   [key: string]: string;
 }
 
@@ -25,10 +26,17 @@ export interface Provider {
   fallback_urls?: string[];
   response_type: 'json' | 'text';
   http_method?: 'GET' | 'POST';
+  /**
+   * @deprecated use trust_movie_results
+   * For backward compatibility this still exists and will only work for movies
+   */
   trust_results?: boolean; // If true then we don't check filename to know if the result is good
+  trust_movie_results?: boolean; // If true then we don't check filename to know if the result is good
+  trust_episode_results?: boolean; // If true then we don't check filename to know if the result is good
+  trust_anime_results?: boolean; // If true then we don't check filename to know if the result is good
   time_to_wait_between_each_request_ms?: number; // In list mode we're gonna do request on all visible media
   time_to_wait_on_too_many_request_ms?: number;
-  timeout_ms?: number
+  timeout_ms?: number;
   token?: {
     // If we need to store a token for each request
     query: string;
