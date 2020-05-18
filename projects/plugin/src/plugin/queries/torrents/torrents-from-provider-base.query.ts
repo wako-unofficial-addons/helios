@@ -171,8 +171,12 @@ export abstract class TorrentsFromProviderBaseQuery {
             return this.removeUnwantedTorrents(_torrents);
           }),
           map((_torrents) => {
-            if (provider.trust_results === true && sourceQuery.movie) {
+            if ((provider.trust_results === true && sourceQuery.movie) || (sourceQuery.movie && provider.trust_movie_results)) {
               // Trust only movie
+              return _torrents;
+            } else if (sourceQuery.episode && provider.trust_episode_results && sourceQuery.category === 'tv') {
+              return _torrents;
+            } else if (sourceQuery.episode && provider.trust_anime_results && sourceQuery.category === 'anime') {
               return _torrents;
             }
             return this.removeBadTorrents(_torrents, originalQuery, sourceQuery);
