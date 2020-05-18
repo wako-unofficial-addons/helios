@@ -8,7 +8,6 @@ import {
   KodiApiService,
   KodiAppService,
   KodiGetAddonDetailsForm,
-  KodiSeekToCommand,
   OpenMedia,
   PlaylistVideo,
   WakoHttpError
@@ -522,7 +521,15 @@ export class OpenSourceService {
           return from(this.settingsService.get()).pipe(
             switchMap((_settings) => {
               settings = _settings;
-              return KodiAppService.openUrl(firstVideoUrl, openMedia, settings.openRemoteAfterClickOnPlay);
+              return KodiAppService.openUrl(
+                firstVideoUrl,
+                openMedia,
+                settings.openRemoteAfterClickOnPlay,
+                {
+                  seekTo: seekTo
+                },
+                false
+              );
             })
           );
         }),
@@ -549,19 +556,7 @@ export class OpenSourceService {
           this.toastService.simpleMessage(message);
         })
       )
-      .subscribe(() => {
-        if (seekTo) {
-          const sub = KodiApiService.wsMessage$.subscribe((data) => {
-            if (data.method === 'Player.OnAVStart') {
-              sub.unsubscribe();
-
-              setTimeout(() => {
-                KodiSeekToCommand.handle(1, seekTo).subscribe();
-              }, 3000);
-            }
-          });
-        }
-      });
+      .subscribe();
   }
 
   private async openBrowser(videoUrl: string, transcodedUrl?: string, title?: string, posterUrl?: string) {
