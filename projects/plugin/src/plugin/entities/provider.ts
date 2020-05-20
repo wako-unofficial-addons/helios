@@ -60,6 +60,7 @@ export interface Provider {
     peers: string;
     size: string;
     quality?: string;
+    isPackage?: string;
   };
   html_parser?: {
     row: string;
@@ -68,6 +69,7 @@ export interface Provider {
     seeds: string;
     peers: string;
     size: string;
+    isPackage?: string;
   };
   source_is_in_sub_page?: boolean;
 }
