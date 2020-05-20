@@ -33,6 +33,7 @@ interface ProviderTorrentResult {
   quality: SourceQuality;
   url: string;
   subPageUrl: string;
+  isPackage: boolean;
 }
 
 export abstract class TorrentsFromProviderBaseQuery {
@@ -492,7 +493,8 @@ export abstract class TorrentsFromProviderBaseQuery {
                   seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.seeds)),
                   peers: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.peers)),
                   quality: SourceUtils.getQuality(quality),
-                  size: 0
+                  size: 0,
+                  isPackage: this.getObjectFromKey(result, provider.json_format.isPackage) ? true : false
                 };
 
                 if (!torrent.url && !torrent.subPageUrl) {
@@ -528,7 +530,8 @@ export abstract class TorrentsFromProviderBaseQuery {
             seeds: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.seeds)),
             peers: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.peers)),
             size: this.getObjectFromKey(result, provider.json_format.size),
-            quality: SourceUtils.getQuality(quality)
+            quality: SourceUtils.getQuality(quality),
+            isPackage: this.getObjectFromKey(result, provider.json_format.isPackage) ? true : false
           };
 
           if (!torrent.url && !torrent.subPageUrl) {
@@ -579,7 +582,8 @@ export abstract class TorrentsFromProviderBaseQuery {
             seeds: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'seeds')),
             peers: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'peers')),
             quality: SourceUtils.getQuality(title),
-            size: 0
+            size: 0,
+            isPackage: this.evalCode(row, providerUrl, provider, 'isPackage') ? true : false
           };
 
           if (!torrent.url && !torrent.subPageUrl) {
@@ -629,7 +633,7 @@ export abstract class TorrentsFromProviderBaseQuery {
       quality: providerTorrentResult.quality,
       url: providerTorrentResult.url,
       subPageUrl: providerTorrentResult.subPageUrl,
-      isPackage: false,
+      isPackage: providerTorrentResult.isPackage,
       hash: hash,
       isCached: false,
       type: 'torrent'
