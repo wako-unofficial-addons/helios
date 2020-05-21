@@ -926,7 +926,7 @@ export class OpenSourceService {
 
                       playlist.items.push({
                         label: _sourceQuery.episode.episodeCode,
-                        url: url,
+                        url: this.getStreamUrlFromSource(childSource, _sourceQuery, getTranscoded),
                         currentSeconds: 0,
                         pluginId: 'plugin.helios',
                         openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null,
