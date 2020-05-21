@@ -837,11 +837,13 @@ export class OpenSourceService {
   }
 
   private getCustomDataFromSource(source: StreamLinkSource | TorrentSource, sourceQuery: SourceQuery) {
-    return {
+    const data: PlaylistVideoHeliosCustomData = {
       sourceQuery: sourceQuery,
       torrentSource: this.getTorrentSourceFromSource(source),
-      type: source.type
-    } as PlaylistVideoHeliosCustomData;
+      type: source.type as any
+    };
+
+    return JSON.parse(JSON.stringify(data)) as PlaylistVideoHeliosCustomData;
   }
 
   private getStreamUrlFromSource(source: StreamLinkSource | TorrentSource, sourceQuery, getTranscoded = false) {
@@ -924,7 +926,7 @@ export class OpenSourceService {
 
                       playlist.items.push({
                         label: _sourceQuery.episode.episodeCode,
-                        url: this.getStreamUrlFromSource(childSource, _sourceQuery, getTranscoded),
+                        url: url,
                         currentSeconds: 0,
                         pluginId: 'plugin.helios',
                         openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null,
