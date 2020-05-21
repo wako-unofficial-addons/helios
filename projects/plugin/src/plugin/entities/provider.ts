@@ -26,11 +26,6 @@ export interface Provider {
   fallback_urls?: string[];
   response_type: 'json' | 'text';
   http_method?: 'GET' | 'POST';
-  /**
-   * @deprecated use trust_movie_results
-   * For backward compatibility this still exists and will only work for movies
-   */
-  trust_results?: boolean; // If true then we don't check filename to know if the result is good
   trust_movie_results?: boolean; // If true then we don't check filename to know if the result is good
   trust_episode_results?: boolean; // If true then we don't check filename to know if the result is good
   trust_anime_results?: boolean; // If true then we don't check filename to know if the result is good
