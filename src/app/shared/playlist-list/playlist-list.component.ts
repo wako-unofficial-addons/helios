@@ -21,4 +21,12 @@ export class PlaylistListComponent implements OnInit {
     const pluginService = this.pluginLoader.getPluginService('plugin.helios');
     pluginService.customAction('resume', item);
   }
+
+  async clearPlaylist() {
+    for (const playlist of this.playlists) {
+      await this.heliosPlaylistService.delete(playlist);
+    }
+
+    this.playlists = await this.heliosPlaylistService.getAll();
+  }
 }
