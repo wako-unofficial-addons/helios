@@ -1,10 +1,10 @@
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { ProviderHttpService } from '../../services/provider-http.service';
 import { getDomainFromUrl } from '@wako-app/mobile-sdk';
 
 export class TorrentGetUrlQuery {
-  static getData(url: string, subPageUrl?: string): Observable<string> {
+  static getData(url: string, subPageUrl?: string, attempt = 0): Observable<string> {
     if (!subPageUrl) {
       return of(url);
     }
@@ -19,10 +19,19 @@ export class TorrentGetUrlQuery {
       10000,
       true
     ).pipe(
-      catchError(() => {
+      catchError((err) => {
+        if (err && err.status === 503 && attempt === 0) {
+          attempt++;
+
+          return timer(1000).pipe(
+            switchMap(() => {
+              return this.getData(url, subPageUrl, attempt);
+            })
+          );
+        }
         return of(null);
       }),
-      map(_html => {
+      map((_html) => {
         if (!_html) {
           return null;
         }
