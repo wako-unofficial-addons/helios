@@ -149,6 +149,8 @@ export class Settings {
     excludeTags: []
   };
 
+  simultaneousProviderQueries = 10;
+
   constructor() {
     // default actions
     this.availablePlayButtonActions = ['open-kodi', 'cast', 'open-vlc', 'share-url'];

@@ -4,12 +4,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { logData } from './tools';
 import { DebridAccountService } from './debrid-account.service';
 import { ProviderService } from './provider.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
 import { Storage } from '@ionic/storage';
 import { OpenSourceService } from './open-source.service';
-import { Settings } from '../entities/settings';
 import { SettingsService } from './settings.service';
+
+declare const device: any;
 
 @Injectable()
 export class PluginService extends PluginBaseService {
@@ -20,58 +21,30 @@ export class PluginService extends PluginBaseService {
     private modalController: ModalController,
     private storage: Storage,
     private openSourceService: OpenSourceService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private platform: Platform
   ) {
     super();
   }
 
   private async patchSettings() {
-    const settingsPatched = await this.storage.get('helios_settings_patched');
+    const settingsPatched = await this.storage.get('helios_settings_patched2');
 
     if (settingsPatched) {
       logData('Settings already patched');
       return;
     }
 
-    let settings: Settings = await this.storage.get('helios-settings-key');
-    if (!settings) {
-      logData(`No Settings don't patch`);
+    const settings = await this.settingsService.get();
 
-      await this.storage.set('helios_settings_patched', true);
-      return;
+    if (this.platform.is('android') && typeof device !== 'undefined' && device['version']) {
+      const deviceVersion = +device['version'];
+      if (deviceVersion < 7) {
+        settings.simultaneousProviderQueries = 3;
+        await this.settingsService.set(settings);
+      }
     }
-
-    logData('Do patch');
-
-    const premiummize_settings = await this.storage.get('premiummize_settings');
-    const real_debrid_settings = await this.storage.get('real_debrid_settings');
-    const alldebrid_settings = await this.storage.get('alldebrid_settings');
-
-    if (!settings) {
-      settings = new Settings();
-    }
-    if (premiummize_settings) {
-      settings.premiumize = premiummize_settings;
-    }
-    if (real_debrid_settings) {
-      settings.realDebrid = real_debrid_settings;
-    }
-    if (alldebrid_settings) {
-      settings.allDebrid = alldebrid_settings;
-    }
-
-    if (settings.defaultPlayButtonAction === null || settings.defaultPlayButtonAction.length === 0) {
-      settings.defaultPlayButtonAction = 'let-me-choose';
-    }
-
-    await this.settingsService.set(settings);
-
-    await this.storage.set('helios_settings_patched', true);
-
-    await this.storage.remove('premiummize_settings');
-    await this.storage.remove('real_debrid_settings');
-    await this.storage.remove('alldebrid_settings');
-    await this.storage.remove('helios-settings-key');
+    await this.storage.set('helios_settings_patched2', true);
   }
 
   async initialize() {
