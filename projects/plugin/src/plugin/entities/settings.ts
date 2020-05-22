@@ -149,7 +149,7 @@ export class Settings {
     excludeTags: []
   };
 
-  simultaneousProviderQueries = 10;
+  simultaneousProviderQueries = 0;
 
   constructor() {
     // default actions
