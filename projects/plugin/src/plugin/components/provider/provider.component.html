@@ -1,6 +1,25 @@
 <ion-list lines="full">
   <ion-list-header>
     <ion-label>
+      <ion-icon name="speedometer-outline"></ion-icon>
+      {{ 'pages.providers.list.providerSimultaneousHeader' | translate }}
+    </ion-label>
+  </ion-list-header>
+  <ion-item>
+    <ion-label class="label-provider-speed ion-text-wrap">{{ 'pages.providers.list.providerSimultaneousLabel' | translate }}</ion-label>
+    <ion-input
+      type="number"
+      class="ion-text-right"
+      size="1"
+      [(ngModel)]="settings.simultaneousProviderQueries"
+      (ngModelChange)="setSettings()"
+    ></ion-input>
+  </ion-item>
+</ion-list>
+
+<ion-list lines="full">
+  <ion-list-header>
+    <ion-label>
       <ion-icon name="logo-dropbox"></ion-icon>
       {{ 'pages.providers.list.providersUrl' | translate }}
     </ion-label>
@@ -8,7 +27,7 @@
   </ion-list-header>
   <ion-item-sliding *ngFor="let providerUrl of providersUrls; let i = index">
     <ion-item button (click)="setUrl(i)">
-      {{providerUrl}}
+      {{ providerUrl }}
     </ion-item>
     <ion-item-options side="end">
       <ion-item-option color="danger" (click)="deleteProvider(providerUrl)">

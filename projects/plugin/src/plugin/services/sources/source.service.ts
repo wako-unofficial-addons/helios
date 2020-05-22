@@ -16,13 +16,9 @@ import { Settings } from '../../entities/settings';
 import { TorrentSource } from '../../entities/torrent-source';
 import { StreamLinkSourceDetail } from '../../entities/stream-link-source-detail';
 import { KodiOpenMedia } from '../../entities/kodi-open-media';
-import { Platform } from '@ionic/angular';
 import { TmdbSeasonGetByIdForm } from '../tmdb/forms/seasons/tmdb-season-get-by-id.form';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
 import { incrementEpisodeCode } from '../tools';
-import { ToastService } from '../toast.service';
-
-declare const device: any;
 
 const GET_LAST_MOVIE_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_movie2';
 const GET_LAST_SHOW_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_show2';
@@ -33,9 +29,7 @@ export class SourceService {
     private cachedTorrentSourceService: CachedTorrentSourceService,
     private torrentSourceService: TorrentSourceService,
     private settingsService: SettingsService,
-    private providerService: ProviderService,
-    private toastService: ToastService,
-    private platform: Platform
+    private providerService: ProviderService
   ) {}
 
   private getByProvider(sourceQuery: SourceQuery, provider: Provider) {
@@ -299,16 +293,6 @@ export class SourceService {
     );
   }
 
-  private isFastModeEnabled() {
-    if (this.platform.is('android') && typeof device !== 'undefined' && device['version']) {
-      const deviceVersion = +device['version'];
-      if (deviceVersion < 7) {
-        return of(false);
-      }
-    }
-    return of(true);
-  }
-
   getAll(sourceQuery: SourceQuery) {
     if (sourceQuery.query && sourceQuery.query.trim().length === 0) {
       return EMPTY;
@@ -327,9 +311,9 @@ export class SourceService {
           obss.push(this.getByProvider(sourceQuery, provider));
         });
 
-        return this.isFastModeEnabled().pipe(
-          switchMap((isFastModeEnabled) => {
-            if (isFastModeEnabled) {
+        return from(this.settingsService.get()).pipe(
+          switchMap((settings) => {
+            if (settings.simultaneousProviderQueries === 0) {
               return merge(...obss);
             }
 
@@ -338,7 +322,7 @@ export class SourceService {
             obss.forEach((obs, index) => {
               _obss.push(obs);
 
-              if (index % 3 === 0) {
+              if (index % settings.simultaneousProviderQueries === 0) {
                 gourpObss.push(merge(..._obss));
                 _obss = [];
               }

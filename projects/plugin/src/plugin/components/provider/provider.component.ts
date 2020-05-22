@@ -5,6 +5,8 @@ import { finalize } from 'rxjs/operators';
 import { ProviderList } from '../../entities/provider';
 import { ProviderService } from '../../services/provider.service';
 import { ToastService } from '../../services/toast.service';
+import { SettingsService } from '../../services/settings.service';
+import { Settings } from '../../entities/settings';
 
 interface ProdviderArray {
   key: string;
@@ -14,7 +16,8 @@ interface ProdviderArray {
 
 @Component({
   selector: 'wk-providers',
-  templateUrl: './provider.component.html'
+  templateUrl: './provider.component.html',
+  styleUrls: ['./provider.component.scss']
 })
 export class ProviderComponent implements OnInit {
   @Output() providerAdded = new EventEmitter<boolean>();
@@ -27,12 +30,15 @@ export class ProviderComponent implements OnInit {
 
   isLoading = false;
 
+  settings: Settings = null;
+
   constructor(
     private providerService: ProviderService,
     private alertController: AlertController,
     private translateService: TranslateService,
     private toastService: ToastService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private settingsService: SettingsService
   ) {}
 
   async ngOnInit() {
@@ -41,6 +47,8 @@ export class ProviderComponent implements OnInit {
     this.providerList = await this.providerService.getProviders();
 
     this.providerArray = [];
+
+    this.settings = await this.settingsService.get();
 
     if (!this.providerList) {
       return;
@@ -129,5 +137,9 @@ export class ProviderComponent implements OnInit {
       this.ngOnInit();
       this.isLoading = false;
     });
+  }
+
+  async setSettings() {
+    return await this.settingsService.set(this.settings);
   }
 }

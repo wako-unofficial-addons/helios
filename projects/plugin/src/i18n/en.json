@@ -76,7 +76,9 @@
         "header": "Setup",
         "providersUrl": "Providers URLs",
         "noUrl": "Click here to add one",
-        "addProvider": "Add providers"
+        "addProvider": "Add providers",
+        "providerSimultaneousHeader": "Speed",
+        "providerSimultaneousLabel": "Number of providers to run in parallel. 0 for unlimited. On some phones too many parallel providers can crash helios."
       },
       "enabledSource": {
         "header": "Enabled Source",
