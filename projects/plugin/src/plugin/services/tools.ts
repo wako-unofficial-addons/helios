@@ -425,3 +425,14 @@ export function setKodiOpenMediaLang(kodiOpenMedia: KodiOpenMedia, lang: string)
 
   return kodiOpenMedia;
 }
+
+export function getHashFromUrl(url: string) {
+  let hash = null;
+  if (url && url.match('magnet')) {
+    try {
+      hash = url.split(':')[3].split('&')[0];
+    } catch (e) {}
+  }
+
+  return hash;
+}

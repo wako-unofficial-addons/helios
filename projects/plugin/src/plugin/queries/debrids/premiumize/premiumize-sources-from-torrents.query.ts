@@ -1,6 +1,6 @@
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, mapTo } from 'rxjs/operators';
-import { logData } from '../../../services/tools';
+import { getHashFromUrl, logData } from '../../../services/tools';
 import { PremiumizeApiService } from '../../../services/premiumize/services/premiumize-api.service';
 import { PremiumizeTransferDirectdlForm } from '../../../services/premiumize/forms/transfer/premiumize-transfer-directdl.form';
 import { TorrentSource } from '../../../entities/torrent-source';
@@ -14,11 +14,17 @@ export class PremiumizeSourcesFromTorrentsQuery {
 
   private static getAllHash(torrents: TorrentSource[]) {
     const allHashes = [];
-    torrents.forEach(torrent => {
+    torrents.forEach((torrent) => {
       let hash = torrent.hash;
       const shortMagnet = this.getShortMagnet(torrent.url);
       if (shortMagnet) {
         hash = shortMagnet;
+      }
+      if (!hash) {
+        hash = getHashFromUrl(torrent.url);
+      }
+      if (hash && !torrent.hash) {
+        torrent.hash = hash;
       }
       if (hash && !allHashes.includes(hash)) {
         allHashes.push(hash);
@@ -40,7 +46,7 @@ export class PremiumizeSourcesFromTorrentsQuery {
 
     const allGroups = [];
     let hashGroup = [];
-    hash.forEach(h => {
+    hash.forEach((h) => {
       hashGroup.push(h);
 
       if (hashGroup.join('').length > 3000) {
@@ -55,11 +61,10 @@ export class PremiumizeSourcesFromTorrentsQuery {
 
     const obss = [];
 
-    allGroups.forEach(hashes => {
-
+    allGroups.forEach((hashes) => {
       obss.push(
         PremiumizeCacheCheckForm.submit(hashes).pipe(
-          map(data => {
+          map((data) => {
             if (data.status === 'success') {
               hashes.forEach((h, index) => {
                 if (data.response[index]) {
@@ -90,8 +95,8 @@ export class PremiumizeSourcesFromTorrentsQuery {
     const allHashes = this.getAllHash(torrents);
 
     return this.cacheCheck(allHashes).pipe(
-      map(isCachedMap => {
-        torrents.forEach(torrent => {
+      map((isCachedMap) => {
+        torrents.forEach((torrent) => {
           let hash = torrent.hash;
           const shortMagnet = this.getShortMagnet(torrent.url);
           if (shortMagnet) {
@@ -111,7 +116,8 @@ export class PremiumizeSourcesFromTorrentsQuery {
               torrent.isPackage,
               'PM',
               torrent.provider,
-              torrent.url
+              torrent.url,
+              torrent.hash
             );
 
             debridSource.premiumizeTransferDirectdlDto = PremiumizeTransferDirectdlForm.submit(torrent.url);
@@ -122,7 +128,7 @@ export class PremiumizeSourcesFromTorrentsQuery {
 
         return streamLinkSources;
       }),
-      catchError(err => {
+      catchError((err) => {
         logData(err);
 
         return of(streamLinkSources);

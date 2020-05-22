@@ -2,7 +2,7 @@ import { Observable, of } from 'rxjs';
 import { RealDebridTorrentsInstantAvailabilityForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { SourceQuery } from '../../../entities/source-query';
-import { getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../../services/tools';
+import { getHashFromUrl, getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../../services/tools';
 import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
 import { TorrentSource } from '../../../entities/torrent-source';
 import { StreamLinkSource } from '../../../entities/stream-link-source';
@@ -39,6 +39,15 @@ export class RealDebridSourcesFromTorrentsQuery {
   private static getAllHash(torrents: TorrentSource[]) {
     const allHashes = [];
     torrents.forEach((torrent) => {
+      let hash = torrent.hash;
+
+      if (!hash) {
+        hash = getHashFromUrl(torrent.url);
+      }
+      if (hash && !torrent.hash) {
+        torrent.hash = hash;
+      }
+
       if (torrent.hash && !allHashes.includes(torrent.hash)) {
         allHashes.push(torrent.hash);
       }
@@ -126,7 +135,8 @@ export class RealDebridSourcesFromTorrentsQuery {
             torrent.isPackage,
             'RD',
             torrent.provider,
-            torrent.url
+            torrent.url,
+            torrent.hash
           );
 
           debridSource.realDebridLinks = new Observable<RealDebridUnrestrictLinkDto[]>((observer) => {
@@ -135,6 +145,7 @@ export class RealDebridSourcesFromTorrentsQuery {
 
             if (groupIndex !== null) {
               const fileIds = Object.getOwnPropertyNames(data.rd[groupIndex]);
+
               RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds)
                 .pipe(finalize(() => loader.dismiss()))
                 .subscribe(
