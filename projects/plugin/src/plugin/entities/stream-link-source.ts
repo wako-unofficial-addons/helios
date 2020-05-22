@@ -12,7 +12,6 @@ export class StreamLinkSource extends BaseSource {
 
   streamLinks: StreamLink[];
 
-
   constructor(
     public id: string,
     public title: string,
@@ -22,7 +21,8 @@ export class StreamLinkSource extends BaseSource {
     public isPackage: boolean,
     public debridService: 'PM' | 'RD' | 'AD',
     public provider: string,
-    public originalUrl: string
+    public originalUrl: string,
+    public originalHash?: string
   ) {
     super(id, title, size, quality, provider, type);
   }
@@ -36,6 +36,5 @@ export class StreamLink {
     public isStreamable: boolean,
     public transcodedUrl: string,
     public servicePlayerUrl: string = null
-  ) {
-  }
+  ) {}
 }

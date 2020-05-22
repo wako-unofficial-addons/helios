@@ -1,6 +1,6 @@
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, mapTo } from 'rxjs/operators';
-import { logData } from '../../../services/tools';
+import { getHashFromUrl, logData } from '../../../services/tools';
 import { TorrentSource } from '../../../entities/torrent-source';
 import { StreamLinkSource } from '../../../entities/stream-link-source';
 import { AllDebridApiService } from '../../../services/all-debrid/services/all-debrid-api.service';
@@ -14,11 +14,17 @@ export class AllDebridSourcesFromTorrentsQuery {
 
   private static getAllHash(torrents: TorrentSource[]) {
     const allHashes = [];
-    torrents.forEach(torrent => {
+    torrents.forEach((torrent) => {
       let hash = torrent.hash;
       const shortMagnet = this.getShortMagnet(torrent.url);
       if (shortMagnet) {
         hash = shortMagnet;
+      }
+      if (!hash) {
+        hash = getHashFromUrl(torrent.url);
+      }
+      if (hash && !torrent.hash) {
+        torrent.hash = hash;
       }
       if (hash && !allHashes.includes(hash)) {
         allHashes.push(hash);
@@ -40,7 +46,7 @@ export class AllDebridSourcesFromTorrentsQuery {
 
     const allGroups = [];
     let hashGroup = [];
-    hash.forEach(h => {
+    hash.forEach((h) => {
       hashGroup.push(h);
 
       if (hashGroup.join('').length > 3000) {
@@ -55,11 +61,10 @@ export class AllDebridSourcesFromTorrentsQuery {
 
     const obss = [];
 
-    allGroups.forEach(hashes => {
-
+    allGroups.forEach((hashes) => {
       obss.push(
         AllDebridMagnetInstantForm.submit(hashes).pipe(
-          map(dto => {
+          map((dto) => {
             if (dto.status === 'success') {
               hashes.forEach((h, index) => {
                 const response = dto.data.magnets[index];
@@ -91,8 +96,8 @@ export class AllDebridSourcesFromTorrentsQuery {
     const allHashes = this.getAllHash(torrents);
 
     return this.cacheCheck(allHashes).pipe(
-      map(isCachedMap => {
-        torrents.forEach(torrent => {
+      map((isCachedMap) => {
+        torrents.forEach((torrent) => {
           let hash = torrent.hash;
           const shortMagnet = this.getShortMagnet(torrent.url);
           if (shortMagnet) {
@@ -112,7 +117,8 @@ export class AllDebridSourcesFromTorrentsQuery {
               torrent.isPackage,
               'AD',
               torrent.provider,
-              torrent.url
+              torrent.url,
+              torrent.hash
             );
 
             debridSource.allDebridMagnetStatusMagnet = AllDebridGetLinksQuery.getData(torrent.url, torrent.isPackage);
@@ -123,7 +129,7 @@ export class AllDebridSourcesFromTorrentsQuery {
 
         return streamLinkSources;
       }),
-      catchError(err => {
+      catchError((err) => {
         logData(err);
 
         return of(streamLinkSources);

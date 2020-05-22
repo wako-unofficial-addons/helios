@@ -817,7 +817,7 @@ export class OpenSourceService {
     if (source instanceof StreamLinkSource) {
       return {
         id: source.id,
-        hash: null,
+        hash: source.originalHash,
         isCached: true,
         cachedService: source.debridService,
         provider: source.provider,
@@ -926,7 +926,7 @@ export class OpenSourceService {
 
                       playlist.items.push({
                         label: _sourceQuery.episode.episodeCode,
-                        url: this.getStreamUrlFromSource(childSource, _sourceQuery, getTranscoded),
+                        url: url,
                         currentSeconds: 0,
                         pluginId: 'plugin.helios',
                         openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null,
@@ -989,6 +989,9 @@ export class OpenSourceService {
 
   private getNextEpisodeSources(source: StreamLinkSource | TorrentSource, sourceQuery: SourceQuery) {
     if (!sourceQuery.episode || source.isPackage) {
+      if (source instanceof StreamLinkSource && source.streamLinks.length > 0) {
+        (source as StreamLinkSource).streamLinks.shift();
+      }
       return of([source]);
     }
 
@@ -1171,6 +1174,9 @@ export class OpenSourceService {
       } else {
         const sources = await this.cachedTorrentService.getFromTorrents([customData.torrentSource], customData.sourceQuery).toPromise();
         const source = sources.pop();
+        if (!source) {
+          return;
+        }
         const streamLinks = await this.getStreamLinksWithLoader(source, customData.sourceQuery, showLoader);
         if (streamLinks) {
           source.streamLinks = streamLinks;
