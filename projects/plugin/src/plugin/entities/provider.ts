@@ -49,13 +49,14 @@ export interface Provider {
   json_format?: {
     results: string;
     sub_results?: string;
-    url: string;
+    url?: string;
     title: string;
     seeds: string;
     peers: string;
     size: string;
     quality?: string;
     isPackage?: string;
+    hash?: string;
   };
   html_parser?: {
     row: string;
@@ -65,6 +66,7 @@ export interface Provider {
     peers: string;
     size: string;
     isPackage?: string;
+    hash?: string;
   };
   source_is_in_sub_page?: boolean;
 }

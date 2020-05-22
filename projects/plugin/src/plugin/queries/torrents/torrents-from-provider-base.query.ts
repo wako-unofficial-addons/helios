@@ -4,7 +4,7 @@ import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
 import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
 import { SourceQuery } from '../../entities/source-query';
-import { cleanTitleCustom, logData } from '../../services/tools';
+import { cleanTitleCustom, getHashFromUrl, logData } from '../../services/tools';
 import { TorrentSource } from '../../entities/torrent-source';
 import { SourceQuality } from '../../entities/source-quality';
 import { TorrentGetUrlQuery } from './torrent-get-url.query';
@@ -34,6 +34,7 @@ interface ProviderTorrentResult {
   url: string;
   subPageUrl: string;
   isPackage: boolean;
+  hash: string;
 }
 
 export abstract class TorrentsFromProviderBaseQuery {
@@ -109,12 +110,12 @@ export abstract class TorrentsFromProviderBaseQuery {
     let allTorrents: TorrentSource[] = [];
 
     keywords.forEach((_keywords) => {
-      let isPost = provider.http_method === 'POST';
+      const isPost = provider.http_method === 'POST';
 
       const data = this.getProviderQueryReplacement(provider, sourceQuery, _keywords, token, isPost);
 
       let query = replacer(_keywords, data.cleanedReplacement).trim();
-      let originalQuery = replacer(_keywords, data.rawReplacement).trim();
+      const originalQuery = replacer(_keywords, data.rawReplacement).trim();
 
       if (provider.separator) {
         query = query.replace(/\s/g, provider.separator);
@@ -213,7 +214,7 @@ export abstract class TorrentsFromProviderBaseQuery {
       const match = url.match(/(\w{40})/);
       return match.length > 1 ? match[1].trim().toLowerCase() : null;
     }
-    return null;
+    return getHashFromUrl(url);
   }
 
   private static setVideoMetadata(torrents: TorrentSource[], sourceQuery: SourceQuery) {
@@ -407,17 +408,21 @@ export abstract class TorrentsFromProviderBaseQuery {
     );
   }
 
-  private static getObjectFromKey(rootObject: Object, keyString: string): any {
-    let results = rootObject;
-    keyString.split('.').forEach((key) => {
-      if (results && results.hasOwnProperty(key)) {
-        results = results[key];
-      } else {
-        results = null;
-      }
-    });
+  private static getObjectFromKey(rootObject: object, keyString: string): any {
+    try {
+      let results = rootObject;
+      keyString.split('.').forEach((key) => {
+        if (results && results.hasOwnProperty(key)) {
+          results = results[key];
+        } else {
+          results = null;
+        }
+      });
 
-    return results;
+      return results;
+    } catch (e) {
+      return null;
+    }
   }
 
   private static getSize(size: number | string) {
@@ -457,7 +462,7 @@ export abstract class TorrentsFromProviderBaseQuery {
     const torrents: ProviderTorrentResult[] = [];
 
     try {
-      const results = this.getObjectFromKey(response, provider.json_format.results);
+      const results = provider.json_format.results ? this.getObjectFromKey(response, provider.json_format.results) : response;
 
       if (!results) {
         return torrents;
@@ -476,7 +481,9 @@ export abstract class TorrentsFromProviderBaseQuery {
                   ? this.getObjectFromKey(subResult, provider.json_format.quality)
                   : SourceUtils.getQuality(title);
 
-                let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(subResult, provider.json_format.url));
+                let torrentUrl = provider.json_format.url
+                  ? this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(subResult, provider.json_format.url))
+                  : null;
                 let subPageUrl = null;
 
                 if (provider.source_is_in_sub_page) {
@@ -493,7 +500,10 @@ export abstract class TorrentsFromProviderBaseQuery {
                   peers: this.getFormatIntIfNotNull(this.getObjectFromKey(subResult, provider.json_format.peers)),
                   quality: SourceUtils.getQuality(quality),
                   size: 0,
-                  isPackage: this.getObjectFromKey(result, provider.json_format.isPackage) ? true : false
+                  isPackage: !!(
+                    provider.json_format.isPackage !== undefined && this.getObjectFromKey(result, provider.json_format.isPackage)
+                  ),
+                  hash: provider.json_format.hash !== undefined && this.getObjectFromKey(result, provider.json_format.hash)
                 };
 
                 if (!torrent.url && !torrent.subPageUrl) {
@@ -513,14 +523,15 @@ export abstract class TorrentsFromProviderBaseQuery {
             ? this.getObjectFromKey(result, provider.json_format.quality)
             : SourceUtils.getQuality(title);
 
-          let torrentUrl = this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(result, provider.json_format.url));
+          let torrentUrl = provider.json_format.url
+            ? this.addBaseUrlIfNeeded(provider.base_url, this.getObjectFromKey(result, provider.json_format.url))
+            : null;
           let subPageUrl = null;
 
           if (provider.source_is_in_sub_page) {
             subPageUrl = torrentUrl;
             torrentUrl = null;
           }
-
           const torrent: ProviderTorrentResult = {
             providerName: provider.name,
             title: title,
@@ -530,10 +541,15 @@ export abstract class TorrentsFromProviderBaseQuery {
             peers: this.getFormatIntIfNotNull(this.getObjectFromKey(result, provider.json_format.peers)),
             size: this.getObjectFromKey(result, provider.json_format.size),
             quality: SourceUtils.getQuality(quality),
-            isPackage: this.getObjectFromKey(result, provider.json_format.isPackage) ? true : false
+            isPackage: !!(provider.json_format.isPackage !== undefined && this.getObjectFromKey(result, provider.json_format.isPackage)),
+            hash: provider.json_format.hash !== undefined && this.getObjectFromKey(result, provider.json_format.hash)
           };
 
-          if (!torrent.url && !torrent.subPageUrl) {
+          if (torrent.hash && !torrent.url && !torrent.subPageUrl) {
+            torrent.url = `magnet:?xt=urn:btih:${torrent.hash}`;
+          }
+
+          if (!torrent.url && !torrent.subPageUrl && !torrent.hash) {
             return;
           }
 
@@ -545,7 +561,7 @@ export abstract class TorrentsFromProviderBaseQuery {
         }
       });
     } catch (e) {
-      //  console.error(`Error on provider ${provider.name}`, e, response);
+      console.error(`Error on provider ${provider.name}`, e, response);
     }
 
     return torrents;
@@ -582,7 +598,8 @@ export abstract class TorrentsFromProviderBaseQuery {
             peers: this.getFormatIntIfNotNull(this.evalCode(row, providerUrl, provider, 'peers')),
             quality: SourceUtils.getQuality(title),
             size: 0,
-            isPackage: this.evalCode(row, providerUrl, provider, 'isPackage') ? true : false
+            isPackage: this.evalCode(row, providerUrl, provider, 'isPackage') ? true : false,
+            hash: this.evalCode(row, providerUrl, provider, 'hash')
           };
 
           if (!torrent.url && !torrent.subPageUrl) {
@@ -615,7 +632,7 @@ export abstract class TorrentsFromProviderBaseQuery {
 
   private static transformProviderTorrentResultToTorrentSource(providerTorrentResult: ProviderTorrentResult) {
     let id = null;
-    const hash = this.getHashFromUrl(providerTorrentResult.url);
+    const hash = providerTorrentResult.hash ?? this.getHashFromUrl(providerTorrentResult.url);
     if (hash) {
       id = providerTorrentResult.providerName + '-' + hash;
     } else {
