@@ -65,10 +65,11 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
 
     const cacheKey = 'helios_' + provider.name + '_' + JSON.stringify(sourceQuery);
 
-    const startTime = Date.now();
     return HeliosCacheService.get<TorrentSourceDetail>(cacheKey).pipe(
       switchMap((cache) => {
         console.log('DOING', provider.name);
+
+        const startTime = Date.now();
 
         if (cache) {
           return of(cache);
