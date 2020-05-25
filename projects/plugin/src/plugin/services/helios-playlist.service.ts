@@ -90,12 +90,7 @@ export class HeliosPlaylistService {
       return url;
     }
 
-    if (openMedia.movieIds) {
-      return JSON.stringify(openMedia.movieIds);
-    } else if (openMedia.showIds) {
-      return JSON.stringify(openMedia.showIds) + '-' + openMedia.seasonNumber + '-' + openMedia.episodeNumber;
-    }
-    return null;
+    return this.playListService.getPlaylistIdFromOpenMedia(openMedia);
   }
 
   private removeDuplicateEntries(playlist: Playlist) {
