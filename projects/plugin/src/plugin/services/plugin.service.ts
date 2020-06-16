@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  BrowserService,
   Episode,
   ExplorerFile,
   ExplorerFolderItem,
@@ -148,6 +149,20 @@ export class PluginService extends PluginBaseService {
   ): Promise<WakoFileActionButton[]> {
     const link = await this.explorerService.getLinkRD(file);
 
-    return this.fileActionService.getFileActionButtons(link, link, title, posterUrl, seekTo, openMedia, kodiOpenParams);
+    const actions = await this.fileActionService.getFileActionButtons(link, link, title, posterUrl, seekTo, openMedia, kodiOpenParams);
+
+    actions.forEach((action) => {
+      if (action.action === 'play-browser' && file.customData.servicePlayerUrl) {
+        action.handler = () => {
+          if (this.platform.is('ios')) {
+            BrowserService.open(file.customData.servicePlayerUrl, true);
+          } else {
+            window.open(file.customData.servicePlayerUrl, '_system', 'location=yes');
+          }
+        };
+      }
+    });
+
+    return actions;
   }
 }

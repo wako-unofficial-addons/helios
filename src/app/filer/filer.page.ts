@@ -49,8 +49,14 @@ export class FilerPage implements OnInit {
     this.isLoading = false;
   }
 
-  open(item: ExplorerItem) {
-    this.fileActionService.openWithDefaultActions(item.file.link, item.file.streamLink);
+  async open(item: ExplorerItem) {
+    if (!item.file.link) {
+      const pluginService = this.pluginLoader.getPluginService('plugin.helios');
+      const actions = await pluginService.getFileActionButtons(item.file);
+      this.fileActionService.showActionSheetActions(actions);
+    } else {
+      this.fileActionService.openWithDefaultActions(item.file.link, item.file.streamLink);
+    }
   }
 
   delete(folder: ExplorerFolderItem, item: ExplorerItem) {

@@ -3,7 +3,7 @@ import { first, map, mapTo, switchMap } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
 import { DebridAccountService } from './debrid-account.service';
 import { RealDebridFolderListForm } from './real-debrid/forms/torrents/real-debrid-torrents-list.form';
-import { ExplorerFile, ExplorerFolderItem } from '@wako-app/mobile-sdk';
+import { ExplorerFile, ExplorerFolderItem, ExplorerItem } from '@wako-app/mobile-sdk';
 import { RealDebridTorrentsInfoForm } from './real-debrid/forms/torrents/real-debrid-torrents-info.form';
 import { RealDebridTorrentsDeleteForm } from './real-debrid/forms/torrents/real-debrid-torrents-delete.form';
 import { RealDebridUnrestrictLinkForm } from './real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
@@ -17,12 +17,22 @@ import { RealDebridApiService } from './real-debrid/services/real-debrid-api.ser
 interface CustomDataRD {
   type: 'RD';
   link: string;
-  fileId?: number;
+  servicePlayerUrl?: string;
 }
 
 @Injectable()
 export class ExplorerService {
   constructor(private settingsService: SettingsService, private debridAccountService: DebridAccountService) {}
+
+  private sortByNameAsc(files: ExplorerItem[]) {
+    files.sort((stream1, stream2) => {
+      if (stream1.label === stream2.label) {
+        return 0;
+      }
+
+      return stream1.label > stream2.label ? 1 : -1;
+    });
+  }
 
   private fetchChildrenRD(parentTitle: string, id: string) {
     return RealDebridTorrentsInfoForm.submit(id).pipe(
@@ -43,8 +53,7 @@ export class ExplorerService {
             size: torrent.bytes,
             customData: {
               type: 'RD',
-              link: torrent.links[index],
-              fileId: file.id
+              link: torrent.links[index]
             }
           };
 
@@ -59,6 +68,8 @@ export class ExplorerService {
             deleteAction: null
           });
         });
+
+        this.sortByNameAsc(explorerFolderItem.items);
 
         return explorerFolderItem;
       })
@@ -148,6 +159,8 @@ export class ExplorerService {
     }
 
     const unrestrictedLink = await RealDebridUnrestrictLinkForm.submit(customData.link).toPromise();
+
+    file.customData.servicePlayerUrl = `https://real-debrid.com/streaming-${unrestrictedLink.id}`;
 
     return unrestrictedLink.download;
   }
