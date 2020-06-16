@@ -154,11 +154,7 @@ export class PluginService extends PluginBaseService {
     actions.forEach((action) => {
       if (action.action === 'play-browser' && file.customData.servicePlayerUrl) {
         action.handler = () => {
-          if (this.platform.is('ios')) {
-            BrowserService.open(file.customData.servicePlayerUrl, true);
-          } else {
-            window.open(file.customData.servicePlayerUrl, '_system', 'location=yes');
-          }
+          BrowserService.open(file.customData.servicePlayerUrl);
         };
       }
     });
