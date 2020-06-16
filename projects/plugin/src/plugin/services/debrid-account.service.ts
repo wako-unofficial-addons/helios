@@ -18,6 +18,7 @@ export const REAL_DEBRID_CLIENT_ID = 'X245A4XAIBGVM';
 @Injectable()
 export class DebridAccountService {
   hasAtLeastOneAccount$ = new ReplaySubject<boolean>(1);
+  ready$ = new ReplaySubject<boolean>(1);
 
   private realDebridRefreshTokenInterval;
   private realDebridAuthInterval;
@@ -58,6 +59,8 @@ export class DebridAccountService {
       AllDebridApiService.setApiKey(allDebridSettings.apiKey);
       AllDebridApiService.setName(allDebridSettings.name);
     }
+
+    this.ready$.next(true);
   }
 
   async hasAtLeastOneAccount() {

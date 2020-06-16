@@ -1,11 +1,11 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "3.9.8",
+  "version": "3.9.9",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
   "author": "Davy",
-  "actions": ["movies", "episodes", "episodes-item-option"],
+  "actions": ["movies", "episodes", "episodes-item-option", "file-explorer"],
   "entryPointV2": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/plugin.js",
   "entryPoint": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/old-wako/dist/plugin.js",
   "languages": {
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "3.9.9": "File Explorer feature for PM & RD",
     "3.9.8": "Use getPlaylistIdFromOpenMedia",
     "3.9.5": "Fix issue with playlist + Handle isPackage property returned by providers needed by orion",
     "3.9.3": "#58 - New trust_*_results properties",

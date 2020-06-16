@@ -8,6 +8,15 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
+        path: 'filer',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../filer/filer.module').then((m) => m.FilterPageModule)
+          }
+        ]
+      },
+      {
         path: 'movie',
         children: [
           {

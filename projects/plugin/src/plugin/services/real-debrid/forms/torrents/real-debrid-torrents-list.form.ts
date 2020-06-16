@@ -3,6 +3,6 @@ import { RealDebridFolderListDto } from '../../dtos/torrents/real-debrid-torrent
 
 export class RealDebridFolderListForm {
   static submit() {
-    return RealDebridApiService.get<RealDebridFolderListDto>('/torrents/');
+    return RealDebridApiService.get<RealDebridFolderListDto[]>('/torrents/');
   }
 }

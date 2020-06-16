@@ -12,6 +12,7 @@ import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
 import { PluginLoaderFakeService } from './services/plugin-loader-fake.service';
 import { PluginLoaderService } from './services/plugin-loader.service';
 import { SharedModule } from './shared/shared.module';
+import { WakoProviders } from '@wako-app/mobile-sdk';
 
 @NgModule({
   declarations: [AppComponent],
@@ -36,7 +37,8 @@ import { SharedModule } from './shared/shared.module';
     {
       provide: PluginLoaderService,
       useClass: PluginLoaderFakeService
-    }
+    },
+    ...WakoProviders
   ],
   bootstrap: [AppComponent]
 })
