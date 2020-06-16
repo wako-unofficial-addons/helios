@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { PluginService } from './services/plugin.service';
 import { MovieButtonComponent } from './movie-button/movie-button.component';
 
-import { BrowserService, PluginBaseModule } from '@wako-app/mobile-sdk';
+import { BrowserService, PluginBaseModule, WakoProviders } from '@wako-app/mobile-sdk';
 import { SettingsComponent } from './settings/settings.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { EpisodeButtonComponent } from './episode-button/episode-button.component';
@@ -41,6 +41,7 @@ import { FileSizeFilterComponent } from './components/file-size-filter/file-size
 import { SourcePopoverFilterComponent } from './components/source-popover-filter/source-popover-filter.component';
 import { ToastService } from './services/toast.service';
 import { ClipboardModule } from 'ngx-clipboard';
+import { ExplorerService } from './services/explorer.service';
 
 const components = [
   MovieButtonComponent,
@@ -84,7 +85,9 @@ const directives = [HideKeyboardEnterDirective];
     SourceService,
     SettingsService,
     CachedTorrentSourceService,
-    HeliosPlaylistService
+    HeliosPlaylistService,
+    ExplorerService,
+    ...WakoProviders
   ] // Add your services here. Do not use provideIn: 'root' in your services
 })
 export class PluginModule extends PluginBaseModule {

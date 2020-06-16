@@ -1,8 +1,8 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { OpenSourceService } from '../../services/open-source.service';
-import { StreamLinkSource, StreamLink } from '../../entities/stream-link-source';
+import { StreamLink, StreamLinkSource } from '../../entities/stream-link-source';
 import { SourceQuery } from '../../entities/source-query';
 
 import { PremiumizeFolderListForm } from '../../services/premiumize/forms/folder/premiumize-folder-list.form';
@@ -13,6 +13,7 @@ import { RealDebridUnrestrictLinkForm } from '../../services/real-debrid/forms/u
 import { RealDebridTorrentsDeleteForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-delete.form';
 
 import { DebridAccountService } from '../../services/debrid-account.service';
+import { PremiumizeItemDeleteForm } from '../../services/premiumize/forms/item/premiumize-item-delete.form';
 
 @Component({
   selector: 'wk-debrid-files',
@@ -129,7 +130,7 @@ export class DebridFilesComponent implements OnInit {
           text: this.translateService.instant('alerts.removeButton'),
           handler: async () => {
             if (debrid == 'pm') {
-              await PremiumizeFolderListForm.remove(itemId).toPromise();
+              await PremiumizeItemDeleteForm.submit(itemId).toPromise();
               this.ngZone.run(() => {
                 this.listAll(folderId);
               });
