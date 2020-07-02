@@ -163,7 +163,9 @@ export class DebridAccountService {
 
     const d = await this.settingsService.set(settings);
 
-    this.initializeRefreshTokenRealDebridInterval(realDebridSettings);
+    if (realDebridSettings) {
+      this.initializeRefreshTokenRealDebridInterval(realDebridSettings);
+    }
 
     return d;
   }
