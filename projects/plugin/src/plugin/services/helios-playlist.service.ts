@@ -90,7 +90,16 @@ export class HeliosPlaylistService {
       return url;
     }
 
-    return this.playListService.getPlaylistIdFromOpenMedia(openMedia);
+    let id = this.playListService.getPlaylistIdFromOpenMedia(openMedia);
+
+    if (openMedia.seasonNumber) {
+      id += `_S${openMedia.seasonNumber}`;
+    }
+    if (openMedia.episodeNumber) {
+      id += `_E${openMedia.episodeNumber}`;
+    }
+
+    return id;
   }
 
   private removeDuplicateEntries(playlist: Playlist) {
@@ -98,6 +107,7 @@ export class HeliosPlaylistService {
     const ids = [];
     playlist.items.forEach((item) => {
       const id = this.getId(item.url, item.openMedia);
+
       if (ids.includes(id)) {
         return;
       }
