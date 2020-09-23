@@ -101,7 +101,7 @@ export class RealDebridSourcesFromTorrentsQuery {
                   match = isEpisodeCodeMatchesFileName(episodeCode, file.filename);
                 }
 
-                if (file.filename.match(/.mkv|.mp4/) && match) {
+                if (file.filename.match(/.mkv|.mp4/) && match && !groupWithFile.includes(index)) {
                   groupWithFile.push(index);
                   episodeFound = true;
                 }
