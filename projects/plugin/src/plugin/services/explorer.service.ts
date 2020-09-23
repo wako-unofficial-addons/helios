@@ -60,7 +60,7 @@ export class ExplorerService {
           explorerFolderItem.items.push({
             id: torrent.id,
             createdAt: null,
-            label: file.path,
+            label: file.path[0] === '/' ? file.path.substr(1) : file.path,
             pluginId: 'plugin.helios',
             type: 'file',
             file: explorerFile,
