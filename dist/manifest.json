@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "4.0.3": "Try to fix No links found error in RD.<br>Fix playlist issue",
     "4.0.2": "Bug fixes",
     "4.0.1": "Use RD Player for browser action",
     "3.9.9": "File Explorer feature for PM & RD",
