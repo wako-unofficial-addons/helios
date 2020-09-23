@@ -48,7 +48,7 @@ export class RealDebridGetCachedUrlQuery {
                 if (fileId !== 'all') {
                   return this.getData(url, []);
                 }
-                return throwError('No links found');
+                return throwError('No links found. It seems the source is not fully cached, try to add the trorrent manually');
               })
             );
           }),
@@ -59,7 +59,7 @@ export class RealDebridGetCachedUrlQuery {
           }),
           switchMap((links: RealDebridUnrestrictLinkDto[]) => {
             if (!links) {
-              return throwError('No links found');
+              return throwError('No links found. It seems the source is not fully cached, try to add the trorrent manually');
             }
             return from(HeliosCacheService.set(cacheKey, links, '15min')).pipe(mapTo(links));
           })
