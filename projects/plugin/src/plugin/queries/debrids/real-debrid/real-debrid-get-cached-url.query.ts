@@ -45,6 +45,9 @@ export class RealDebridGetCachedUrlQuery {
                   return forkJoin(obs).pipe(mapTo(links));
                 }
 
+                if (fileId !== 'all') {
+                  return this.getData(url, []);
+                }
                 return throwError('No links found');
               })
             );
