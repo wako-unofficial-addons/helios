@@ -5,22 +5,18 @@ import { Link } from '../../../entities/link';
 import { StreamLinksFromLinksQuery } from '../stream-links-from-links.query';
 
 export class RealDebridGetStreamLinkQuery {
-
   static getData(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery) {
     return streamLinkSource.realDebridLinks.pipe(
-      map(files => {
-
+      map((files) => {
         const links: Link[] = [];
-        files.forEach(file => {
-          if (file.mimeType.match('video') !== null) {
-            links.push({
-              filename: file.filename,
-              size: file.filesize,
-              streamLink: file.streamable ? file.download : null,
-              url: file.download,
-              servicePlayerUrl: `https://real-debrid.com/streaming-${file.id}`
-            });
-          }
+        files.forEach((file) => {
+          links.push({
+            filename: file.filename,
+            size: file.filesize,
+            streamLink: file.streamable ? file.download : null,
+            url: file.download,
+            servicePlayerUrl: `https://real-debrid.com/streaming-${file.id}`
+          });
         });
 
         return StreamLinksFromLinksQuery.getData(streamLinkSource, sourceQuery, links);

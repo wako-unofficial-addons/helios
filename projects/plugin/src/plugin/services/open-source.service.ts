@@ -397,8 +397,14 @@ export class OpenSourceService {
       }
     });
 
+    let subHeader = null;
+    if (streamLinkSource.streamLinks.length > 0 && streamLinkSource.streamLinks[0].filename.match('.rar') !== null) {
+      subHeader = `Waring the file is compressed`;
+    }
+
     const actionSheet = await this.actionSheetController.create({
       header: this.translateService.instant('actionSheets.open-source.openTitle'),
+      subHeader: subHeader,
       buttons: buttons
     });
 
@@ -1053,6 +1059,10 @@ export class OpenSourceService {
       }
 
       let playVideo = false;
+
+      if (streamLinkSource.streamLinks.length === 0) {
+        throw new Error('No links found');
+      }
 
       const streamLink = streamLinkSource.streamLinks[0];
 
