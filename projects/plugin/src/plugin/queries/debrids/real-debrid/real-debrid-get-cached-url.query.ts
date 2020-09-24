@@ -57,8 +57,18 @@ export class RealDebridGetCachedUrlQuery {
               RealDebridTorrentsDeleteForm.submit(torrentInfo.id).subscribe();
             }
           }),
-          switchMap((links: RealDebridUnrestrictLinkDto[]) => {
-            if (!links) {
+          switchMap((allLinks: RealDebridUnrestrictLinkDto[]) => {
+            const links: RealDebridUnrestrictLinkDto[] = [];
+
+            if (allLinks) {
+              allLinks.forEach((link) => {
+                if (link.mimeType.match('video') !== null || link.mimeType === 'application/x-rar-compressed') {
+                  links.push(link);
+                }
+              });
+            }
+
+            if (links.length === 0) {
               return throwError('No links found. It seems the source is not fully cached, try to add the trorrent manually');
             }
             return from(HeliosCacheService.set(cacheKey, links, '15min')).pipe(mapTo(links));
