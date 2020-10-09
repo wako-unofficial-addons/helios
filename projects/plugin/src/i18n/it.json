@@ -129,7 +129,7 @@
       "addedToRD": "La fonte è stata aggiunta al tuo account RD",
       "failedToAddToRD": "Impossibile aggiungere la fonte al tuo account RD: {{error}}",
       "sourceNotCached": "Impossibile recuperare l'URL del video",
-      "permissionDenied": "Autorizzazione Negata - Controlla il tuo account"
+      "permissionDenied": "Autorizzazione Negata (conto {{debridService}} bloccato)"
     },
     "elementumNotInstalled": "Per utilizzare l'add-on Kodi Elementum, è necessario installarlo su Kodi",
     "playlist": "La playlist {{playlistName}} è stata creata/aggiornata. Contiene {{items}} elementi"
