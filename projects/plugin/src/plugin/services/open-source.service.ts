@@ -122,7 +122,7 @@ export class OpenSourceService {
     } catch (err) {
       if (err && err instanceof WakoHttpError) {
         if (err.status === 403) {
-          this.toastService.simpleMessage('toasts.open-source.permissionDenied', null, 4000);
+          this.toastService.simpleMessage('toasts.open-source.permissionDenied', { debridService: streamLinkSource.debridService }, 4000);
         } else {
           this.toastService.simpleMessage(JSON.stringify(err.response), null, 4000);
         }
@@ -399,7 +399,7 @@ export class OpenSourceService {
 
     let subHeader = null;
     if (streamLinkSource.streamLinks.length > 0 && streamLinkSource.streamLinks[0].filename.match('.rar') !== null) {
-      subHeader = `Waring the file is compressed`;
+      subHeader = `Warning the file is compressed`;
     }
 
     const actionSheet = await this.actionSheetController.create({

@@ -150,7 +150,7 @@
       "addedToAD": "Source has been added to you AD account",
       "failedToAddToAD": "Failed to add the source to your AD account: {{error}}",
       "sourceNotCached": "Failed to retrieved the video URL",
-      "permissionDenied": "Permission Denied - Please check you account"
+      "permissionDenied": "Permission denied (account {{debridService}} locked)"
     },
     "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi",
     "playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items"
