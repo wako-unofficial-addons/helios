@@ -76,6 +76,7 @@ export class RealDebridSourcesFromTorrentsQuery {
 
           // Take the group with the most video files
           let groupIndex = sourceQuery.query ? null : 0;
+          let matchFiles = new Map<string, number>();
 
           if (sourceQuery.episode) {
             const groupWithFile = [];
@@ -104,6 +105,7 @@ export class RealDebridSourcesFromTorrentsQuery {
                 if (file.filename.match(/.mkv|.mp4/) && match && !groupWithFile.includes(index)) {
                   groupWithFile.push(index);
                   episodeFound = true;
+                  matchFiles.set(file.filename, index);
                 }
               });
             });
@@ -149,7 +151,46 @@ export class RealDebridSourcesFromTorrentsQuery {
               RealDebridGetCachedUrlQuery.getData(torrent.url, fileIds)
                 .pipe(finalize(() => loader.dismiss()))
                 .subscribe(
-                  (links) => {
+                  async (links) => {
+                    if (matchFiles.size > 1) {
+                      const buttons = [];
+                      matchFiles.forEach((index, filename) => {
+                        buttons.push({
+                          text: filename,
+                          handler: () => {
+                            const newLinks = [];
+                            links.forEach((link) => {
+                              if (link.filename === filename) {
+                                newLinks.push(link);
+                              }
+                            });
+
+                            observer.next(newLinks);
+                            observer.complete();
+                          }
+                        });
+                      });
+
+                      buttons.push({
+                        text: 'Cancel',
+                        icon: 'close',
+                        role: 'cancel',
+                        handler: () => {
+                          console.log('Cancel clicked');
+                        }
+                      });
+
+                      const action = new ActionSheetController();
+                      const a = await action.create({
+                        header: 'Select a file',
+                        buttons
+                      });
+                      a.present();
+                      console.log({ data });
+
+                      return;
+                    }
+
                     observer.next(links);
                     observer.complete();
                   },
