@@ -8,6 +8,7 @@ import { RealDebridTorrentsInfoForm } from '../../../services/real-debrid/forms/
 import { RealDebridUnrestrictLinkForm } from '../../../services/real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
 import { RealDebridTorrentsAddMagnetDto } from '../../../services/real-debrid/dtos/torrents/real-debrid-torrents-add-magnet.dto';
 import { HeliosCacheService } from '../../../services/provider-cache.service';
+import { getSupportedMedia } from '../../../services/tools';
 
 export class RealDebridGetCachedUrlQuery {
   static getData(url: string, fileIds: string[]): Observable<RealDebridUnrestrictLinkDto[]> {
@@ -42,7 +43,32 @@ export class RealDebridGetCachedUrlQuery {
                       )
                     );
                   });
-                  return forkJoin(obs).pipe(mapTo(links));
+                  return forkJoin(obs).pipe(
+                    switchMap(() => {
+                      const videoLinks = [];
+                      const otherLinks = [];
+
+                      links.forEach((link) => {
+                        const ext = '.' + link.filename.split('.').pop().toLowerCase();
+                        const commonVideoExtensions = getSupportedMedia('video').split('|');
+
+                        if (!commonVideoExtensions.includes(ext) || ext === '.rar') {
+                          otherLinks.push(link);
+                        } else {
+                          videoLinks.push(link);
+                        }
+                      });
+
+                      if (videoLinks.length === 0 && otherLinks.length > 0 && fileId !== 'all') {
+                        return this.getData(url, []);
+                      }
+
+                      if (videoLinks.length === 0 && otherLinks.length > 0) {
+                        videoLinks.push(...otherLinks);
+                      }
+                      return of(videoLinks);
+                    })
+                  );
                 }
 
                 if (fileId !== 'all') {
