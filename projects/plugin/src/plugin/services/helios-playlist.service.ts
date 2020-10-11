@@ -36,14 +36,20 @@ export class HeliosPlaylistService {
     let poster = null;
 
     if (kodiOpenMedia) {
+      const openMedia: OpenMedia = {
+        episodeNumber: kodiOpenMedia?.episode?.number,
+        seasonNumber: kodiOpenMedia?.episode?.seasonNumber,
+        movieIds: kodiOpenMedia?.movie?.ids,
+        showIds: kodiOpenMedia?.show?.ids
+      };
+      id = this.playListService.getPlaylistIdFromOpenMedia(openMedia);
+
       if (kodiOpenMedia.movie) {
-        id = (kodiOpenMedia.movie.ids.trakt ?? kodiOpenMedia.movie.ids.imdb).toString();
         label = kodiOpenMedia.movie.title;
         if (kodiOpenMedia.movie.imagesUrl) {
           poster = kodiOpenMedia.movie.imagesUrl.poster;
         }
       } else if (kodiOpenMedia.show) {
-        id = (kodiOpenMedia.show.ids.trakt ?? kodiOpenMedia.show.ids.simkl).toString();
         label = kodiOpenMedia.show.title + ' S' + kodiOpenMedia.episode.seasonNumber.toString().padStart(2, '0');
         if (kodiOpenMedia.show.imagesUrl) {
           poster = kodiOpenMedia.show.imagesUrl.poster;
