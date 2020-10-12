@@ -128,6 +128,8 @@ export class OpenSourceService {
         }
       } else if (err && typeof err === 'string') {
         this.toastService.simpleMessage(err, null, 4000);
+      } else if (err && err.message) {
+        this.toastService.simpleMessage(err.message, null, 4000);
       } else {
         this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
       }

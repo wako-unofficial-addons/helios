@@ -2,7 +2,7 @@ import { Observable, throwError } from 'rxjs';
 import { ProviderHttpService } from '../../provider-http.service';
 import { catchError, switchMap } from 'rxjs/operators';
 import { RealDebridOauthTokenDto } from '../dtos/oauth/real-debrid-oauth-token.dto';
-import { WakoHttpError, WakoHttpRequest } from '@wako-app/mobile-sdk';
+import { WakoHttpError, WakoHttpRequest, WakoHttpService } from '@wako-app/mobile-sdk';
 
 export class RealDebridApiService extends ProviderHttpService {
   static queueEnabled = true;
@@ -35,7 +35,7 @@ export class RealDebridApiService extends ProviderHttpService {
   static request<T>(
     httpRequest: WakoHttpRequest,
     cacheTime?: string | number,
-    timeoutMs = 20000,
+    timeoutMs = 40000,
     byPassCors = false,
     timeToWaitOnTooManyRequest?: number,
     timeToWaitBetweenEachRequest?: number
@@ -68,12 +68,22 @@ export class RealDebridApiService extends ProviderHttpService {
   }
 
   static post<T>(url: string, body: Object, cacheTime?: string) {
-    return super.request<T>(
+    return this.request<T>(
       {
         method: 'POST',
         url: this.getApiBaseUrl() + url,
         body: body,
         headers: this.getHeaders()
+      },
+      cacheTime
+    );
+  }
+
+  static get<T>(url: string, params?: any, cacheTime?: string | number): Observable<T> {
+    return this.request<T>(
+      {
+        url: this.getApiBaseUrl() + WakoHttpService.addParamsToUrl(url, params),
+        method: 'GET'
       },
       cacheTime
     );
