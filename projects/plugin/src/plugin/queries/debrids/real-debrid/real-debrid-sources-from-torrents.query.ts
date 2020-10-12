@@ -186,7 +186,6 @@ export class RealDebridSourcesFromTorrentsQuery {
                         buttons
                       });
                       a.present();
-                      console.log({ data });
 
                       return;
                     }
