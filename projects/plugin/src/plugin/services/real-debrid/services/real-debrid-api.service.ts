@@ -36,40 +36,31 @@ export class RealDebridApiService extends ProviderHttpService {
     httpRequest: WakoHttpRequest,
     cacheTime?: string | number,
     timeoutMs = 40000,
-    byPassCors = true,
+    byPassCors = false,
     timeToWaitOnTooManyRequest?: number,
     timeToWaitBetweenEachRequest?: number
   ) {
-    return super
-      .request<T>(httpRequest, cacheTime, timeoutMs, this.byPassCors, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest)
-      .pipe(
-        catchError((err) => {
-          if (err instanceof WakoHttpError && err.status === 401 && this.handle401) {
-            console.log('Refreshing RD');
-            return this.handle401.pipe(
-              switchMap((credentialsRefreshed) => {
-                if (credentialsRefreshed) {
-                  httpRequest.headers = null;
+    return super.request<T>(httpRequest, cacheTime, timeoutMs, byPassCors, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest).pipe(
+      catchError((err) => {
+        if (err instanceof WakoHttpError && err.status === 401 && this.handle401) {
+          console.log('Refreshing RD');
+          return this.handle401.pipe(
+            switchMap((credentialsRefreshed) => {
+              if (credentialsRefreshed) {
+                httpRequest.headers = null;
 
-                  return super.request<T>(
-                    httpRequest,
-                    cacheTime,
-                    timeoutMs,
-                    byPassCors,
-                    timeToWaitOnTooManyRequest,
-                    timeToWaitBetweenEachRequest
-                  );
-                }
-                return throwError(err);
-              })
-            );
-          }
-          return throwError(err);
-        })
-      );
+                return super.request<T>(httpRequest, cacheTime, timeoutMs, true, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest);
+              }
+              return throwError(err);
+            })
+          );
+        }
+        return throwError(err);
+      })
+    );
   }
 
-  static post<T>(url: string, body: Object, cacheTime?: string) {
+  static post<T>(url: string, body: Object, cacheTime?: string, timeoutMs?, byPassCors = true) {
     return this.request<T>(
       {
         method: 'POST',
@@ -77,17 +68,21 @@ export class RealDebridApiService extends ProviderHttpService {
         body: body,
         headers: this.getHeaders()
       },
-      cacheTime
+      cacheTime,
+      timeoutMs ?? 40000,
+      byPassCors
     );
   }
 
-  static get<T>(url: string, params?: any, cacheTime?: string | number): Observable<T> {
+  static get<T>(url: string, params?: any, cacheTime?: string | number, timeoutMs?, byPassCors = true): Observable<T> {
     return this.request<T>(
       {
         url: this.getApiBaseUrl() + WakoHttpService.addParamsToUrl(url, params),
         method: 'GET'
       },
-      cacheTime
+      cacheTime,
+      timeoutMs ?? 40000,
+      byPassCors
     );
   }
 }
