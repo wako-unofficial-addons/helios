@@ -3,6 +3,6 @@ import { RealDebridTorrentsInfoDto } from '../../dtos/torrents/real-debrid-torre
 
 export class RealDebridTorrentsInfoForm {
   static submit(torrentId: string) {
-    return RealDebridApiService.get<RealDebridTorrentsInfoDto>(`/torrents/info/${torrentId}`);
+    return RealDebridApiService.get<RealDebridTorrentsInfoDto>(`/torrents/info/${torrentId}`, null, null, null, false);
   }
 }

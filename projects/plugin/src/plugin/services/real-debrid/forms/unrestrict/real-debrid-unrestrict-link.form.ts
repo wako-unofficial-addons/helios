@@ -3,8 +3,14 @@ import { RealDebridUnrestrictLinkDto } from '../../dtos/unrestrict/real-debrid-u
 
 export class RealDebridUnrestrictLinkForm {
   static submit(link: string) {
-    return RealDebridApiService.post<RealDebridUnrestrictLinkDto>(`/unrestrict/link`, {
-      link: link
-    });
+    return RealDebridApiService.post<RealDebridUnrestrictLinkDto>(
+      `/unrestrict/link`,
+      {
+        link: link
+      },
+      null,
+      null,
+      false
+    );
   }
 }
