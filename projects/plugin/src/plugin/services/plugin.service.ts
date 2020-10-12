@@ -21,7 +21,6 @@ import { ModalController, Platform } from '@ionic/angular';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
 import { Storage } from '@ionic/storage';
 import { OpenSourceService } from './open-source.service';
-import { SettingsService } from './settings.service';
 import { ExplorerService } from './explorer.service';
 
 declare const device: any;
@@ -35,7 +34,6 @@ export class PluginService extends PluginBaseService {
     private modalController: ModalController,
     private storage: Storage,
     private openSourceService: OpenSourceService,
-    private settingsService: SettingsService,
     private platform: Platform,
     private explorerService: ExplorerService,
     private fileActionService: WakoFileActionService
@@ -43,30 +41,8 @@ export class PluginService extends PluginBaseService {
     super();
   }
 
-  private async patchSettings() {
-    const settingsPatched = await this.storage.get('helios_settings_patched2');
-
-    if (settingsPatched) {
-      logData('Settings already patched');
-      return;
-    }
-
-    const settings = await this.settingsService.get();
-
-    if (this.platform.is('android') && typeof device !== 'undefined' && device['version']) {
-      const deviceVersion = +device['version'];
-      if (deviceVersion < 7) {
-        settings.simultaneousProviderQueries = 3;
-        await this.settingsService.set(settings);
-      }
-    }
-    await this.storage.set('helios_settings_patched2', true);
-  }
-
   async initialize() {
     logData('plugin initialized');
-
-    await this.patchSettings();
 
     await this.providerService.initialize();
 

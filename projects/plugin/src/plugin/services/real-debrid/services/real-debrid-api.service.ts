@@ -36,35 +36,37 @@ export class RealDebridApiService extends ProviderHttpService {
     httpRequest: WakoHttpRequest,
     cacheTime?: string | number,
     timeoutMs = 40000,
-    byPassCors = false,
+    byPassCors = true,
     timeToWaitOnTooManyRequest?: number,
     timeToWaitBetweenEachRequest?: number
   ) {
-    return super.request<T>(httpRequest, cacheTime, timeoutMs, byPassCors, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest).pipe(
-      catchError((err) => {
-        if (err instanceof WakoHttpError && err.status === 401 && this.handle401) {
-          console.log('Refreshing RD');
-          return this.handle401.pipe(
-            switchMap((credentialsRefreshed) => {
-              if (credentialsRefreshed) {
-                httpRequest.headers = null;
+    return super
+      .request<T>(httpRequest, cacheTime, timeoutMs, this.byPassCors, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest)
+      .pipe(
+        catchError((err) => {
+          if (err instanceof WakoHttpError && err.status === 401 && this.handle401) {
+            console.log('Refreshing RD');
+            return this.handle401.pipe(
+              switchMap((credentialsRefreshed) => {
+                if (credentialsRefreshed) {
+                  httpRequest.headers = null;
 
-                return super.request<T>(
-                  httpRequest,
-                  cacheTime,
-                  timeoutMs,
-                  byPassCors,
-                  timeToWaitOnTooManyRequest,
-                  timeToWaitBetweenEachRequest
-                );
-              }
-              return throwError(err);
-            })
-          );
-        }
-        return throwError(err);
-      })
-    );
+                  return super.request<T>(
+                    httpRequest,
+                    cacheTime,
+                    timeoutMs,
+                    byPassCors,
+                    timeToWaitOnTooManyRequest,
+                    timeToWaitBetweenEachRequest
+                  );
+                }
+                return throwError(err);
+              })
+            );
+          }
+          return throwError(err);
+        })
+      );
   }
 
   static post<T>(url: string, body: Object, cacheTime?: string) {
