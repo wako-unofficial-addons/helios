@@ -74,7 +74,7 @@ export class RealDebridGetCachedUrlQuery {
                 if (fileId !== 'all') {
                   return this.getData(url, []);
                 }
-                return throwError('No links found. It seems the source is not fully cached, try to add the trorrent manually');
+                return throwError('No links found. It seems the source is not fully cached, try to add the torrent manually');
               })
             );
           }),
@@ -95,7 +95,7 @@ export class RealDebridGetCachedUrlQuery {
             }
 
             if (links.length === 0) {
-              return throwError('No links found. It seems the source is not fully cached, try to add the trorrent manually');
+              return throwError('No links found. It seems the source is not fully cached, try to add the torrent manually');
             }
             return from(HeliosCacheService.set(cacheKey, links, '15min')).pipe(mapTo(links));
           })
