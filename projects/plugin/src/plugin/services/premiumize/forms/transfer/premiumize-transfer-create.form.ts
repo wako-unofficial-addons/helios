@@ -5,6 +5,7 @@ export class PremiumizeTransferCreateForm {
   static submit(torrentUrl: string) {
     return PremiumizeApiService.post<PremiumizeTransferCreateDto>('/transfer/create', {
       src: torrentUrl
+      folder_id: /downloads/
     });
   }
 }
