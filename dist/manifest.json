@@ -6,8 +6,8 @@
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
   "author": "Davy",
   "actions": ["movies", "episodes", "episodes-item-option", "file-explorer"],
-  "entryPointV2": "https://raw.githubusercontent.com/jamesah2008/helios/tree/patch-1/dist/plugin.js",
-  "entryPoint": "https://raw.githubusercontent.com/jamesah2008/helios/tree/patch-1/dist/plugin.js",
+  "entryPointV2": "https://github.com/jamesah2008/helios/blob/patch-1/dist/plugin.js",
+  "entryPoint": "https://github.com/jamesah2008/helios/blob/patch-1/dist/plugin.js",
   "languages": {
     "en": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/en.json",
     "fr": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/fr.json",
