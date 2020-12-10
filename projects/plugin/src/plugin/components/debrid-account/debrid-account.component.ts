@@ -276,8 +276,11 @@ export class DebridAccountComponent implements OnInit {
         return;
       }
 
+      settings.disabled = !enabled;
+
       this.debridAccountService.setAllDebridSettings(settings).then(() => {
         this.ngOnInit();
+        document.location.reload();
       });
     });
   }

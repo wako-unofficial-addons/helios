@@ -686,7 +686,7 @@ export class OpenSourceService {
         if (data.status === 'success') {
           this.toastService.simpleMessage('toasts.open-source.addedToAD');
         } else {
-          this.toastService.simpleMessage('toasts.open-source.failedToAddToAD', { error: '' });
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToAD', { error: data?.error?.message });
         }
       });
   }
