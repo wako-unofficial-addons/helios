@@ -10,7 +10,7 @@ export class AllDebridGetLinksQuery {
     const cacheKey = 'setCachedLinksAD_' + url + isPackage;
 
     return HeliosCacheService.get<AllDebridMagnetStatusMagnetDto>(cacheKey).pipe(
-      switchMap(cacheLinks => {
+      switchMap((cacheLinks) => {
         if (cacheLinks) {
           return of(cacheLinks);
         }
@@ -18,9 +18,13 @@ export class AllDebridGetLinksQuery {
         let magnetId = null;
 
         return AllDebridMagnetUploadForm.submit([url]).pipe(
-          switchMap(dto => {
+          switchMap((dto) => {
             if (dto.status !== 'success') {
-              return throwError('All Debrid /magnet/upload - Generic error');
+              let error = 'All Debrid /magnet/upload - Generic error';
+              if (dto?.error?.message) {
+                error = 'All Debrid /magnet/upload - ' + dto.error.message;
+              }
+              return throwError(error);
             }
 
             const magnet = dto.data.magnets.shift();
@@ -35,9 +39,8 @@ export class AllDebridGetLinksQuery {
               return throwError('All Debrid /magnet/upload - torrent is not ready yet');
             }
 
-
             return AllDebridMagnetStatusForm.submit(magnet.id).pipe(
-              switchMap(statusDto => {
+              switchMap((statusDto) => {
                 if (statusDto.status !== 'success') {
                   return throwError('All Debrid /magnet/status - Generic error');
                 }

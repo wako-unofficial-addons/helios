@@ -5,6 +5,10 @@ export interface AllDebridMagnetUploadDto {
   data: {
     magnets: AllDebridMagnetUploadMagnetDto[];
   };
+  error?: {
+    code: string;
+    message: string;
+  };
 }
 
 export interface AllDebridMagnetUploadMagnetDto {
