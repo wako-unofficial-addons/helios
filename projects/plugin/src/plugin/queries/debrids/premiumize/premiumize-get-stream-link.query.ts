@@ -8,14 +8,14 @@ import { StreamLinksFromLinksQuery } from '../stream-links-from-links.query';
 export class PremiumizeGetStreamLinkQuery {
   static getData(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery) {
     return streamLinkSource.premiumizeTransferDirectdlDto.pipe(
-      map(dto => {
+      map((dto) => {
         if (dto.status !== 'success') {
-          throw new Error(dto.message);
+          throw new Error('Premiumize.me: ' + dto.message);
         }
 
         const links: Link[] = [];
 
-        dto.content.forEach(_file => {
+        dto.content.forEach((_file) => {
           const ext = '.' + _file.link.split('.').pop().toLowerCase();
           const commonVideoExtensions = getSupportedMedia('video').split('|');
 
