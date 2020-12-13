@@ -1,3 +1,4 @@
+import { RD_ERR_CODE_NOT_FULLY_CACHED } from './../queries/debrids/real-debrid/real-debrid-get-cached-url.query';
 import { Injectable } from '@angular/core';
 import { ActionSheetController, LoadingController, Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -108,7 +109,6 @@ export class OpenSourceService {
 
   private async getStreamLinksWithLoader(streamLinkSource: StreamLinkSource, sourceQuery: SourceQuery, showLoader = true) {
     const loader = await this.loadingController.create({
-      message: 'Please wait...',
       spinner: 'crescent',
       backdropDismiss: true
     });
@@ -130,6 +130,23 @@ export class OpenSourceService {
         this.toastService.simpleMessage(err, null, 4000);
       } else if (err && err.message) {
         this.toastService.simpleMessage(err.message, null, 4000);
+        if (err?.code === RD_ERR_CODE_NOT_FULLY_CACHED && streamLinkSource.originalUrl) {
+          const torrentSource: TorrentSource = {
+            hash: streamLinkSource.originalHash,
+            id: streamLinkSource.id,
+            isCached: false,
+            isPackage: streamLinkSource.isPackage,
+            peers: null,
+            provider: streamLinkSource.provider,
+            quality: streamLinkSource.quality,
+            seeds: null,
+            size: streamLinkSource.size,
+            title: streamLinkSource.title,
+            type: streamLinkSource.type,
+            url: streamLinkSource.originalUrl
+          };
+          this._openTorrentSource(torrentSource);
+        }
       } else {
         this.toastService.simpleMessage('toasts.open-source.sourceNotCached');
       }
@@ -255,7 +272,7 @@ export class OpenSourceService {
       });
     }
 
-    if (currentHost) {
+    if (settings.availablePlayButtonActions.includes('open-elementum') && currentHost) {
       buttons.push({
         cssClass: 'kodi',
         text: this.translateService.instant('actionSheets.open-source.options.open-elementum'),
@@ -271,6 +288,17 @@ export class OpenSourceService {
         text: this.translateService.instant('actionSheets.open-source.options.add-to-playlist'),
         handler: () => {
           this.open(torrent, 'add-to-playlist', kodiOpenMedia);
+        }
+      });
+    }
+
+    if (settings.availablePlayButtonActions.includes('copy-url')) {
+      buttons.push({
+        role: 'copy-url',
+        icon: 'copy',
+        text: this.translateService.instant('actionSheets.open-source.options.copy-url'),
+        handler: () => {
+          this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
         }
       });
     }
@@ -294,6 +322,19 @@ export class OpenSourceService {
     this.setImages();
 
     await action.present();
+
+    const copyEl = document.querySelector('.action-sheet-copy-url');
+    if (!copyEl) {
+      return;
+    }
+
+    copyEl.addEventListener('click', () => {
+      this.clipboardService.copyFromContent(torrent.url);
+      setTimeout(() => {
+        // Need to be done twice to work on android
+        this.clipboardService.copyFromContent(torrent.url);
+      }, 100);
+    });
   }
 
   private async _openStreamLinkSource(streamLinkSource: StreamLinkSource, actions: PlayButtonAction[], kodiOpenMedia?: KodiOpenMedia) {
@@ -655,7 +696,6 @@ export class OpenSourceService {
 
   private async addToPM(url: string) {
     const loader = await this.loadingController.create({
-      message: 'Please wait...',
       spinner: 'crescent'
     });
 
@@ -674,7 +714,6 @@ export class OpenSourceService {
 
   private async addToAD(url: string) {
     const loader = await this.loadingController.create({
-      message: 'Please wait...',
       spinner: 'crescent'
     });
 
@@ -693,7 +732,6 @@ export class OpenSourceService {
 
   private async addToRD(url: string) {
     const loader = await this.loadingController.create({
-      message: 'Please wait...',
       spinner: 'crescent'
     });
 
