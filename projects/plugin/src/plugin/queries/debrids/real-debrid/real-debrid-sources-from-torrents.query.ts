@@ -36,17 +36,21 @@ export class RealDebridSourcesFromTorrentsQuery {
     return Math.round(res * 100) / 100 + ' ' + unit;
   }
 
+  private static setHash(torrent: TorrentSource) {
+    let hash = torrent.hash;
+
+    if (!hash) {
+      hash = getHashFromUrl(torrent.url);
+    }
+    if (hash && !torrent.hash) {
+      torrent.hash = hash;
+    }
+  }
+
   private static getAllHash(torrents: TorrentSource[]) {
     const allHashes = [];
     torrents.forEach((torrent) => {
-      let hash = torrent.hash;
-
-      if (!hash) {
-        hash = getHashFromUrl(torrent.url);
-      }
-      if (hash && !torrent.hash) {
-        torrent.hash = hash;
-      }
+      this.setHash(torrent);
 
       if (torrent.hash && !allHashes.includes(torrent.hash)) {
         allHashes.push(torrent.hash);
@@ -66,6 +70,8 @@ export class RealDebridSourcesFromTorrentsQuery {
     return RealDebridTorrentsInstantAvailabilityForm.submit(allHashes).pipe(
       map((realDebridTorrentsInstantAvailabilityDto) => {
         torrents.forEach((torrent) => {
+          this.setHash(torrent);
+
           if (!torrent.hash) {
             return;
           }
