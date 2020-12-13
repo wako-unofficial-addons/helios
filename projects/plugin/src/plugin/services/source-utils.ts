@@ -9,16 +9,19 @@ export class SourceUtils {
       return null;
     }
 
-    if (sizeStr.match(/GB|GiB/gi) !== null) {
-      return +sizeStr.replace(/GB|GiB/gi, '') * 1024 * 1024 * 1024;
+    let regEx = new RegExp(/GB|GiB|Go/gi);
+    if (sizeStr.match(regEx) !== null) {
+      return +sizeStr.replace(regEx, '') * 1024 * 1024 * 1024;
     }
 
-    if (sizeStr.match(/MB|MiB/gi) !== null) {
-      return +sizeStr.replace(/MB|MiB/gi, '') * 1024 * 1024;
+    regEx = new RegExp(/MB|MiB|Mo/gi);
+    if (sizeStr.match(regEx) !== null) {
+      return +sizeStr.replace(regEx, '') * 1024 * 1024;
     }
 
-    if (sizeStr.match(/KB|KiB/gi) !== null) {
-      return +sizeStr.replace(/KB|KiB/, '') * 1024;
+    regEx = new RegExp(/KB|KiB|Ko/gi);
+    if (sizeStr.match(regEx) !== null) {
+      return +sizeStr.replace(regEx, '') * 1024;
     }
 
     return null;
@@ -65,7 +68,7 @@ export class SourceUtils {
   static cleanTitle(title: string, apostropheReplacement: 's' | '' | ' s' = 's') {
     title = title.toLowerCase();
     title = this.stripAccents(title);
-  //  title = this.stripNonAsciiAndUnprintable(title);
+    //  title = this.stripNonAsciiAndUnprintable(title);
 
     title = title.replace(`\\'s`, apostropheReplacement);
     title = title.replace(`'s`, apostropheReplacement);
@@ -105,7 +108,8 @@ export class SourceUtils {
     function checkForSep(t: string, sep: string) {
       if (
         t.match(sep) !== null &&
-        t.substr(t.indexOf(sep) + 1)
+        t
+          .substr(t.indexOf(sep) + 1)
           .trim()
           .toLowerCase()
           .startsWith(title)
@@ -122,7 +126,7 @@ export class SourceUtils {
   }
 
   static removeWWWUrl(releaseTitle: string, title: string) {
-    const regex = new RegExp(/www.[^.]+.[a-z]+/ig);
+    const regex = new RegExp(/www.[^.]+.[a-z]+/gi);
     if (releaseTitle.match(regex) !== null && title.match(regex) === null) {
       return releaseTitle.replace(regex, '');
     }
@@ -151,8 +155,12 @@ export class SourceUtils {
     return title.replace(/([A-Z])\./g, '$1');
   }
 
-
-  static isTitleMatching(releaseTitle: string, title: string, sourceQuery: SourceMovieQuery | SourceEpisodeQuery, addSpaceAtTheEnd = false) {
+  static isTitleMatching(
+    releaseTitle: string,
+    title: string,
+    sourceQuery: SourceMovieQuery | SourceEpisodeQuery,
+    addSpaceAtTheEnd = false
+  ) {
     title = this.cleanTitle(' ' + title + ' ');
 
     releaseTitle = this.cleanTags(releaseTitle);
@@ -172,7 +180,6 @@ export class SourceUtils {
 
     const year = (sourceQuery.year || '').toString();
 
-
     releaseTitle = this.removeFromTitle(releaseTitle, year);
     title = this.removeFromTitle(title, year);
 
@@ -183,46 +190,41 @@ export class SourceUtils {
     return false;
   }
 
-
   static checkEpisodeNumberMatch(releaseTitle: string) {
     releaseTitle = this.cleanTitle(releaseTitle);
 
-    return releaseTitle.match(/(s\d+e[a-z]*\d+ )|(s\d+ *e\d+ )|(season \d+ episode \d+)/ig) !== null;
-
+    return releaseTitle.match(/(s\d+e[a-z]*\d+ )|(s\d+ *e\d+ )|(season \d+ episode \d+)/gi) !== null;
   }
 
   static isWordMatching(releaseTitle: string, title: string, minWords = 3) {
-
     title = this.stripAccents(title);
 
     const placeholder = 'ZZOOPPQQ';
-    const nameAndNumberMatches = title.match(/[a-z]+\s+[0-9]+/ig);
+    const nameAndNumberMatches = title.match(/[a-z]+\s+[0-9]+/gi);
 
     let hasBeenFixed = false;
     if (nameAndNumberMatches) {
-      nameAndNumberMatches.forEach(str => {
+      nameAndNumberMatches.forEach((str) => {
         const regExp = new RegExp(str, 'g');
         title = title.replace(regExp, str.replace(/\s/, placeholder));
       });
       hasBeenFixed = true;
-
     }
 
     let words = title
       .replace(/[^0-9a-z]/gi, ' ')
       .split(' ')
-      .filter(word => word.trim().length >= 2);
+      .filter((word) => word.trim().length >= 2);
 
     if (words.length >= minWords) {
-
       if (hasBeenFixed) {
         const regExp = new RegExp(placeholder, 'g');
-        words = words.map(word => {
+        words = words.map((word) => {
           return word.replace(regExp, ' ');
         });
       }
 
-      words = words.map(word => {
+      words = words.map((word) => {
         return word + ' ';
       });
 
@@ -262,13 +264,16 @@ export class SourceUtils {
       return true;
     }
 
-
-    if (!this.isTitleMatching(releaseTitle, title, sourceQuery) && !this.isTitleMatching(releaseTitle, titleBroken1, sourceQuery) && !this.isTitleMatching(releaseTitle, titleBroken2, sourceQuery)) {
+    if (
+      !this.isTitleMatching(releaseTitle, title, sourceQuery) &&
+      !this.isTitleMatching(releaseTitle, titleBroken1, sourceQuery) &&
+      !this.isTitleMatching(releaseTitle, titleBroken2, sourceQuery)
+    ) {
       return false;
     }
 
     let hasExclusion = false;
-    ['soundtrack', 'gesproken'].forEach(exclusion => {
+    ['soundtrack', 'gesproken'].forEach((exclusion) => {
       if (releaseTitle.match(exclusion) !== null) {
         hasExclusion = true;
       }
@@ -316,19 +321,14 @@ export class SourceUtils {
       stringList.unshift(absoluteNumber);
     }
 
-    const titles = [
-      showTitle,
-      episodeTitle + ' ' + showTitle,
-      showTitle + ' ' + episodeTitle
-    ];
+    const titles = [showTitle, episodeTitle + ' ' + showTitle, showTitle + ' ' + episodeTitle];
 
-    titles.forEach(title => {
+    titles.forEach((title) => {
       const cleaned = this.cleanDotAbbr(title);
       if (cleaned !== title) {
         titles.push(cleaned);
       }
     });
-
 
     for (const title of titles) {
       for (const code of stringList) {
@@ -345,7 +345,6 @@ export class SourceUtils {
     return false;
   }
 
-
   static isSeasonPackTitleMatching(releaseTitle: string, searchQuery: string, sourceQuery: SourceEpisodeQuery) {
     const episodeNumberMatch = this.checkEpisodeNumberMatch(releaseTitle);
     if (episodeNumberMatch) {
@@ -354,7 +353,6 @@ export class SourceUtils {
 
     const showTitle = sourceQuery.title;
     const season = sourceQuery.seasonNumber;
-
 
     const seasonFill = add0(season);
     const seasonCheck = `s${season} `;
@@ -374,12 +372,9 @@ export class SourceUtils {
     stringList.push(seasonFullPack);
     stringList.push(seasonFullPackFull);
 
+    const titles = [showTitle];
 
-    const titles = [
-      showTitle
-    ];
-
-    titles.forEach(title => {
+    titles.forEach((title) => {
       const cleaned = this.cleanDotAbbr(title);
       if (cleaned !== title) {
         titles.push(cleaned);
@@ -389,14 +384,20 @@ export class SourceUtils {
     for (const title of titles) {
       for (const code of stringList) {
         if (this.isWordMatching(releaseTitle, title + ' ' + code)) {
-          if ((code === seasonFullPack || code === seasonFullPackFull) && !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)) {
+          if (
+            (code === seasonFullPack || code === seasonFullPackFull) &&
+            !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)
+          ) {
             continue;
           }
           return true;
         }
 
         if (this.isTitleMatching(releaseTitle, title + ' ' + code, sourceQuery, code.substr(-1, 1) === ' ')) {
-          if ((code === seasonFullPack || code === seasonFullPackFull) && !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)) {
+          if (
+            (code === seasonFullPack || code === seasonFullPackFull) &&
+            !this.isMatchingFullPack(releaseTitle, sourceQuery.seasonNumber, code)
+          ) {
             continue;
           }
           return true;
@@ -422,7 +423,6 @@ export class SourceUtils {
     }
     return seasonNumber < maxSeasonNumber;
   }
-
 
   static getVideoMetadata(releaseTitle: string, sourceQuery: SourceQuery) {
     let title = '';
