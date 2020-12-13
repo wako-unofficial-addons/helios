@@ -2,7 +2,7 @@ import { Observable, of } from 'rxjs';
 import { RealDebridTorrentsInstantAvailabilityForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { SourceQuery } from '../../../entities/source-query';
-import { getHashFromUrl, getSupportedMedia, isEpisodeCodeMatchesFileName } from '../../../services/tools';
+import { getHashFromUrl, isEpisodeCodeMatchesFileName, isVideoFile } from '../../../services/tools';
 import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
 import { TorrentSource } from '../../../entities/torrent-source';
 import { StreamLinkSource } from '../../../entities/stream-link-source';
@@ -88,15 +88,11 @@ export class RealDebridSourcesFromTorrentsQuery {
 
             let episodeFound = false;
 
-            const commonVideoExtensions = getSupportedMedia('video').split('|');
-
             data.rd.forEach((rd, index) => {
               Object.keys(rd).forEach((key) => {
                 const file = rd[key];
 
-                const ext = '.' + file.filename.split('.').pop().toLowerCase();
-
-                if (!firstVideoFileIndex && commonVideoExtensions.includes(ext)) {
+                if (!firstVideoFileIndex && isVideoFile(file.filename)) {
                   firstVideoFileIndex = index;
                 }
 
@@ -107,7 +103,7 @@ export class RealDebridSourcesFromTorrentsQuery {
                   match = isEpisodeCodeMatchesFileName(episodeCode, file.filename);
                 }
 
-                if (commonVideoExtensions.includes(ext) && match && !groupWithFile.includes(index)) {
+                if (isVideoFile(file.filename) && match && !groupWithFile.includes(index)) {
                   groupWithFile.push(index);
                   episodeFound = true;
                   matchFiles.set(file.filename, index);
@@ -207,14 +203,11 @@ export class RealDebridSourcesFromTorrentsQuery {
 
             const buttons = [];
 
-            const commonVideoExtensions = getSupportedMedia('video').split('|');
-
             data.rd.forEach((rd, index) => {
               Object.keys(rd).forEach((key) => {
                 const file = rd[key];
-                const ext = '.' + file.filename.split('.').pop().toLowerCase();
 
-                if (!file.filename || !commonVideoExtensions.includes(ext)) {
+                if (!file.filename || !isVideoFile(file.filename)) {
                   return;
                 }
 
@@ -284,9 +277,8 @@ export class RealDebridSourcesFromTorrentsQuery {
                 const link = links.slice(0).pop();
 
                 const ext = '.' + link.filename.split('.').pop().toLowerCase();
-                const commonVideoExtensions = getSupportedMedia('video').split('|');
 
-                if (!commonVideoExtensions.includes(ext) || ext === '.rar') {
+                if (!isVideoFile(link.filename) || ext === '.rar') {
                   // try to get all files
                   return RealDebridGetCachedUrlQuery.getData(torrent.url, []);
                 }
