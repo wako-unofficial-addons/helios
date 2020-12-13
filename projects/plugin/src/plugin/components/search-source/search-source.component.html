@@ -4,7 +4,7 @@
       {{ title }}
     </ion-title>
     <ion-title *ngIf="manualSearch">
-      {{ 'modals.search-source.manual'|translate }}
+      {{ 'modals.search-source.manual' | translate }}
     </ion-title>
     <ion-buttons slot="secondary">
       <ion-button (click)="selectLang()">
@@ -22,7 +22,7 @@
 
 <ion-content>
   <ng-container *ngIf="showContent">
-    <wk-source-list *ngIf="!manualSearch" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
+    <wk-source-list *ngIf="!manualSearch" [disableSearch]="disableSearch" [kodiOpenMedia]="kodiOpenMedia"></wk-source-list>
     <helios-plugin-detail
       *ngIf="manualSearch"
       [searchInput]="manualSearchValue"

@@ -43,6 +43,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   searchOnOpen = true;
 
+  @Input()
+  disableSearch = false;
+
   totalStreamLinkSource = 0;
   totalTorrentSource = 0;
 
@@ -90,7 +93,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
   initialized = false;
 
-  private ready = false;
   searchInput = '';
 
   settings: Settings;
@@ -106,11 +108,20 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   async ngOnInit() {
     this.hasDebridAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
+    if (this.kodiOpenMedia) {
+      this.sourceQuery = await SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia).toPromise();
+      this.providers = await this.providerService.getAll(true, this.sourceQuery.category);
+    }
+
+    this.hasProvider = (await this.providerService.getAll(true)).length > 0;
+
+    this.settings = await this.settingsService.get();
+
     if (!this.hasDebridAccount) {
       this.segment = 'torrents';
     }
 
-    this.ready = true;
+    this.initialized = true;
 
     if (this.searchOnOpen) {
       this.search();
@@ -128,7 +139,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async ngOnChanges() {
-    if (!this.ready) {
+    if (!this.initialized) {
       return;
     }
 
@@ -136,6 +147,10 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private async search() {
+    if (this.disableSearch) {
+      console.log('HELIOS SEARCH IS DISABLED');
+      return;
+    }
     this.progressBarValue = 0;
 
     this.totalTimeElapsed = 0;
@@ -164,13 +179,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.providerIsLoading = {};
 
-    this.hasProvider = (await this.providerService.getAll(true)).length > 0;
-
     this.stopSearch$.next(true);
-
-    this.settings = await this.settingsService.get();
-
-    this.initialized = true;
 
     if (!this.kodiOpenMedia || this.manualSearchValue) {
       if (this.manualSearchValue.length === 0) {
@@ -191,13 +200,13 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
+    this.providers = await this.providerService.getAll(true, this.sourceQuery.category);
+
     this.searching = true;
 
     const startTime = Date.now();
 
     let total = 0;
-
-    this.providers = await this.providerService.getAll(true, this.sourceQuery.category);
 
     this.providers.forEach((provider) => {
       this.providerIsLoading[provider.name] = provider;

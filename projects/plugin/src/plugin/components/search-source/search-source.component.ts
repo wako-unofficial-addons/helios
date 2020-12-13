@@ -24,6 +24,8 @@ export class SearchSourceComponent implements OnInit {
   lang: string;
   showContent = true;
 
+  disableSearch = true;
+
   constructor(
     private modalCtrl: ModalController,
     private actionSheetController: ActionSheetController,
@@ -40,6 +42,10 @@ export class SearchSourceComponent implements OnInit {
     this.lang = this.kodiOpenMedia.titleLang;
 
     this.setProperties();
+  }
+
+  ionViewDidEnter() {
+    this.disableSearch = false;
   }
 
   private async setProperties() {
@@ -73,7 +79,7 @@ export class SearchSourceComponent implements OnInit {
       titles = this.kodiOpenMedia.show.alternativeTitles;
     }
 
-    Object.keys(titles).forEach(lang => {
+    Object.keys(titles).forEach((lang) => {
       if (lang === 'original') {
         buttons.unshift({
           text: 'Original - ' + titles[lang],
