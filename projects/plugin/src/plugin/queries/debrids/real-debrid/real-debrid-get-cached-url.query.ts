@@ -8,7 +8,7 @@ import { RealDebridTorrentsInfoForm } from '../../../services/real-debrid/forms/
 import { RealDebridUnrestrictLinkForm } from '../../../services/real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
 import { RealDebridTorrentsAddMagnetDto } from '../../../services/real-debrid/dtos/torrents/real-debrid-torrents-add-magnet.dto';
 import { HeliosCacheService } from '../../../services/provider-cache.service';
-import { getSupportedMedia } from '../../../services/tools';
+import { isVideoFile } from '../../../services/tools';
 
 export const RD_ERR_CODE_NOT_FULLY_CACHED = 100;
 
@@ -52,9 +52,8 @@ export class RealDebridGetCachedUrlQuery {
 
                       links.forEach((link) => {
                         const ext = '.' + link.filename.split('.').pop().toLowerCase();
-                        const commonVideoExtensions = getSupportedMedia('video').split('|');
 
-                        if (!commonVideoExtensions.includes(ext) || ext === '.rar') {
+                        if (!isVideoFile(link.filename) || ext === '.rar') {
                           otherLinks.push(link);
                         } else {
                           videoLinks.push(link);

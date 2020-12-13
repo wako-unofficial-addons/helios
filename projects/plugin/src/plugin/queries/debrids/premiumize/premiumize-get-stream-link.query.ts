@@ -1,5 +1,5 @@
 import { SourceQuery } from '../../../entities/source-query';
-import { getSupportedMedia } from '../../../services/tools';
+import { isVideoFile } from '../../../services/tools';
 import { map } from 'rxjs/operators';
 import { StreamLinkSource } from '../../../entities/stream-link-source';
 import { Link } from '../../../entities/link';
@@ -16,10 +16,7 @@ export class PremiumizeGetStreamLinkQuery {
         const links: Link[] = [];
 
         dto.content.forEach((_file) => {
-          const ext = '.' + _file.link.split('.').pop().toLowerCase();
-          const commonVideoExtensions = getSupportedMedia('video').split('|');
-
-          if (commonVideoExtensions.includes(ext)) {
+          if (isVideoFile(_file.link)) {
             links.push({
               filename: _file.path.split('/').pop(),
               size: _file.size,
