@@ -142,7 +142,7 @@ export class OpenSourceService {
             seeds: null,
             size: streamLinkSource.size,
             title: streamLinkSource.title,
-            type: streamLinkSource.type,
+            type: 'torrent',
             url: streamLinkSource.originalUrl
           };
           this._openTorrentSource(torrentSource);
