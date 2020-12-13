@@ -87,11 +87,16 @@ export class RealDebridSourcesFromTorrentsQuery {
               sourceQuery.category === 'anime' ? sourceQuery.episode.absoluteNumber.toString() : sourceQuery.episode.episodeCode;
 
             let episodeFound = false;
+
+            const commonVideoExtensions = getSupportedMedia('video').split('|');
+
             data.rd.forEach((rd, index) => {
               Object.keys(rd).forEach((key) => {
                 const file = rd[key];
 
-                if (!firstVideoFileIndex && file.filename.match(/.mkv|.mp4/)) {
+                const ext = '.' + file.filename.split('.').pop().toLowerCase();
+
+                if (!firstVideoFileIndex && commonVideoExtensions.includes(ext)) {
                   firstVideoFileIndex = index;
                 }
 
@@ -102,7 +107,7 @@ export class RealDebridSourcesFromTorrentsQuery {
                   match = isEpisodeCodeMatchesFileName(episodeCode, file.filename);
                 }
 
-                if (file.filename.match(/.mkv|.mp4/) && match && !groupWithFile.includes(index)) {
+                if (commonVideoExtensions.includes(ext) && match && !groupWithFile.includes(index)) {
                   groupWithFile.push(index);
                   episodeFound = true;
                   matchFiles.set(file.filename, index);
@@ -201,10 +206,15 @@ export class RealDebridSourcesFromTorrentsQuery {
             }
 
             const buttons = [];
+
+            const commonVideoExtensions = getSupportedMedia('video').split('|');
+
             data.rd.forEach((rd, index) => {
               Object.keys(rd).forEach((key) => {
                 const file = rd[key];
-                if (!file.filename || file.filename.match(/.mkv|.mp4/) === null) {
+                const ext = '.' + file.filename.split('.').pop().toLowerCase();
+
+                if (!file.filename || !commonVideoExtensions.includes(ext)) {
                   return;
                 }
 
@@ -216,7 +226,6 @@ export class RealDebridSourcesFromTorrentsQuery {
                     let loader2;
                     loader
                       .create({
-                        message: 'Please wait...',
                         spinner: 'crescent',
                         backdropDismiss: true
                       })
@@ -249,16 +258,14 @@ export class RealDebridSourcesFromTorrentsQuery {
               });
             });
 
-            if (buttons.length > 5) {
-              buttons.push({
-                text: 'Cancel',
-                icon: 'close',
-                role: 'cancel',
-                handler: () => {
-                  console.log('Cancel clicked');
-                }
-              });
-            }
+            buttons.push({
+              text: 'Cancel',
+              icon: 'close',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            });
 
             const action = new ActionSheetController();
             action

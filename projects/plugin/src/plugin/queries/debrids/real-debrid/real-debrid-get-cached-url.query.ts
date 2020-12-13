@@ -10,6 +10,8 @@ import { RealDebridTorrentsAddMagnetDto } from '../../../services/real-debrid/dt
 import { HeliosCacheService } from '../../../services/provider-cache.service';
 import { getSupportedMedia } from '../../../services/tools';
 
+export const RD_ERR_CODE_NOT_FULLY_CACHED = 100;
+
 export class RealDebridGetCachedUrlQuery {
   static getData(url: string, fileIds: string[]): Observable<RealDebridUnrestrictLinkDto[]> {
     const fileId = fileIds.length === 0 ? 'all' : fileIds.join(',');
@@ -74,7 +76,10 @@ export class RealDebridGetCachedUrlQuery {
                 if (fileId !== 'all') {
                   return this.getData(url, []);
                 }
-                return throwError('No links found. It seems the source is not fully cached, try to add the torrent manually');
+                return throwError({
+                  code: RD_ERR_CODE_NOT_FULLY_CACHED,
+                  message: 'Real Debrid: No links found. It seems the source is not fully cached, try to add the torrent manually'
+                });
               })
             );
           }),
@@ -95,7 +100,10 @@ export class RealDebridGetCachedUrlQuery {
             }
 
             if (links.length === 0) {
-              return throwError('No links found. It seems the source is not fully cached, try to add the torrent manually');
+              return throwError({
+                code: RD_ERR_CODE_NOT_FULLY_CACHED,
+                message: 'Real Debrid: No links found. It seems the source is not fully cached, try to add the torrent manually'
+              });
             }
             return from(HeliosCacheService.set(cacheKey, links, '15min')).pipe(mapTo(links));
           })
