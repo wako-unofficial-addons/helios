@@ -3,7 +3,7 @@ import { AllDebridErrorDto } from '../all-debrid-error.dto';
 export interface AllDebridMagnetStatusDto {
   status: 'error' | 'success';
   data: {
-    magnets: AllDebridMagnetStatusMagnetDto;
+    magnets: AllDebridMagnetStatusMagnetDto | { [key: number]: AllDebridMagnetStatusMagnetDto };
   };
 }
 

@@ -44,7 +44,7 @@ export class AllDebridGetLinksQuery {
                 if (statusDto.status !== 'success') {
                   return throwError('All Debrid /magnet/status - Generic error');
                 }
-                const magnetStatus = statusDto.data.magnets;
+                const magnetStatus = statusDto.data.magnets as AllDebridMagnetStatusMagnetDto;
 
                 if (magnetStatus.error) {
                   return throwError('All Debrid /magnet/status - ' + magnetStatus.error.message);

@@ -1,6 +1,9 @@
+import { AllDebridLinkUnlockForm } from './all-debrid/forms/link/all-debrid-link-unlock.form';
+import { AllDebridMagnetDeleteForm } from './all-debrid/forms/magnet/all-debrid-magnet-delete.form';
+import { AllDebridMagnetStatusForm } from './all-debrid/forms/magnet/all-debrid-magnet-status.form';
+import { AllDebridApiService } from './all-debrid/services/all-debrid-api.service';
 import { Injectable } from '@angular/core';
 import { first, map, mapTo, switchMap } from 'rxjs/operators';
-import { SettingsService } from './settings.service';
 import { DebridAccountService } from './debrid-account.service';
 import { RealDebridFolderListForm } from './real-debrid/forms/torrents/real-debrid-torrents-list.form';
 import { ExplorerFile, ExplorerFolderItem, ExplorerItem } from '@wako-app/mobile-sdk';
@@ -13,6 +16,8 @@ import { PremiumizeItemDeleteForm } from './premiumize/forms/item/premiumize-ite
 import { forkJoin, Observable } from 'rxjs';
 import { PremiumizeApiService } from './premiumize/services/premiumize-api.service';
 import { RealDebridApiService } from './real-debrid/services/real-debrid-api.service';
+import { AllDebridMagnetStatusMagnetDto } from './all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
+import { isVideoFile } from './tools';
 
 interface CustomDataRD {
   type: 'RD';
@@ -22,7 +27,7 @@ interface CustomDataRD {
 
 @Injectable()
 export class ExplorerService {
-  constructor(private settingsService: SettingsService, private debridAccountService: DebridAccountService) {}
+  constructor(private debridAccountService: DebridAccountService) {}
 
   private sortByNameAsc(files: ExplorerItem[]) {
     files.sort((stream1, stream2) => {
@@ -70,6 +75,9 @@ export class ExplorerService {
         });
 
         this.sortByNameAsc(explorerFolderItem.items);
+
+        explorerFolderItem.title += ` (${explorerFolderItem.items.length})`;
+        explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
 
         return explorerFolderItem;
       })
@@ -129,6 +137,71 @@ export class ExplorerService {
           }
         });
 
+        explorerFolderItem.title += ` (${explorerFolderItem.items.length})`;
+        explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
+
+        return explorerFolderItem;
+      })
+    );
+  }
+
+  private getFromAD() {
+    return AllDebridMagnetStatusForm.submit(null, 'ready').pipe(
+      map((data: any) => {
+        const explorerFolderItem: ExplorerFolderItem = {
+          isRoot: true,
+          folderId: null,
+          parentId: null,
+          title: 'All Debrid',
+          label: 'All Debrid',
+          items: [],
+          goToParentAction: null
+        };
+
+        if (data.status !== 'success') {
+          return explorerFolderItem;
+        }
+
+        const magnets: AllDebridMagnetStatusMagnetDto[] = [];
+        if (data.data.magnets.hasOwnProperty('id')) {
+          magnets.push(data.data.magnets);
+        } else {
+          Object.values(data.data.magnets).forEach((magnet: AllDebridMagnetStatusMagnetDto) => {
+            magnets.push(magnet);
+          });
+        }
+
+        magnets.forEach((magnet) => {
+          magnet.links.forEach((link) => {
+            if (!isVideoFile(link.filename)) {
+              return;
+            }
+            const file: ExplorerFile = {
+              id: link.link,
+              size: link.size,
+              customData: {
+                type: 'AD',
+                magnet,
+                link
+              }
+            };
+
+            explorerFolderItem.items.push({
+              id: link.link,
+              createdAt: null,
+              label: link.filename,
+              pluginId: 'plugin.helios',
+              type: 'file',
+              file: file,
+              fetchChildren: null,
+              deleteAction: AllDebridMagnetDeleteForm.submit(magnet.id).pipe(mapTo(true))
+            });
+          });
+        });
+
+        explorerFolderItem.title += ` (${explorerFolderItem.items.length})`;
+        explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
+
         return explorerFolderItem;
       })
     );
@@ -147,22 +220,42 @@ export class ExplorerService {
           obss.push(this.getFromRD());
         }
 
+        if (AllDebridApiService.hasApiKey()) {
+          obss.push(this.getFromAD());
+        }
+
         return forkJoin(obss);
       })
     );
   }
 
-  async getLinkRD(file: ExplorerFile) {
+  async getLinkFromFile(file: ExplorerFile) {
     const customData: CustomDataRD = file.customData;
-    if (customData.type !== 'RD') {
-      return null;
+    if (customData.type === 'RD') {
+      return this.getLinkFromFileRD(file);
     }
+    if (customData.type === 'AD') {
+      return this.getLinkFromFileAD(file);
+    }
+    return null;
+  }
+
+  async getLinkFromFileRD(file: ExplorerFile) {
+    const customData: CustomDataRD = file.customData;
 
     const unrestrictedLink = await RealDebridUnrestrictLinkForm.submit(customData.link).toPromise();
 
     file.customData.servicePlayerUrl = `https://real-debrid.com/streaming-${unrestrictedLink.id}`;
 
     return unrestrictedLink.download;
+  }
+
+  async getLinkFromFileAD(file: ExplorerFile) {
+    const customData: CustomDataRD = file.customData;
+
+    const unrestrictedLink = await AllDebridLinkUnlockForm.submit(customData.link.link as any).toPromise();
+
+    return unrestrictedLink.data.link;
   }
 
   getFromPM(folderId?: string) {
@@ -207,6 +300,9 @@ export class ExplorerService {
             deleteAction: item.type === 'folder' ? this.deleteFolderFromPMById(item.id) : this.deleteFileFromPMById(item.id)
           });
         });
+
+        explorerFolderItem.title += ` (${explorerFolderItem.items.length})`;
+        explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
 
         return explorerFolderItem;
       })

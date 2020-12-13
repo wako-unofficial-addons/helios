@@ -123,7 +123,7 @@ export class PluginService extends PluginBaseService {
     openMedia?: OpenMedia,
     kodiOpenParams?: KodiOpenParams
   ): Promise<WakoFileActionButton[]> {
-    const link = await this.explorerService.getLinkRD(file);
+    const link = await this.explorerService.getLinkFromFile(file);
 
     const actions = await this.fileActionService.getFileActionButtons(link, link, title, posterUrl, seekTo, openMedia, kodiOpenParams);
 
