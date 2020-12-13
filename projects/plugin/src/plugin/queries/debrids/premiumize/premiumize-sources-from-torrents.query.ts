@@ -12,22 +12,27 @@ export class PremiumizeSourcesFromTorrentsQuery {
     return PremiumizeApiService.hasApiKey();
   }
 
+  private static setHash(torrent: TorrentSource) {
+    let hash = torrent.hash;
+    const shortMagnet = this.getShortMagnet(torrent.url);
+    if (shortMagnet) {
+      hash = shortMagnet;
+    }
+    if (!hash) {
+      hash = getHashFromUrl(torrent.url);
+    }
+    if (hash && !torrent.hash) {
+      torrent.hash = hash;
+    }
+  }
+
   private static getAllHash(torrents: TorrentSource[]) {
     const allHashes = [];
     torrents.forEach((torrent) => {
-      let hash = torrent.hash;
-      const shortMagnet = this.getShortMagnet(torrent.url);
-      if (shortMagnet) {
-        hash = shortMagnet;
-      }
-      if (!hash) {
-        hash = getHashFromUrl(torrent.url);
-      }
-      if (hash && !torrent.hash) {
-        torrent.hash = hash;
-      }
-      if (hash && !allHashes.includes(hash)) {
-        allHashes.push(hash);
+      this.setHash(torrent);
+
+      if (torrent.hash && !allHashes.includes(torrent.hash)) {
+        allHashes.push(torrent.hash);
       }
     });
     return allHashes;
@@ -97,13 +102,9 @@ export class PremiumizeSourcesFromTorrentsQuery {
     return this.cacheCheck(allHashes).pipe(
       map((isCachedMap) => {
         torrents.forEach((torrent) => {
-          let hash = torrent.hash;
-          const shortMagnet = this.getShortMagnet(torrent.url);
-          if (shortMagnet) {
-            hash = shortMagnet;
-          }
+          this.setHash(torrent);
 
-          if (isCachedMap.has(hash)) {
+          if (isCachedMap.has(torrent.hash)) {
             torrent.isCached = true;
             torrent.cachedService = 'PM';
 
