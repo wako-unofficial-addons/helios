@@ -24,6 +24,22 @@ export class PremiumizeApiService extends ProviderHttpService {
     return headers;
   }
 
+  private static addParamsToUrl(url: string, params: any) {
+    if (params) {
+      const searchParams = new URLSearchParams('');
+
+      for (const key in params) {
+        if (params[key]) {
+          searchParams.set(key, params[key]);
+        }
+      }
+
+      url += (url.match(/\?/) ? '&' : '?') + decodeURIComponent(searchParams.toString()).replace(/’/gi, "'");
+    }
+
+    return url;
+  }
+
   static get<T>(url: string, params?: any, cacheTime?: string | number): Observable<T> {
     if (!params) {
       params = {};
@@ -33,7 +49,7 @@ export class PremiumizeApiService extends ProviderHttpService {
       params['apikey'] = this.apikey;
     }
 
-    return super.get<T>(url, params, cacheTime);
+    return super.get<T>(this.addParamsToUrl(url, params), null, cacheTime);
   }
 
   static post<T>(url: string, body: Object, cacheTime?: string) {
