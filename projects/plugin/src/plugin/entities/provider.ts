@@ -47,7 +47,7 @@ export interface Provider {
   season?: ProviderQueryInfo;
   anime?: ProviderQueryInfo;
   json_format?: {
-    results: string;
+    results?: string;
     sub_results?: string;
     url?: string;
     title: string;
@@ -74,3 +74,7 @@ export interface Provider {
 export interface ProviderList {
   [key: string]: Provider;
 }
+
+export const testProviders: ProviderList = {};
+
+console.log('testProviders', JSON.stringify(testProviders));

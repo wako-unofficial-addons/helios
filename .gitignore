@@ -9,7 +9,7 @@
 log.txt
 *.sublime-project
 *.sublime-workspace
-.vscode/
+.vscode/*
 npm-debug.log*
 
 .idea/
@@ -35,3 +35,4 @@ UserInterfaceState.xcuserstate
 
 src/assets/plugins/*
 projects/plugin/src/providers.json
+!.vscode/launch.json

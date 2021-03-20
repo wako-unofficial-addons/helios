@@ -1,13 +1,13 @@
-import { Provider } from '../../entities/provider';
-import { Observable, of, throwError } from 'rxjs';
-import { TorrentsFromProviderBaseQuery } from './torrents-from-provider-base.query';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { SourceQuery } from '../../entities/source-query';
-import { HeliosCacheService } from '../../services/provider-cache.service';
-import { TorrentSource } from '../../entities/torrent-source';
-import { logData } from '../../services/tools';
-import { TorrentSourceDetail } from '../../entities/torrent-source-detail';
 import { WakoHttpError } from '@wako-app/mobile-sdk';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Provider, testProviders } from '../../entities/provider';
+import { SourceQuery } from '../../entities/source-query';
+import { TorrentSource } from '../../entities/torrent-source';
+import { TorrentSourceDetail } from '../../entities/torrent-source-detail';
+import { HeliosCacheService } from '../../services/provider-cache.service';
+import { logData } from '../../services/tools';
+import { TorrentsFromProviderBaseQuery } from './torrents-from-provider-base.query';
 
 export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
   private static getMovies(sourceQuery: SourceQuery, provider: Provider) {
@@ -70,6 +70,11 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
         console.log('DOING', provider.name);
 
         const startTime = Date.now();
+
+        if (Object.keys(testProviders).length > 0) {
+          console.log('You are using the test providers, cache is now disabled');
+          cache = null;
+        }
 
         if (cache) {
           return of(cache);
