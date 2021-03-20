@@ -92,7 +92,7 @@ export class RealDebridGetCachedUrlQuery {
 
             if (allLinks) {
               allLinks.forEach((link) => {
-                if (link.mimeType.match('video') !== null || link.mimeType === 'application/x-rar-compressed') {
+                if (!link.mimeType || link.mimeType.match('video') !== null || link.mimeType === 'application/x-rar-compressed') {
                   links.push(link);
                 }
               });
