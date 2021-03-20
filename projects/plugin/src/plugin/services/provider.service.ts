@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { catchError, last, map, switchMap } from 'rxjs/operators';
-import { concat, EMPTY, from, of, throwError } from 'rxjs';
 import { WakoHttpRequestService, WakoSettingsService } from '@wako-app/mobile-sdk';
-import { Provider, ProviderList } from '../entities/provider';
-import { countryCodeToEmoji, logData } from './tools';
+import { concat, EMPTY, from, of, throwError } from 'rxjs';
+import { catchError, last, map, switchMap } from 'rxjs/operators';
+import { Provider, ProviderList, testProviders } from '../entities/provider';
 import { HeliosCacheService } from './provider-cache.service';
 import { ToastService } from './toast.service';
+import { countryCodeToEmoji, logData } from './tools';
 
 const CACHE_KEY_PROVIDERS = 'CACHE_KEY_PROVIDERS';
 const CACHE_TIMEOUT_PROVIDERS = '1d';
@@ -164,6 +164,10 @@ export class ProviderService {
   }
 
   getProviders(): Promise<ProviderList> {
+    if (Object.keys(testProviders).length > 0) {
+      console.log('Gonna use the test provider');
+      return Promise.resolve(testProviders);
+    }
     return this.storage.get(this.providerStorageKey);
   }
 

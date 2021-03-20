@@ -1,14 +1,14 @@
+import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
 import { concat, forkJoin, Observable, of, throwError } from 'rxjs';
-import { ProviderHttpService } from '../../services/provider-http.service';
 import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
-import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
-import { SourceQuery } from '../../entities/source-query';
-import { cleanTitleCustom, getHashFromUrl, logData } from '../../services/tools';
-import { TorrentSource } from '../../entities/torrent-source';
 import { SourceQuality } from '../../entities/source-quality';
-import { TorrentGetUrlQuery } from './torrent-get-url.query';
+import { SourceQuery } from '../../entities/source-query';
+import { TorrentSource } from '../../entities/torrent-source';
+import { ProviderHttpService } from '../../services/provider-http.service';
 import { SourceUtils } from '../../services/source-utils';
+import { cleanTitleCustom, getHashFromUrl, logData } from '../../services/tools';
+import { TorrentGetUrlQuery } from './torrent-get-url.query';
 
 function bodyReplacer(tpl: string, data: { [key: string]: any }) {
   return tpl.replace(/{([a-z0-9\.]*)}/g, ($1, $2) => {
