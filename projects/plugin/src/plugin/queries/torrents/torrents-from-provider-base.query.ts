@@ -154,11 +154,15 @@ export abstract class TorrentsFromProviderBaseQuery {
       torrentsObs.push(
         this.doProviderHttpRequest(providerUrl, provider, providerBody).pipe(
           catchError((err) => {
-            if (err.status && err.status === 404) {
+            if (err instanceof WakoHttpError && err.status > 0) {
+              if (err.status && err.status === 404) {
+                return of([]);
+              }
+              console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
               return of([]);
             }
-            console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
-            return of([]);
+
+            return throwError(err);
           }),
           map((response) => {
             if (!response) {
