@@ -34,5 +34,5 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 
 src/assets/plugins/*
-projects/plugin/src/providers.json
+providers.json
 !.vscode/launch.json
