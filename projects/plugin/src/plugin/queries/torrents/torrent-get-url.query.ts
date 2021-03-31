@@ -55,6 +55,10 @@ export class TorrentGetUrlQuery {
           url += torrentUrl[0] === '/' ? torrentUrl : '/' + torrentUrl;
           return url;
         }
+        if (_html.match(/>([a-zA-Z0-9]{40})</)) {
+          const infoHash = _html.match(/>([a-zA-Z0-9]{40})</)[1];
+          return 'magnet:?xt=urn:btih:'+infoHash;
+        }
         return null;
       })
     );
