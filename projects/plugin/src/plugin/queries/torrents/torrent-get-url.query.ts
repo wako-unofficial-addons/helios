@@ -39,6 +39,11 @@ export class TorrentGetUrlQuery {
         if (_html.match(/href=["|']?(magnet[^"|']+)/)) {
           return _html.match(/href=["|']?(magnet[^"|']+)/)[1];
         }
+        if (_html.match(/>([a-zA-Z0-9]{40})</)) {
+        let magnetHeader = ('magnet:?xt=urn:btih:');
+        let infoHash = _html.match(/>([a-zA-Z0-9]{40})</)[1];
+        return magnetHeader+infoHash;
+        }
         if (_html.match(/http(.*?).torrent["\']/)) {
           return _html.match(/http(.*?).torrent["\']/).shift();
         }
