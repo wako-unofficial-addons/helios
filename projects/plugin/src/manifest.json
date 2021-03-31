@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.1.9",
+  "version": "4.2.0",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
+    "4.2.0": "Search for infohash if magnet link not found (from PR #78 thanks to Minefield)",
     "4.1.9": "Fix HTTP issue preventing the use of fallback urls",
     "4.1.8": "Fix RD issue",
     "4.1.7": "Fix PM issue due to wako's sdk update",
