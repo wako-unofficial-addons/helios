@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
-import { EventCategory, EventName, EventService, OpenMedia, Playlist, PlaylistService } from '@wako-app/mobile-sdk';
+import {
+  EventCategory,
+  EventName,
+  EventService,
+  OpenMedia,
+  Playlist,
+  PlaylistService,
+  WakoStorage
+} from '@wako-app/mobile-sdk';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
-import { Storage } from '@ionic/storage';
 
 @Injectable()
 export class HeliosPlaylistService {
   private playListService: PlaylistService;
 
-  constructor(private storage: Storage) {
+  constructor(private storage: WakoStorage) {
     PlaylistService.initialize(this.storage);
 
     this.playListService = PlaylistService.getInstance();

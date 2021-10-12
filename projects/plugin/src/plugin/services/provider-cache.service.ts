@@ -1,12 +1,9 @@
-import { PLATFORM_ID } from '@angular/core';
-import { Storage } from '@ionic/storage';
-import { WakoCacheService } from '@wako-app/mobile-sdk';
+import { WakoCacheService, WakoStorage } from '@wako-app/mobile-sdk';
 
 export class HeliosCacheService extends WakoCacheService {
-  protected static storageEngine = new Storage(
+  protected static storageEngine = new WakoStorage(
     {
       name: 'wako_helios_cache'
-    },
-    PLATFORM_ID
+    }
   );
 }
