@@ -1,8 +1,6 @@
-import { RD_ERR_CODE_NOT_FULLY_CACHED } from './../queries/debrids/real-debrid/real-debrid-get-cached-url.query';
 import { Injectable } from '@angular/core';
 import { ActionSheetController, LoadingController, Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { DebridAccountService } from './debrid-account.service';
 import {
   BrowserService,
   ChromecastService,
@@ -11,15 +9,30 @@ import {
   KodiGetAddonDetailsForm,
   OpenMedia,
   PlaylistVideo,
-  WakoHttpError
+  WakoHttpError,
+  WakoShare
 } from '@wako-app/mobile-sdk';
-import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
+import { ClipboardService } from 'ngx-clipboard';
 import { EMPTY, from, NEVER, Observable, of } from 'rxjs';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
+import { PlaylistVideoHeliosCustomData } from '../entities/playlist-video-custom-data';
+import { PlayButtonAction, Settings } from '../entities/settings';
+import { SourceQuery } from '../entities/source-query';
+import { StreamLinkSource } from '../entities/stream-link-source';
+import { TorrentSource } from '../entities/torrent-source';
+import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
+import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
+import { RD_ERR_CODE_NOT_FULLY_CACHED } from './../queries/debrids/real-debrid/real-debrid-get-cached-url.query';
+import { AllDebridMagnetUploadForm } from './all-debrid/forms/magnet/all-debrid-magnet-upload.form';
+import { DebridAccountService } from './debrid-account.service';
+import { HeliosPlaylistService } from './helios-playlist.service';
 import { PremiumizeTransferCreateForm } from './premiumize/forms/transfer/premiumize-transfer-create.form';
 import { RealDebridCacheUrlCommand } from './real-debrid/commands/real-debrid-cache-url.command';
-import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
-import { TorrentSource } from '../entities/torrent-source';
+import { SettingsService } from './settings.service';
+import { CachedTorrentSourceService } from './sources/cached-torrent-source.service';
+import { SourceService } from './sources/source.service';
+import { ToastService } from './toast.service';
 import {
   addToKodiPlaylist,
   episodeFoundInStreamLinks,
@@ -27,18 +40,6 @@ import {
   getOpenMediaFromKodiOpenMedia,
   incrementEpisodeCode
 } from './tools';
-import { SettingsService } from './settings.service';
-import { StreamLinkSource } from '../entities/stream-link-source';
-import { CachedTorrentSourceService } from './sources/cached-torrent-source.service';
-import { SourceQuery } from '../entities/source-query';
-import { SourceService } from './sources/source.service';
-import { HeliosPlaylistService } from './helios-playlist.service';
-import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
-import { PlayButtonAction, Settings } from '../entities/settings';
-import { AllDebridMagnetUploadForm } from './all-debrid/forms/magnet/all-debrid-magnet-upload.form';
-import { ToastService } from './toast.service';
-import { ClipboardService } from 'ngx-clipboard';
-import { PlaylistVideoHeliosCustomData } from '../entities/playlist-video-custom-data';
 
 @Injectable()
 export class OpenSourceService {
@@ -262,7 +263,7 @@ export class OpenSourceService {
       }
     }
 
-    if (settings.availablePlayButtonActions.includes('share-url') && window['plugins'] && window['plugins'].socialsharing) {
+    if (settings.availablePlayButtonActions.includes('share-url')) {
       buttons.push({
         icon: 'share',
         text: this.translateService.instant('actionSheets.open-source.options.share-url'),
@@ -803,12 +804,12 @@ export class OpenSourceService {
   }
 
   private share(cachedUrl: string, torrentTitle: string) {
-    if (window['plugins'] && window['plugins'].socialsharing) {
-      window['plugins'].socialsharing.shareWithOptions({
-        url: cachedUrl,
-        chooserTitle: torrentTitle
-      });
-    }
+    WakoShare.share({
+      url: cachedUrl,
+      text: torrentTitle,
+      dialogTitle: torrentTitle,
+      title: torrentTitle
+    });
   }
 
   private openWith(url: string, title: string) {
