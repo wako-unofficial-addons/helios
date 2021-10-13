@@ -1,22 +1,22 @@
+import { Injectable } from '@angular/core';
+import { ExplorerFile, ExplorerFolderItem, ExplorerItem } from '@wako-app/mobile-sdk';
+import { forkJoin, Observable } from 'rxjs';
+import { first, map, mapTo, switchMap } from 'rxjs/operators';
+import { AllDebridMagnetStatusMagnetDto } from './all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
 import { AllDebridLinkUnlockForm } from './all-debrid/forms/link/all-debrid-link-unlock.form';
 import { AllDebridMagnetDeleteForm } from './all-debrid/forms/magnet/all-debrid-magnet-delete.form';
 import { AllDebridMagnetStatusForm } from './all-debrid/forms/magnet/all-debrid-magnet-status.form';
 import { AllDebridApiService } from './all-debrid/services/all-debrid-api.service';
-import { Injectable } from '@angular/core';
-import { first, map, mapTo, switchMap } from 'rxjs/operators';
 import { DebridAccountService } from './debrid-account.service';
-import { RealDebridFolderListForm } from './real-debrid/forms/torrents/real-debrid-torrents-list.form';
-import { ExplorerFile, ExplorerFolderItem, ExplorerItem } from '@wako-app/mobile-sdk';
-import { RealDebridTorrentsInfoForm } from './real-debrid/forms/torrents/real-debrid-torrents-info.form';
-import { RealDebridTorrentsDeleteForm } from './real-debrid/forms/torrents/real-debrid-torrents-delete.form';
-import { RealDebridUnrestrictLinkForm } from './real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
-import { PremiumizeFolderListForm } from './premiumize/forms/folder/premiumize-folder-list.form';
 import { PremiumizeFolderDeleteForm } from './premiumize/forms/folder/premiumize-folder-delete.form';
+import { PremiumizeFolderListForm } from './premiumize/forms/folder/premiumize-folder-list.form';
 import { PremiumizeItemDeleteForm } from './premiumize/forms/item/premiumize-item-delete.form';
-import { forkJoin, Observable } from 'rxjs';
 import { PremiumizeApiService } from './premiumize/services/premiumize-api.service';
+import { RealDebridTorrentsDeleteForm } from './real-debrid/forms/torrents/real-debrid-torrents-delete.form';
+import { RealDebridTorrentsInfoForm } from './real-debrid/forms/torrents/real-debrid-torrents-info.form';
+import { RealDebridFolderListForm } from './real-debrid/forms/torrents/real-debrid-torrents-list.form';
+import { RealDebridUnrestrictLinkForm } from './real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
 import { RealDebridApiService } from './real-debrid/services/real-debrid-api.service';
-import { AllDebridMagnetStatusMagnetDto } from './all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
 import { isVideoFile } from './tools';
 
 interface CustomDataRD {
@@ -275,7 +275,7 @@ export class ExplorerService {
           goToParentAction: data.name === 'root' ? null : this.getFromPM(data.parent_id)
         };
         data.content.forEach((item) => {
-          if (item.type === 'file' && !item.stream_link) {
+          if (item.type === 'file' && !item.stream_link && !item.link) {
             return;
           }
 
