@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
-import { WakoHttpRequestService, WakoSettingsService } from '@wako-app/mobile-sdk';
+import { WakoHttpRequestService, WakoSettingsService, WakoStorage } from '@wako-app/mobile-sdk';
 import { concat, EMPTY, from, of, throwError } from 'rxjs';
 import { catchError, last, map, switchMap } from 'rxjs/operators';
 import { Provider, ProviderList, testProviders } from '../entities/provider';
@@ -24,7 +23,8 @@ export class ProviderService {
    */
   private providerUrlsToSyncStorageKey = 'provider_urls_to_sync';
 
-  constructor(private storage: Storage, private toastService: ToastService) {}
+  constructor(private storage: WakoStorage, private toastService: ToastService) {
+  }
 
   async initialize() {
     setTimeout(() => {
@@ -213,6 +213,7 @@ export class ProviderService {
   private setProvidersFromUrls(urls: string[], isAutomatic = false) {
     const invalidUrls = [];
     const obss = [];
+
     urls.forEach((url) => {
       obss.push(
         WakoHttpRequestService.request<ProviderList>(
@@ -227,6 +228,12 @@ export class ProviderService {
           catchError(() => {
             invalidUrls.push(url);
             return EMPTY;
+          }),
+          switchMap(data=>{
+            if(isAutomatic && typeof data !== 'object') {
+              return EMPTY;
+            }
+            return of(data);
           })
         )
       );

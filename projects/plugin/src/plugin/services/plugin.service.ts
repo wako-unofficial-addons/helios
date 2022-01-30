@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 import {
   BrowserService,
   Episode,
@@ -11,17 +13,15 @@ import {
   PluginBaseService,
   Show,
   WakoFileActionButton,
-  WakoFileActionService
+  WakoFileActionService,
+  WakoStorage
 } from '@wako-app/mobile-sdk';
-import { TranslateService } from '@ngx-translate/core';
-import { logData } from './tools';
-import { DebridAccountService } from './debrid-account.service';
-import { ProviderService } from './provider.service';
-import { ModalController, Platform } from '@ionic/angular';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
-import { Storage } from '@ionic/storage';
-import { OpenSourceService } from './open-source.service';
+import { DebridAccountService } from './debrid-account.service';
 import { ExplorerService } from './explorer.service';
+import { OpenSourceService } from './open-source.service';
+import { ProviderService } from './provider.service';
+import { logData } from './tools';
 
 declare const device: any;
 
@@ -32,9 +32,8 @@ export class PluginService extends PluginBaseService {
     private cloudService: DebridAccountService,
     private providerService: ProviderService,
     private modalController: ModalController,
-    private storage: Storage,
+    private storage: WakoStorage,
     private openSourceService: OpenSourceService,
-    private platform: Platform,
     private explorerService: ExplorerService,
     private fileActionService: WakoFileActionService
   ) {
