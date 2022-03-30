@@ -609,18 +609,6 @@ export class OpenSourceService {
       .subscribe();
   }
 
-  private async openBrowser(videoUrl: string, transcodedUrl?: string, title?: string, posterUrl?: string) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.set('title', title);
-    urlSearchParams.set('posterUrl', posterUrl);
-    urlSearchParams.set('videoUrl', videoUrl);
-    urlSearchParams.set('transcodedUrl', transcodedUrl ? transcodedUrl : videoUrl);
-
-    const wakoUrl = `https://wako.app/player?${urlSearchParams.toString()}`;
-
-    this.openBrowserUrl(wakoUrl);
-  }
-
   private openBrowserUrl(url: string) {
     if (this.platform.is('ios')) {
       BrowserService.open(url, true);
@@ -631,7 +619,7 @@ export class OpenSourceService {
 
   private async openVlc(videoUrl: string) {
     if (this.platform.is('ios')) {
-      const url = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(videoUrl)}`;
+      const url = `vlc-x-callback://x-callback-url/stream?url=${videoUrl}`;
       BrowserService.open(url, false);
     } else {
       const url = `vlc://${videoUrl}`;
@@ -690,7 +678,7 @@ export class OpenSourceService {
     console.log('downloadWithVlc', videoUrl);
 
     if (this.platform.is('ios')) {
-      const url = `vlc-x-callback://x-callback-url/download?url=${encodeURIComponent(videoUrl)}`;
+      const url = `vlc-x-callback://x-callback-url/download?url=${videoUrl}`;
       BrowserService.open(url, false);
     }
   }
@@ -1118,12 +1106,12 @@ export class OpenSourceService {
           this.addToAD(streamLinkSource.originalUrl);
           break;
         case 'open-browser':
+          let url = streamLink.url ?? streamLink.transcodedUrl;
           if (streamLink.servicePlayerUrl) {
             // They have their own player
-            this.openBrowserUrl(streamLink.servicePlayerUrl);
-          } else {
-            this.openBrowser(streamLink.url, streamLink.transcodedUrl, title, posterUrl);
+            url = streamLink.servicePlayerUrl;
           }
+          this.openBrowserUrl(url);
           playVideo = true;
           break;
 
@@ -1318,7 +1306,7 @@ export class OpenSourceService {
         case 'open-browser':
           buttonOptions.icon = 'browsers';
           buttonOptions.handler = () => {
-            this.openBrowser(playlistVideo.url, null, playlistVideo.label);
+            this.openBrowserUrl(playlistVideo.url);
           };
           break;
         case 'copy-url':
