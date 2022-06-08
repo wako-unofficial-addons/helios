@@ -13,24 +13,34 @@
     <ion-slide>
       <ion-card>
         <ion-card-header>
-          <ion-card-title>
-            {{ 'pages.tuto.slideDisclaimer.title' | translate }}
-          </ion-card-title>
+          <ion-card-title> About Helios </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slideDisclaimer.description' | translate"> </ion-card-content>
+        <ion-card-content>
+          Helios is a FREE and open-source third-party add-on developed by the community.<br />It is a source finder, it
+          scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are
+          <strong>publicly available</strong> on the internet.
+        </ion-card-content>
       </ion-card>
       <ion-card class="disclaimer">
         <ion-card-header>
-          <ion-card-title>
-            {{ 'pages.tuto.slideDisclaimer.titleDisclaimer' | translate }}
-          </ion-card-title>
+          <ion-card-title> Disclaimer </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slideDisclaimer.disclaimer' | translate"> </ion-card-content>
+        <ion-card-content>
+          Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or
+          developers have no control over the content on these third party sites provided by the end user. Helios claims
+          no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content
+          displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a
+          violation of national, federal or terrestrial laws applicable to them. <br /><br />Helios doesn't come with
+          any providers, you have to add them manually.<br /><br />Helios is not developed nor endorsed by wako, for
+          support create issue on its github or discuss with the community on reddit:
+          https://www.reddit.com/r/Addons4Wako/
+        </ion-card-content>
       </ion-card>
+
       <ion-card>
         <ion-card-content class="accept ion-activatable ion-no-padding" (click)="toggleChecked()">
           <ion-checkbox [checked]="checked" slot="start"></ion-checkbox>
-          <ion-label class="ion-text-nowrap"> {{ 'pages.tuto.slideDisclaimer.accept' | translate }}</ion-label>
+          <ion-label class="ion-text-nowrap"> I have read and agree with this</ion-label>
           <ion-ripple-effect></ion-ripple-effect>
         </ion-card-content>
       </ion-card>
