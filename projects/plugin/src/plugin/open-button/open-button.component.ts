@@ -1,25 +1,26 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Episode, Movie, Show } from '@wako-app/mobile-sdk';
 import { LoadingController, ModalController } from '@ionic/angular';
-import { SourceService } from '../services/sources/source.service';
-import { SettingsService } from '../services/settings.service';
-import { Settings } from '../entities/settings';
+import { Episode, Movie, Show, WakoCacheService } from '@wako-app/mobile-sdk';
+import { lastValueFrom, of } from 'rxjs';
+import { catchError, finalize, timeout } from 'rxjs/operators';
+import { DisclaimerComponent } from '../components/disclaimer/disclaimer.component';
 import { SearchSourceComponent } from '../components/search-source/search-source.component';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
-import { OpenSourceService } from '../services/open-source.service';
-import { ProviderService } from '../services/provider.service';
-import { logData, setKodiOpenMediaLang } from '../services/tools';
-import { NEVER, of } from 'rxjs';
+import { Settings } from '../entities/settings';
 import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
-import { catchError, finalize, timeout } from 'rxjs/operators';
-import { ProvidersComponent } from '../settings/providers/providers.component';
+import { OpenSourceService } from '../services/open-source.service';
+import { ProviderService } from '../services/provider.service';
+import { SettingsService } from '../services/settings.service';
+import { SourceService } from '../services/sources/source.service';
 import { ToastService } from '../services/toast.service';
+import { logData, setKodiOpenMediaLang } from '../services/tools';
+import { ProvidersComponent } from '../settings/providers/providers.component';
 
 @Component({
   selector: 'wk-open-button',
   templateUrl: './open-button.component.html',
-  styleUrls: ['./open-button.component.scss']
+  styleUrls: ['./open-button.component.scss'],
 })
 export class OpenButtonComponent implements OnInit {
   @Input() movie: Movie;
@@ -63,7 +64,7 @@ export class OpenButtonComponent implements OnInit {
       movie: this.movie,
       show: this.show,
       episode: this.episode,
-      titleLang: traktDefaultTitleLang
+      titleLang: traktDefaultTitleLang,
     } as KodiOpenMedia;
 
     const kodiOpenMediaCopy = JSON.parse(JSON.stringify(kodiOpenMedia)) as KodiOpenMedia;
@@ -100,7 +101,7 @@ export class OpenButtonComponent implements OnInit {
 
   private async openProviderModal() {
     const modal = await this.modalController.create({
-      component: ProvidersComponent
+      component: ProvidersComponent,
     });
 
     await modal.present();
@@ -109,18 +110,21 @@ export class OpenButtonComponent implements OnInit {
   }
 
   async play() {
+    if (await this.needsToDisplayDisclaimer()) {
+      return;
+    }
     const providers = await this.providerService.getAll(true);
 
     if (providers.length === 0) {
       this.toastService.simpleMessage('source-list.noProviderSet');
 
       this.openProviderModal();
-      return NEVER;
+      return;
     }
 
     const loader = await this.loadingCtrl.create({
       message: 'Searching for sources',
-      backdropDismiss: true
+      backdropDismiss: true,
     });
 
     loader.present();
@@ -174,13 +178,33 @@ export class OpenButtonComponent implements OnInit {
   }
 
   async openSourceModal() {
+    if (await this.needsToDisplayDisclaimer()) {
+      return;
+    }
     const modal = await this.modalCtrl.create({
       component: SearchSourceComponent,
       componentProps: {
-        kodiOpenMedia: this.kodiOpenMedia
-      }
+        kodiOpenMedia: this.kodiOpenMedia,
+      },
     });
 
     modal.present();
+  }
+
+  async needsToDisplayDisclaimer() {
+    const data = await lastValueFrom(WakoCacheService.get('disclaimer-accepted'));
+
+    if (!data) {
+      const modal = await this.modalController.create({
+        component: DisclaimerComponent,
+        backdropDismiss: false,
+      });
+
+      await modal.present();
+
+      return true;
+    }
+
+    return false;
   }
 }

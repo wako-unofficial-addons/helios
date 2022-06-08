@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  BrowserService,
   Episode,
   ExplorerFile,
   ExplorerFolderItem,
@@ -14,7 +13,7 @@ import {
   Show,
   WakoFileActionButton,
   WakoFileActionService,
-  WakoStorage
+  WakoStorage,
 } from '@wako-app/mobile-sdk';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
 import { DebridAccountService } from './debrid-account.service';
@@ -80,7 +79,7 @@ export class PluginService extends PluginBaseService {
 
     const modal = await this.modalController.create({
       component: SetupWizardComponent,
-      backdropDismiss: false
+      backdropDismiss: false,
     });
 
     await modal.present();
@@ -124,16 +123,14 @@ export class PluginService extends PluginBaseService {
   ): Promise<WakoFileActionButton[]> {
     const link = await this.explorerService.getLinkFromFile(file);
 
-    const actions = await this.fileActionService.getFileActionButtons(link, link, title, posterUrl, seekTo, openMedia, kodiOpenParams);
-
-    actions.forEach((action) => {
-      if (action.action === 'play-browser' && file.customData.servicePlayerUrl) {
-        action.handler = () => {
-          BrowserService.open(file.customData.servicePlayerUrl);
-        };
-      }
-    });
-
-    return actions;
+    return await this.fileActionService.getFileActionButtons(
+      link,
+      link,
+      title,
+      posterUrl,
+      seekTo,
+      openMedia,
+      kodiOpenParams
+    );
   }
 }

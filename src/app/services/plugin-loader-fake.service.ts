@@ -1,16 +1,6 @@
-import { ComponentFactoryResolver, Injectable, Injector, ViewContainerRef } from '@angular/core';
-
-import {
-  PluginAction,
-  PluginBaseService,
-  PluginDetail,
-  PluginManifest,
-  WakoBaseHttpService,
-  WakoPluginLoaderService
-} from '@wako-app/mobile-sdk';
+import { ComponentFactoryResolver, Injectable, Injector } from '@angular/core';
+import { PluginBaseService, PluginDetail, PluginManifest, WakoBaseHttpService, WakoPluginLoaderService } from '@wako-app/mobile-sdk';
 import { forkJoin, from, of, throwError } from 'rxjs';
-
-import { Storage } from '@ionic/storage';
 import { catchError, mapTo, switchMap, tap } from 'rxjs/operators';
 import { PluginModule } from '../../../projects/plugin/src/plugin/plugin.module';
 

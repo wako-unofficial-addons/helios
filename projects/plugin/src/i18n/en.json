@@ -3,11 +3,11 @@
     "tuto": {
       "title": "Setup Wizard",
       "skip": "Skip",
-      "slide1": {
-        "title": "What is Helios",
-        "description": "Helios is a source finder, it scrapes third-party sites (called providers) that are <strong>publicly available</strong> on the internet.",
+      "slideDisclaimer": {
+        "title": "About Helios",
+        "description": "Helios is a FREE and open-source third-party add-on developed by the community.<br>It is a source finder, it scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are <strong>publicly available</strong> on the internet.",
         "titleDisclaimer": "Disclaimer",
-        "disclaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them. <br/><br/>Helios is not developed nor endorsed by wako, for support create issue on its github or discuss with the community on reddit: https://www.reddit.com/r/Addons4Wako/",
+        "disclaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites provided by the end user. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them. <br/><br/>Helios doesn't come with any providers, you have to add them manually.<br/><br/>Helios is not developed nor endorsed by wako, for support create issue on its github or discuss with the community on reddit: https://www.reddit.com/r/Addons4Wako/",
         "accept": "I have read and agree with this"
       },
       "slide2": {

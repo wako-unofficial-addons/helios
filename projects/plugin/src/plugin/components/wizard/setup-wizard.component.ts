@@ -1,21 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonSlides, ModalController } from '@ionic/angular';
+import { WakoCacheService } from '@wako-app/mobile-sdk';
 
 @Component({
   selector: 'app-tutorial',
   templateUrl: './setup-wizard.component.html',
-  styleUrls: ['./setup-wizard.component.scss']
+  styleUrls: ['./setup-wizard.component.scss'],
 })
 export class SetupWizardComponent implements OnInit {
   slideOpts = {
-    effect: 'flip'
+    effect: 'flip',
   };
 
   @ViewChild(IonSlides, { static: true }) slides: IonSlides;
   checked = false;
 
-  constructor(private modalController: ModalController) {
-  }
+  constructor(private modalController: ModalController) {}
 
   ngOnInit() {
     this.checkSlides();
@@ -26,7 +26,7 @@ export class SetupWizardComponent implements OnInit {
   }
 
   async goNextSlide() {
-    if (await this.slides.getActiveIndex() === 1) {
+    if ((await this.slides.getActiveIndex()) === 1) {
       setTimeout(() => {
         this.slides.slideNext();
       }, 1000);
@@ -40,6 +40,7 @@ export class SetupWizardComponent implements OnInit {
 
     if (this.checked) {
       this.slides.slideNext();
+      WakoCacheService.set('disclaimer-accepted', true, '1m');
     }
   }
 

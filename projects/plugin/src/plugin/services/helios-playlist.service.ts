@@ -6,7 +6,7 @@ import {
   OpenMedia,
   Playlist,
   PlaylistService,
-  WakoStorage
+  WakoStorage,
 } from '@wako-app/mobile-sdk';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { StreamLinkSource } from '../entities/stream-link-source';
@@ -47,7 +47,7 @@ export class HeliosPlaylistService {
         episodeNumber: kodiOpenMedia?.episode?.number,
         seasonNumber: kodiOpenMedia?.episode?.seasonNumber,
         movieIds: kodiOpenMedia?.movie?.ids,
-        showIds: kodiOpenMedia?.show?.ids
+        showIds: kodiOpenMedia?.show?.ids,
       };
       id = this.playListService.getPlaylistIdFromOpenMedia(openMedia);
 
@@ -70,7 +70,7 @@ export class HeliosPlaylistService {
       currentItem: 0,
       poster,
       updatedAt: new Date().toISOString(),
-      items: []
+      items: [],
     } as Playlist;
   }
 

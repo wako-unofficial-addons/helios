@@ -14,25 +14,23 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide1.title' | translate}}
+            {{ 'pages.tuto.slideDisclaimer.title' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide1.description' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slideDisclaimer.description' | translate"> </ion-card-content>
       </ion-card>
       <ion-card class="disclaimer">
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide1.titleDisclaimer' | translate}}
+            {{ 'pages.tuto.slideDisclaimer.titleDisclaimer' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide1.disclaimer' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slideDisclaimer.disclaimer' | translate"> </ion-card-content>
       </ion-card>
       <ion-card>
         <ion-card-content class="accept ion-activatable ion-no-padding" (click)="toggleChecked()">
           <ion-checkbox [checked]="checked" slot="start"></ion-checkbox>
-          <ion-label class="ion-text-nowrap"> {{'pages.tuto.slide1.accept' | translate}}</ion-label>
+          <ion-label class="ion-text-nowrap"> {{ 'pages.tuto.slideDisclaimer.accept' | translate }}</ion-label>
           <ion-ripple-effect></ion-ripple-effect>
         </ion-card-content>
       </ion-card>
@@ -42,11 +40,10 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide2.title' | translate}}
+            {{ 'pages.tuto.slide2.title' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide2.description' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slide2.description' | translate"> </ion-card-content>
       </ion-card>
       <wk-providers (providerAdded)="goNextSlide()"></wk-providers>
     </ion-slide>
@@ -55,11 +52,10 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide3.title' | translate}}
+            {{ 'pages.tuto.slide3.title' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide3.description' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slide3.description' | translate"> </ion-card-content>
       </ion-card>
       <wk-quality></wk-quality>
     </ion-slide>
@@ -68,11 +64,10 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide4.title' | translate}}
+            {{ 'pages.tuto.slide4.title' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide4.description' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slide4.description' | translate"> </ion-card-content>
       </ion-card>
       <wk-debrid-account></wk-debrid-account>
     </ion-slide>
@@ -81,11 +76,10 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide5.title' | translate}}
+            {{ 'pages.tuto.slide5.title' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide5.description' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slide5.description' | translate"> </ion-card-content>
       </ion-card>
       <wk-play-button></wk-play-button>
     </ion-slide>
@@ -98,17 +92,14 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            {{'pages.tuto.slide6.title' | translate}}
+            {{ 'pages.tuto.slide6.title' | translate }}
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content [innerHTML]="'pages.tuto.slide6.description' | translate ">
-        </ion-card-content>
+        <ion-card-content [innerHTML]="'pages.tuto.slide6.description' | translate"> </ion-card-content>
         <ion-card-content>
-          <ion-button expand="block" (click)="close()">{{'pages.tuto.slide6.button' | translate}}</ion-button>
+          <ion-button expand="block" (click)="close()">{{ 'pages.tuto.slide6.button' | translate }}</ion-button>
         </ion-card-content>
       </ion-card>
     </ion-slide>
-
   </ion-slides>
-
 </ion-content>

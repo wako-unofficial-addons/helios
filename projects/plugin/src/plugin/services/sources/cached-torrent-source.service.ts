@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core';
-import { SourceQuery } from '../../entities/source-query';
-import { RealDebridSourcesFromTorrentsQuery } from '../../queries/debrids/real-debrid/real-debrid-sources-from-torrents.query';
-import { catchError, concatMap, last, map, switchMap } from 'rxjs/operators';
-import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiumize/premiumize-sources-from-torrents.query';
-import { TorrentSource } from '../../entities/torrent-source';
 import { from, Observable, of } from 'rxjs';
+import { catchError, concatMap, last, map, switchMap } from 'rxjs/operators';
+import { LastPlayedSource } from '../../entities/last-played-source';
+import { SourceQuery } from '../../entities/source-query';
+import { StreamLink, StreamLinkSource } from '../../entities/stream-link-source';
+import { TorrentSource } from '../../entities/torrent-source';
+import { AllDebridGetStreamLinkQuery } from '../../queries/debrids/all-debrid/all-debrid-get-stream-link.query';
+import { AllDebridSourcesFromTorrentsQuery } from '../../queries/debrids/all-debrid/all-debrid-sources-from-torrents.query';
+import { PremiumizeGetStreamLinkQuery } from '../../queries/debrids/premiumize/premiumize-get-stream-link.query';
+import { PremiumizeSourcesFromTorrentsQuery } from '../../queries/debrids/premiumize/premiumize-sources-from-torrents.query';
+import { RealDebridGetStreamLinkQuery } from '../../queries/debrids/real-debrid/real-debrid-get-stream-link.query';
+import { RealDebridSourcesFromTorrentsQuery } from '../../queries/debrids/real-debrid/real-debrid-sources-from-torrents.query';
+import { PremiumizeAccountInfoForm } from '../premiumize/forms/account/premiumize-account-info.form';
 import {
   episodeFoundInStreamLinks,
   getScoreMatchingName,
@@ -13,13 +20,6 @@ import {
   sortTorrentsByPackage,
   sortTorrentsBySize
 } from '../tools';
-import { PremiumizeAccountInfoForm } from '../premiumize/forms/account/premiumize-account-info.form';
-import { StreamLink, StreamLinkSource } from '../../entities/stream-link-source';
-import { PremiumizeGetStreamLinkQuery } from '../../queries/debrids/premiumize/premiumize-get-stream-link.query';
-import { RealDebridGetStreamLinkQuery } from '../../queries/debrids/real-debrid/real-debrid-get-stream-link.query';
-import { LastPlayedSource } from '../../entities/last-played-source';
-import { AllDebridSourcesFromTorrentsQuery } from '../../queries/debrids/all-debrid/all-debrid-sources-from-torrents.query';
-import { AllDebridGetStreamLinkQuery } from '../../queries/debrids/all-debrid/all-debrid-get-stream-link.query';
 
 @Injectable()
 export class CachedTorrentSourceService {
@@ -71,7 +71,7 @@ export class CachedTorrentSourceService {
     sortTorrentsByPackage(sourceQuality.sourcesOther);
 
     let bestSource: StreamLinkSource = null;
-    const bestSourceObss: Observable<StreamLink | StreamLink[]>[] = [];
+    const bestSourceObss: Observable<StreamLinkSource | StreamLinkSource[]>[] = [];
 
     const allSources = sourceQuality.sources2160p.concat(sourceQuality.sources1080p, sourceQuality.sources720p, sourceQuality.sourcesOther);
 

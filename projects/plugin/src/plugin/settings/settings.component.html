@@ -51,7 +51,7 @@
       <ion-label class="ion-text-wrap">{{ 'pages.settings.list.playlist.item' | translate }}</ion-label>
       <ion-toggle
         [ngModel]="settings.enableEpisodeAutomaticPlaylist"
-        (ionChange)="setEnableEpisodeAutomaticPlaylist($event.detail.checked)"
+        (ionChange)="setEnableEpisodeAutomaticPlaylist($any($event).detail.checked)"
       ></ion-toggle>
     </ion-item>
   </ion-list>
@@ -66,7 +66,7 @@
       <ion-label class="ion-text-wrap"> {{ 'pages.settings.list.openRemoteList.item' | translate }}</ion-label>
       <ion-toggle
         [ngModel]="settings.openRemoteAfterClickOnPlay"
-        (ionChange)="setOpenRemoteAfterClickOnPlaySetting($event.detail.checked)"
+        (ionChange)="setOpenRemoteAfterClickOnPlaySetting($any($event).detail.checked)"
       ></ion-toggle>
     </ion-item>
   </ion-list>
@@ -80,9 +80,11 @@
         {{ 'pages.settings.list.actions.header' | translate }}
       </ion-label>
     </ion-list-header>
-    <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
+    <ion-reorder-group (ionItemReorder)="doReorder($any($event))" disabled="false">
       <ion-item *ngFor="let action of playButtonActionsSettings">
-        <ion-label class="ion-text-wrap">{{ 'actionSheets.open-source.options.' + action.action | translate }}</ion-label>
+        <ion-label class="ion-text-wrap">{{
+          'actionSheets.open-source.options.' + action.action | translate
+        }}</ion-label>
         <ion-reorder slot="start"></ion-reorder>
         <ion-toggle [(ngModel)]="action.enabled" (ionChange)="savePlayButtonAction()"></ion-toggle>
       </ion-item>

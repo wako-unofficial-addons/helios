@@ -1,18 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-
+import { TranslateModule } from '@ngx-translate/core';
+import { WakoProviders } from '@wako-app/mobile-sdk';
+import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { IonicStorageModule } from '@ionic/storage';
-import { PluginModule } from '../../projects/plugin/src/plugin/plugin.module';
 import { PluginLoaderFakeService } from './services/plugin-loader-fake.service';
 import { PluginLoaderService } from './services/plugin-loader.service';
 import { SharedModule } from './shared/shared.module';
-import { WakoProviders } from '@wako-app/mobile-sdk';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,25 +18,24 @@ import { WakoProviders } from '@wako-app/mobile-sdk';
     IonicModule.forRoot({
       swipeBackEnabled: true,
       backButtonText: '',
-      mode: 'md'
+      mode: 'md',
     }),
     AppRoutingModule,
     TranslateModule.forRoot(),
-    IonicStorageModule.forRoot(),
     PluginModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [
     {
       provide: RouteReuseStrategy,
-      useClass: IonicRouteStrategy
+      useClass: IonicRouteStrategy,
     },
     {
       provide: PluginLoaderService,
-      useClass: PluginLoaderFakeService
+      useClass: PluginLoaderFakeService,
     },
-    ...WakoProviders
+    ...WakoProviders,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

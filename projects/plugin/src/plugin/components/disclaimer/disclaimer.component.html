@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Helios Add-on</ion-title>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="modalController.dismiss()"> X </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        {{ 'pages.tuto.slideDisclaimer.title' | translate }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content [innerHTML]="'pages.tuto.slideDisclaimer.description' | translate"> </ion-card-content>
+  </ion-card>
+  <ion-card class="disclaimer">
+    <ion-card-header>
+      <ion-card-title>
+        {{ 'pages.tuto.slideDisclaimer.titleDisclaimer' | translate }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content [innerHTML]="'pages.tuto.slideDisclaimer.disclaimer' | translate"> </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content class="accept ion-activatable ion-no-padding">
+      <ion-checkbox slot="start" #checkBox></ion-checkbox>
+      <ion-label class="ion-text-nowrap"> {{ 'pages.tuto.slideDisclaimer.accept' | translate }}</ion-label>
+      <ion-ripple-effect></ion-ripple-effect>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content class="accept ion-activatable ion-no-padding" (click)="checkIt()">
+      <ion-button [disabled]="!checkBox.checked">OK</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

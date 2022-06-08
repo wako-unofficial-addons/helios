@@ -4,7 +4,7 @@
   <ion-card *ngIf="sourceQuery && (providers.length === 0 || !hasProvider)" (click)="openProviderModal()">
     <ion-card-header>
       <ion-card-title *ngIf="providers.length === 0 && hasProvider">
-        {{ 'source-list.noProviderSetCategory' | translate: {category: sourceQuery.category} }}
+        {{ 'source-list.noProviderSetCategory' | translate: { category: sourceQuery.category } }}
       </ion-card-title>
       <ion-card-title *ngIf="providers.length === 0 && !hasProvider">
         {{ 'source-list.noProviderSet' | translate }}
@@ -15,8 +15,8 @@
     </ion-card-content>
   </ion-card>
 
-  <div *ngIf="providers.length  > 0">
-    <ion-segment (ionChange)="segment = $event.detail.value" [value]="segment" scrollable>
+  <div *ngIf="providers.length > 0">
+    <ion-segment (ionChange)="segment = $any($event).detail.value" [value]="segment" scrollable>
       <ion-segment-button value="debrid">
         <ion-label> {{ 'sources.segments.debrid' | translate }} ({{ totalStreamLinkSource }})</ion-label>
       </ion-segment-button>
@@ -41,7 +41,7 @@
     ></ion-searchbar>
 
     <div [ngSwitch]="segment">
-      <ion-list [ngClass]="{'hidden': segment !== 'debrid'}">
+      <ion-list [ngClass]="{ hidden: segment !== 'debrid' }">
         <ion-card *ngIf="!hasDebridAccount" (click)="openDebridAccountModal()">
           <ion-card-header>
             <ion-card-title>
@@ -58,7 +58,6 @@
             {{ 'shared.noSourceFound' | translate }}
           </ion-card-content>
         </ion-card>
-
 
         <div *ngIf="!settings.sourceFilter.groupStreamsByQuality">
           <wk-debrid-source-item
@@ -125,12 +124,10 @@
         </div>
       </ion-list>
 
-      <ion-list [ngClass]="{'hidden': segment !== 'torrents'}">
+      <ion-list [ngClass]="{ hidden: segment !== 'torrents' }">
         <ion-card *ngIf="!searching && totalTorrentSource === 0">
           <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
         </ion-card>
-
-
 
         <div *ngIf="!settings.sourceFilter.groupTorrentsByQuality">
           <wk-torrent-source-item
@@ -198,53 +195,55 @@
         </ion-item>
         <ion-item-sliding *ngFor="let sourceByProvider of sourceByProviders">
           <ion-item lines="full">
-
             <ion-label class="ion-text-wrap">
               {{ sourceByProvider.provider }}
               <ion-text *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">
-                Error: {{sourceByProvider.torrentSourceDetail.errorMessage}}</ion-text>
+                Error: {{ sourceByProvider.torrentSourceDetail.errorMessage }}</ion-text
+              >
             </ion-label>
 
-            <ion-note slot="end"
-                      [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'">{{
-                sourceByProvider.torrentSourceDetail.sources.length
-              }}</ion-note>
-            <ion-note slot="end"
-                      [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
-            >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
+            <ion-note
+              slot="end"
+              [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
+              >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
+            >
+            <ion-note
+              slot="end"
+              [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
+              >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
               ms
             </ion-note>
             <ion-badge color="danger" *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">Error</ion-badge>
-
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option *ngIf="getProviderStatus(sourceByProvider.provider)" color="dark"
-                             (click)="toggleProvider(sourceByProvider.provider, false)">
+            <ion-item-option
+              *ngIf="getProviderStatus(sourceByProvider.provider)"
+              color="dark"
+              (click)="toggleProvider(sourceByProvider.provider, false)"
+            >
               <ion-icon slot="top" name="remove-circle-outline"></ion-icon>
               Disable
             </ion-item-option>
-            <ion-item-option *ngIf="!getProviderStatus(sourceByProvider.provider)" color="dark"
-                             (click)="toggleProvider(sourceByProvider.provider, true)">
+            <ion-item-option
+              *ngIf="!getProviderStatus(sourceByProvider.provider)"
+              color="dark"
+              (click)="toggleProvider(sourceByProvider.provider, true)"
+            >
               <ion-icon slot="top" name="add-outline"></ion-icon>
               Enable
             </ion-item-option>
           </ion-item-options>
-
         </ion-item-sliding>
-        <ion-item lines="full" *ngFor="let data of providerIsLoading|keyvalue">
+        <ion-item lines="full" *ngFor="let data of providerIsLoading | keyvalue">
           <ion-label>
-            {{data.value.name}}
+            {{ data.value.name }}
           </ion-label>
           <ion-spinner name="dots"></ion-spinner>
         </ion-item>
 
         <ion-item lines="full">
-          <ion-label>
-            Total
-          </ion-label>
-          <ion-note slot="end">
-            {{totalTimeElapsed}} ms
-          </ion-note>
+          <ion-label> Total </ion-label>
+          <ion-note slot="end"> {{ totalTimeElapsed }} ms </ion-note>
         </ion-item>
       </ion-list>
     </div>

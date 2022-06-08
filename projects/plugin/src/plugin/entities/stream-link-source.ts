@@ -1,9 +1,9 @@
-import { SourceQuality } from './source-quality';
 import { Observable } from 'rxjs';
+import { AllDebridMagnetStatusMagnetDto } from '../services/all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
 import { PremiumizeTransferDirectdlDto } from '../services/premiumize/dtos/transfer/premiumize-transfer-directdl.dto';
 import { RealDebridUnrestrictLinkDto } from '../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
 import { BaseSource } from './base-source';
-import { AllDebridMagnetStatusMagnetDto } from '../services/all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
+import { SourceQuality } from './source-quality';
 
 export class StreamLinkSource extends BaseSource {
   premiumizeTransferDirectdlDto: Observable<PremiumizeTransferDirectdlDto>;
@@ -13,14 +13,14 @@ export class StreamLinkSource extends BaseSource {
   streamLinks: StreamLink[];
 
   constructor(
-    public id: string,
-    public title: string,
-    public size: number,
-    public quality: SourceQuality,
-    public type: 'torrent' | 'cached_torrent' | 'debrid' | 'hoster',
+    public override id: string,
+    public override title: string,
+    public override size: number,
+    public override quality: SourceQuality,
+    public override type: 'torrent' | 'cached_torrent' | 'debrid' | 'hoster',
     public isPackage: boolean,
     public debridService: 'PM' | 'RD' | 'AD',
-    public provider: string,
+    public override provider: string,
     public originalUrl: string,
     public originalHash?: string
   ) {
