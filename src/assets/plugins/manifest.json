@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.2.3",
+  "version": "4.2.5",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a FREE and open-source third-party add-on developed by the community. It is a source finder, it scrapes third-party sites (called providers) that you have to provide and are publicly available on the internet.",
@@ -14,7 +14,8 @@
     "el": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/el.json"
   },
   "changeLogs": {
-    "4.2.3": "Use latest dependencies + fix some bugs with RD",
+    "4.2.5": "Handle 204 response from RD",
+    "4.2.4": "Use latest dependencies + fix some bugs with RD",
     "4.2.2": "Fix issue on last version of VLC for iOS",
     "4.2.1": "Fix:<br>- provider could be deleted on automatic update if network issue<br>- share feature stop working<br>- File explorer: PM links inside directories weren't not showing",
     "4.2.0": "Search for infohash if magnet link not found (from PR #78 thanks to Minefield)",

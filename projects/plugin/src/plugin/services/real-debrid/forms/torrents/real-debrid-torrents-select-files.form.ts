@@ -5,11 +5,10 @@ export class RealDebridTorrentsSelectFilesForm {
     return RealDebridApiService.post(
       `/torrents/selectFiles/${torrentId}`,
       {
-        files: fileId
+        files: fileId,
       },
       null,
-      null,
-      false
+      null
     );
   }
 }

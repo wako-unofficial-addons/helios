@@ -1,8 +1,8 @@
-import { Observable, throwError } from 'rxjs';
-import { ProviderHttpService } from '../../provider-http.service';
-import { catchError, switchMap } from 'rxjs/operators';
-import { RealDebridOauthTokenDto } from '../dtos/oauth/real-debrid-oauth-token.dto';
 import { WakoHttpError, WakoHttpRequest, WakoHttpService } from '@wako-app/mobile-sdk';
+import { Observable, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { ProviderHttpService } from '../../provider-http.service';
+import { RealDebridOauthTokenDto } from '../dtos/oauth/real-debrid-oauth-token.dto';
 
 export class RealDebridApiService extends ProviderHttpService {
   static queueEnabled = true;
@@ -15,7 +15,7 @@ export class RealDebridApiService extends ProviderHttpService {
 
   static getHeaders() {
     const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     };
 
     if (!!this.getToken()) {
@@ -36,28 +36,44 @@ export class RealDebridApiService extends ProviderHttpService {
     httpRequest: WakoHttpRequest,
     cacheTime?: string | number,
     timeoutMs = 40000,
-    byPassCors = false,
+    byPassCors = true,
     timeToWaitOnTooManyRequest?: number,
     timeToWaitBetweenEachRequest?: number
   ) {
-    return super.request<T>(httpRequest, cacheTime, timeoutMs, byPassCors, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest).pipe(
-      catchError((err) => {
-        if (err instanceof WakoHttpError && err.status === 401 && this.handle401) {
-          console.log('Refreshing RD');
-          return this.handle401.pipe(
-            switchMap((credentialsRefreshed) => {
-              if (credentialsRefreshed) {
-                httpRequest.headers = null;
+    return super
+      .request<T>(
+        httpRequest,
+        cacheTime,
+        timeoutMs,
+        byPassCors,
+        timeToWaitOnTooManyRequest,
+        timeToWaitBetweenEachRequest
+      )
+      .pipe(
+        catchError((err) => {
+          if (err instanceof WakoHttpError && err.status === 401 && this.handle401) {
+            console.log('Refreshing RD');
+            return this.handle401.pipe(
+              switchMap((credentialsRefreshed) => {
+                if (credentialsRefreshed) {
+                  httpRequest.headers = null;
 
-                return super.request<T>(httpRequest, cacheTime, timeoutMs, true, timeToWaitOnTooManyRequest, timeToWaitBetweenEachRequest);
-              }
-              return throwError(err);
-            })
-          );
-        }
-        return throwError(err);
-      })
-    );
+                  return super.request<T>(
+                    httpRequest,
+                    cacheTime,
+                    timeoutMs,
+                    true,
+                    timeToWaitOnTooManyRequest,
+                    timeToWaitBetweenEachRequest
+                  );
+                }
+                return throwError(err);
+              })
+            );
+          }
+          return throwError(err);
+        })
+      );
   }
 
   static post<T>(url: string, body: Object, cacheTime?: string, timeoutMs?, byPassCors = true) {
@@ -66,7 +82,7 @@ export class RealDebridApiService extends ProviderHttpService {
         method: 'POST',
         url: this.getApiBaseUrl() + url,
         body: body,
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
       },
       cacheTime,
       timeoutMs ?? 40000,
@@ -78,7 +94,7 @@ export class RealDebridApiService extends ProviderHttpService {
     return this.request<T>(
       {
         url: this.getApiBaseUrl() + WakoHttpService.addParamsToUrl(url, params),
-        method: 'GET'
+        method: 'GET',
       },
       cacheTime,
       timeoutMs ?? 40000,

@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.2.4",
+  "version": "4.2.5",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a FREE and open-source third-party add-on developed by the community. It is a source finder, it scrapes third-party sites (called providers) that you have to provide and are publicly available on the internet.",
