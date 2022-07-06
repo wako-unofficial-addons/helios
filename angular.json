@@ -1,7 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "defaultProject": "app",
   "newProjectRoot": "projects",
   "projects": {
     "app": {
@@ -144,7 +143,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         },
         "e2e": {
@@ -326,31 +328,14 @@
           "options": {
             "browserTarget": "wako-like:build"
           }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/wako-like/src/test.ts",
-            "polyfills": "projects/wako-like/src/polyfills.ts",
-            "tsConfig": "projects/wako-like/tsconfig.spec.json",
-            "karmaConfig": "projects/wako-like/karma.conf.js",
-            "styles": ["projects/wako-like/src/styles.css"],
-            "scripts": [],
-            "assets": ["projects/wako-like/src/favicon.ico", "projects/wako-like/src/assets"]
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["projects/wako-like/tsconfig.app.json", "projects/wako-like/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
-          }
         }
       }
     }
   },
   "cli": {
-    "defaultCollection": "@ionic/angular-toolkit"
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ]
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

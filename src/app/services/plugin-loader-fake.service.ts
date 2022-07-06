@@ -1,15 +1,21 @@
-import { ComponentFactoryResolver, Injectable, Injector } from '@angular/core';
-import { PluginBaseService, PluginDetail, PluginManifest, WakoBaseHttpService, WakoPluginLoaderService } from '@wako-app/mobile-sdk';
+import { Injectable, Injector } from '@angular/core';
+import {
+  PluginBaseService,
+  PluginDetail,
+  PluginManifest,
+  WakoBaseHttpService,
+  WakoPluginLoaderService,
+} from '@wako-app/mobile-sdk';
 import { forkJoin, from, of, throwError } from 'rxjs';
 import { catchError, mapTo, switchMap, tap } from 'rxjs/operators';
 import { PluginModule } from '../../../projects/plugin/src/plugin/plugin.module';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PluginLoaderFakeService extends WakoPluginLoaderService {
-  constructor(cfr: ComponentFactoryResolver, injector: Injector) {
-    super(cfr, injector);
+  constructor(injector: Injector) {
+    super(injector);
   }
 
   install(manifestUrl: string, lang: string, loadIt = true) {
@@ -36,7 +42,9 @@ export class PluginLoaderFakeService extends WakoPluginLoaderService {
           pluginDetail.languages = {};
           const obss = [];
           Object.keys(manifest.languages).forEach((langKey) => {
-            const langUrl = manifest.languages[langKey].match('http') ? manifest.languages[langKey] : baseUrl + manifest.languages[langKey];
+            const langUrl = manifest.languages[langKey].match('http')
+              ? manifest.languages[langKey]
+              : baseUrl + manifest.languages[langKey];
 
             const obs = WakoBaseHttpService.get(langUrl).pipe(
               catchError((err) => {
@@ -82,7 +90,7 @@ export class PluginLoaderFakeService extends WakoPluginLoaderService {
         this.pluginModuleMap.set(pluginDetail.manifest.id, {
           pluginDetail,
           moduleType: moduleType,
-          injector: null
+          injector: null,
         });
 
         pluginService.initialize();

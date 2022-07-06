@@ -23,8 +23,7 @@ export class ProviderService {
    */
   private providerUrlsToSyncStorageKey = 'provider_urls_to_sync';
 
-  constructor(private storage: WakoStorage, private toastService: ToastService) {
-  }
+  constructor(private storage: WakoStorage, private toastService: ToastService) {}
 
   async initialize() {
     setTimeout(() => {
@@ -219,7 +218,7 @@ export class ProviderService {
         WakoHttpRequestService.request<ProviderList>(
           {
             url: url,
-            method: 'GET'
+            method: 'GET',
           },
           null,
           20000,
@@ -229,8 +228,8 @@ export class ProviderService {
             invalidUrls.push(url);
             return EMPTY;
           }),
-          switchMap(data=>{
-            if(isAutomatic && typeof data !== 'object') {
+          switchMap((data) => {
+            if (isAutomatic && typeof data !== 'object') {
               return EMPTY;
             }
             return of(data);
@@ -298,7 +297,7 @@ export class ProviderService {
     return WakoHttpRequestService.request<ProviderList>(
       {
         url: url,
-        method: 'GET'
+        method: 'GET',
       },
       null,
       20000,
