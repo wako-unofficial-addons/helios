@@ -43,3 +43,4 @@ resources/ios/splash
 ## Android
 .gradle/
 android/.idea
+src/assets/plugins/*
