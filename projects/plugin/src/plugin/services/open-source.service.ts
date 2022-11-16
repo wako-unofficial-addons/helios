@@ -811,10 +811,10 @@ export class OpenSourceService {
     );
   }
 
-  private share(cachedUrl: string, torrentTitle: string) {
+  private share(cachedUrl: string, torrentTitle: string, text?: string) {
     WakoShare.share({
       url: cachedUrl,
-      text: torrentTitle,
+      text: text ?? torrentTitle,
       dialogTitle: torrentTitle,
       title: torrentTitle,
     });
@@ -1079,7 +1079,8 @@ export class OpenSourceService {
           }
           break;
         case 'share-url':
-          this.share(torrent.url, torrent.title);
+          // magnet URL is not supported
+          this.share(null, torrent.title, torrent.url);
           break;
         case 'add-to-playlist':
           this.handleWakoPlaylist(torrent, kodiOpenMedia, false).subscribe();
