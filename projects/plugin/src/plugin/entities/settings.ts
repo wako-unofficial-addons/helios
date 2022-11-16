@@ -16,7 +16,8 @@ export declare type PlayButtonAction =
   | 'add-to-playlist'
   | 'open-infuse'
   | 'cast'
-  | 'let-me-choose';
+  | 'let-me-choose'
+  | 'open-outplayer';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -32,7 +33,8 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'add-to-ad',
   'add-to-playlist',
   'open-infuse',
-  'cast'
+  'cast',
+  'open-outplayer',
 ];
 
 export const PlayButtonActionAndroid: PlayButtonAction[] = [
@@ -47,7 +49,7 @@ export const PlayButtonActionAndroid: PlayButtonAction[] = [
   'add-to-rd',
   'add-to-ad',
   'add-to-playlist',
-  'cast'
+  'cast',
 ];
 
 export interface SettingsQuality {
@@ -105,23 +107,23 @@ export class Settings {
     {
       quality: '2160p',
       displayName: '2160p/4k',
-      enabled: false
+      enabled: false,
     },
     {
       quality: '1080p',
       displayName: '1080p',
-      enabled: true
+      enabled: true,
     },
     {
       quality: '720p',
       displayName: '720p',
-      enabled: false
+      enabled: false,
     },
     {
       quality: 'other',
       displayName: 'Other',
-      enabled: false
-    }
+      enabled: false,
+    },
   ];
 
   openRemoteAfterClickOnPlay = true;
@@ -130,13 +132,13 @@ export class Settings {
   fileSizeFilteringMovie: FileSizeFilter = {
     enabled: false,
     maxSize: 0,
-    minSize: 0
+    minSize: 0,
   };
 
   fileSizeFilteringTv: FileSizeFilter = {
     enabled: false,
     maxSize: 0,
-    minSize: 0
+    minSize: 0,
   };
 
   defaultTitleLang = 'en';
@@ -146,7 +148,7 @@ export class Settings {
     sortTorrentsBy: 'balanced',
     groupStreamsByQuality: true,
     groupTorrentsByQuality: true,
-    excludeTags: []
+    excludeTags: [],
   };
 
   simultaneousProviderQueries = 0;

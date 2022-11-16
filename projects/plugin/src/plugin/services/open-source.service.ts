@@ -421,6 +421,10 @@ export class OpenSourceService {
           buttonOptions.cssClass = 'vlc';
           break;
 
+        case 'open-outplayer':
+          buttonOptions.cssClass = 'outplayer';
+          break;
+
         case 'open-nplayer':
           buttonOptions.cssClass = 'nplayer';
           break;
@@ -526,6 +530,10 @@ export class OpenSourceService {
       {
         class: '.cast',
         imgUrl: CAST_IMAGE,
+      },
+      {
+        class: '.outplayer',
+        imgUrl: 'https://outplayer.app/images/logo.svg',
       },
     ];
 
@@ -652,6 +660,13 @@ export class OpenSourceService {
       return;
     }
     const url = `infuse://x-callback-url/play?url=${encodeURIComponent(videoUrl)}`;
+    BrowserService.open(url, false);
+  }
+  private async openOutplayer(videoUrl: string) {
+    if (!this.platform.is('ios')) {
+      return;
+    }
+    const url = `outplayer://${videoUrl}`;
     BrowserService.open(url, false);
   }
 
@@ -1165,6 +1180,13 @@ export class OpenSourceService {
           playVideo = true;
           break;
 
+        case 'open-outplayer':
+          this.openOutplayer(
+            preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url
+          );
+          playVideo = true;
+          break;
+
         case 'open-nplayer':
           this.openNplayer(
             preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url
@@ -1386,6 +1408,13 @@ export class OpenSourceService {
           buttonOptions.cssClass = 'vlc';
           buttonOptions.handler = () => {
             this.openVlc(playlistVideo.url);
+          };
+          break;
+
+        case 'open-outplayer':
+          buttonOptions.cssClass = 'outplayer';
+          buttonOptions.handler = () => {
+            this.openOutplayer(playlistVideo.url);
           };
           break;
 
