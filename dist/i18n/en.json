@@ -163,6 +163,7 @@
         "copy-url": "Copy URL",
         "share-url": "Share URL",
         "open-vlc": "Play on VLC",
+        "open-outplayer": "Play on Outplayer",
         "download-vlc": "Download with VLC",
         "open-elementum": "Play on Kodi via Elementum",
         "open-with": "Play on...",
