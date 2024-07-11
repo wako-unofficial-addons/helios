@@ -1,9 +1,9 @@
 import { Episode, KodiApiService, KodiAppService, Movie, OpenMedia, Show, wakoLog } from '@wako-app/mobile-sdk';
-import { TorrentSource } from '../entities/torrent-source';
+import { KodiOpenMedia } from '../entities/kodi-open-media';
 import { SourceByQuality } from '../entities/source-by-quality';
 import { SourceEpisodeQuery, SourceMovieQuery, SourceQuery } from '../entities/source-query';
 import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
-import { KodiOpenMedia } from '../entities/kodi-open-media';
+import { TorrentSource } from '../entities/torrent-source';
 
 export function logData(...data: any) {
   wakoLog('plugin.helios', data);
@@ -82,7 +82,7 @@ export function torrentCacheStrings(episodeCode: string) {
     `${season2}${episode2} `,
     `${season}.${episode2} `,
     `${season2}.${episode} `,
-    `${season2}.${episode2} `
+    `${season2}.${episode2} `,
   ];
 
   const seasonStrings = [
@@ -91,14 +91,14 @@ export function torrentCacheStrings(episodeCode: string) {
     `s${season} `,
     `s${season2} `,
     `series ${season2} `,
-    `series ${season} `
+    `series ${season} `,
   ];
 
   return {
     episodeStrings,
     seasonStrings,
     season2,
-    episode2
+    episode2,
   };
 }
 
@@ -219,7 +219,11 @@ export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: stri
     }
   });
 
-  if (!match && filename.toLowerCase().match('s' + codes.season2) && filename.toLowerCase().match('e' + codes.episode2)) {
+  if (
+    !match &&
+    filename.toLowerCase().match('s' + codes.season2) &&
+    filename.toLowerCase().match('e' + codes.episode2)
+  ) {
     match = true;
   }
 
@@ -231,7 +235,7 @@ export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSour
     sources2160p: [],
     sources1080p: [],
     sources720p: [],
-    sourcesOther: []
+    sourcesOther: [],
   };
 
   sources.forEach((source) => {
@@ -323,6 +327,28 @@ export function incrementEpisodeCode(episodeCode: string) {
   throw new Error('Invalid episode code');
 }
 
+export function appendOpenMediaToUrl(url: string, openMedia: OpenMedia) {
+  const urlObj = new URL(url);
+
+  if (openMedia.movieIds && openMedia.movieIds.imdb) {
+    urlObj.searchParams.set('imdb_id', openMedia.movieIds.imdb);
+  }
+  if (openMedia.showIds && openMedia.showIds.imdb) {
+    urlObj.searchParams.set('imdb_id', openMedia.showIds.imdb);
+  }
+  if (openMedia.seasonNumber) {
+    urlObj.searchParams.set('season', openMedia.seasonNumber.toString());
+  }
+  if (openMedia.episodeNumber) {
+    urlObj.searchParams.set('episode', openMedia.episodeNumber.toString());
+  }
+  urlObj.searchParams.set('z', 'helios');
+  console.log({
+    url: urlObj.toString(),
+  });
+  return urlObj.toString();
+}
+
 export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMedia) {
   const items = [];
   let startEpisode = kodiOpenMedia.episode ? kodiOpenMedia.episode.number : null;
@@ -337,18 +363,18 @@ export function addToKodiPlaylist(videoUrls: string[], kodiOpenMedia: KodiOpenMe
         movieIds: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids : null,
         showIds: kodiOpenMedia.show.ids ? kodiOpenMedia.show.ids : null,
         seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.seasonNumber : null,
-        episodeNumber: startEpisode ? startEpisode : null
+        episodeNumber: startEpisode ? startEpisode : null,
       };
 
       items.push({
-        file: KodiAppService.prependOpenMediaToUrl(videoUrl, openMedia)
+        file: KodiAppService.prependOpenMediaToUrl(appendOpenMediaToUrl(videoUrl, openMedia), openMedia),
       });
     }
   });
 
   return KodiApiService.doHttpAction('Playlist.Add', {
     playlistid: 1,
-    item: items
+    item: items,
   });
 }
 
@@ -362,7 +388,10 @@ export function getElementumUrlBySourceUrl(sourceUrl: string, sourceQuery?: Sour
   if (sourceQuery) {
     urlSearchParams.set('type', sourceQuery.episode ? 'episode' : 'movie');
     if (sourceQuery.episode || sourceQuery.movie) {
-      urlSearchParams.set('tmdb', (sourceQuery.episode ? sourceQuery.episode.showTmdbId : sourceQuery.movie.tmdbId).toString());
+      urlSearchParams.set(
+        'tmdb',
+        (sourceQuery.episode ? sourceQuery.episode.showTmdbId : sourceQuery.movie.tmdbId).toString(),
+      );
     }
     if (sourceQuery.episode) {
       urlSearchParams.set('show', sourceQuery.episode.showTmdbId.toString());
@@ -393,7 +422,7 @@ export function getOpenMediaFromKodiOpenMedia(kodiOpenMedia: KodiOpenMedia) {
     movieIds: kodiOpenMedia.movie ? kodiOpenMedia.movie.ids : null,
     showIds: kodiOpenMedia.show ? kodiOpenMedia.show.ids : null,
     seasonNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.seasonNumber : null,
-    episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.number : null
+    episodeNumber: kodiOpenMedia.episode ? kodiOpenMedia.episode.number : null,
   };
   return openMedia;
 }

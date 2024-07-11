@@ -41,6 +41,7 @@ import { SourceService } from './sources/source.service';
 import { ToastService } from './toast.service';
 import {
   addToKodiPlaylist,
+  appendOpenMediaToUrl,
   episodeFoundInStreamLinks,
   getElementumUrlBySourceUrl,
   getOpenMediaFromKodiOpenMedia,
@@ -591,8 +592,14 @@ export class OpenSourceService {
 
             if (!pluginId) {
               // tslint:disable-next-line:max-line-length
-              firstVideoUrl = KodiAppService.prependOpenMediaToUrl(firstVideoUrl, openMedia);
+              firstVideoUrl = KodiAppService.prependOpenMediaToUrl(
+                appendOpenMediaToUrl(firstVideoUrl, openMedia),
+                openMedia,
+              );
             }
+            console.log({
+              firstVideoUrl,
+            });
           }
 
           return from(this.settingsService.get()).pipe(
