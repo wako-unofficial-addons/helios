@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { provideIonicAngular } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { BrowserService, PluginBaseModule, WakoProviders } from '@wako-app/mobile-sdk';
@@ -75,12 +75,13 @@ const directives = [HideKeyboardEnterDirective];
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule.forRoot(),
     TranslateModule.forRoot(),
     ClipboardModule,
     IonicStorageModule.forRoot({}),
+    ...components,
+    FileSizePipe,
+    ...directives,
   ],
-  declarations: [...components, FileSizePipe, ...directives],
   providers: [
     PluginService,
     TorrentSourceService,
@@ -96,6 +97,11 @@ const directives = [HideKeyboardEnterDirective];
     HeliosPlaylistService,
     ExplorerService,
     ...WakoProviders,
+    provideIonicAngular({
+      swipeBackEnabled: true,
+      backButtonText: '',
+      mode: 'md',
+    }),
   ], // Add your services here. Do not use provideIn: 'root' in your services
 })
 export class PluginModule extends PluginBaseModule {

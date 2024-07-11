@@ -17,7 +17,8 @@ export declare type PlayButtonAction =
   | 'open-infuse'
   | 'cast'
   | 'let-me-choose'
-  | 'open-outplayer';
+  | 'open-outplayer'
+  | 'wako-player';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',

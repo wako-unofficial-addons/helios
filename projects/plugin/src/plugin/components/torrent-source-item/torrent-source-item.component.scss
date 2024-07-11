@@ -4,10 +4,12 @@
   display: inline-flex;
   background-color: var(--ion-color-dark-tint);
 
-
-  .ion-activatable {
+  .ion-focusable {
     position: relative;
     overflow: hidden;
+    background-color: transparent;
+    color: inherit;
+    text-align: left;
   }
 
   .download {
@@ -27,7 +29,6 @@
   }
 
   .title {
-    font-size: 0.9em;
+    font-size: 1em;
   }
-
 }

@@ -32,11 +32,9 @@
     </ion-card-content>
   </ion-card>
   <ion-card>
-    <ion-card-content class="accept ion-activatable ion-no-padding">
-      <ion-checkbox slot="start" #checkBox></ion-checkbox>
-      <ion-label class="ion-text-nowrap"> I have read and agree with this</ion-label>
-      <ion-ripple-effect></ion-ripple-effect>
-    </ion-card-content>
+  <ion-item>
+    <ion-checkbox class="ion-focusable" label-placement="end" #checkBox>I have read and agree with this</ion-checkbox>
+  </ion-item>
   </ion-card>
   <ion-card>
     <ion-card-content class="accept ion-activatable ion-no-padding" (click)="checkIt()">

@@ -1,21 +1,20 @@
 <div class="row">
-  <div class="ion-activatable download" (click)="download()">
+  <button class="ion-focusable download" (click)="download()">
     <ion-ripple-effect></ion-ripple-effect>
     <p class="title">
       {{ source.title }}
       <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy-outline"></ion-icon>
-      <br/>
+      <br />
     </p>
     <p>
       <ion-grid class="ion-no-margin ion-no-padding">
         <ion-row>
           <ion-col size="8" class="ion-text-left ion-no-margin ion-no-padding">
-            <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality}}</ion-badge>
+            <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality }}</ion-badge>
 
             <ion-badge color="light"> {{ source.size | bsFileSize }}</ion-badge>
             <ion-icon *ngIf="source.isPackage" name="cube-outline" class="ion-margin-start"></ion-icon>
           </ion-col>
-
 
           <ion-col class="ion-text-right ion-no-margin ion-no-padding">
             <ion-badge>{{ source.debridService }}</ion-badge>
@@ -29,9 +28,9 @@
         </ion-row>
       </ion-grid>
     </p>
-  </div>
-  <div class="ion-activatable more" (click)="more()">
+  </button>
+  <button class="ion-focusable more" (click)="more()">
     <ion-ripple-effect></ion-ripple-effect>
     <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-  </div>
+  </button>
 </div>

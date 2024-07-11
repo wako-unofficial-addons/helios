@@ -3,7 +3,8 @@ import { Directive, ElementRef, HostListener } from '@angular/core';
 declare const Keyboard: any;
 
 @Directive({
-  selector: '[wkHideKeyboardEnter]'
+    selector: '[wkHideKeyboardEnter]',
+    standalone: true
 })
 export class HideKeyboardEnterDirective {
   constructor(private element: ElementRef) {

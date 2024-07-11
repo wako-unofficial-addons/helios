@@ -3,6 +3,8 @@
     "tuto": {
       "title": "Setup Wizard",
       "skip": "Skip",
+      "prev": "Prev",
+      "next": "Next",
       "slideDisclaimer": {
         "title": "About Helios",
         "description": "Helios is a FREE and open-source third-party add-on developed by the community.<br>It is a source finder, it scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are <strong>publicly available</strong> on the internet.",
