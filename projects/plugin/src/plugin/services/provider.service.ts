@@ -23,7 +23,10 @@ export class ProviderService {
    */
   private providerUrlsToSyncStorageKey = 'provider_urls_to_sync';
 
-  constructor(private storage: WakoStorage, private toastService: ToastService) {}
+  constructor(
+    private storage: WakoStorage,
+    private toastService: ToastService,
+  ) {}
 
   async initialize() {
     setTimeout(() => {
@@ -137,9 +140,9 @@ export class ProviderService {
           }),
           switchMap((urls) => {
             return this.setProvidersFromUrls(urls, false);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -156,9 +159,9 @@ export class ProviderService {
         return from(this.setProviderUrls(newUrls)).pipe(
           switchMap(() => {
             return this.setProvidersFromUrls(newUrls, false);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -222,7 +225,7 @@ export class ProviderService {
           },
           null,
           20000,
-          true
+          true,
         ).pipe(
           catchError(() => {
             invalidUrls.push(url);
@@ -233,8 +236,8 @@ export class ProviderService {
               return EMPTY;
             }
             return of(data);
-          })
-        )
+          }),
+        ),
       );
     });
 
@@ -270,12 +273,12 @@ export class ProviderService {
           }),
           map(() => {
             return true;
-          })
+          }),
         );
       }),
       catchError(() => {
         return of(false);
-      })
+      }),
     );
   }
 
@@ -301,7 +304,7 @@ export class ProviderService {
       },
       null,
       20000,
-      true
+      true,
     ).pipe(
       catchError(() => {
         return of(false);
@@ -316,7 +319,7 @@ export class ProviderService {
           });
         }
         return valid;
-      })
+      }),
     );
   }
 }

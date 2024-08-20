@@ -78,3 +78,20 @@ export interface ProviderList {
 export const testProviders: ProviderList = {};
 
 console.log('testProviders', JSON.stringify(testProviders));
+
+export const fixProvider = (provider: Provider) => {
+  if (!provider.name) {
+    provider.name = 'Unknown';
+  }
+
+  if (!provider.enabled) {
+    provider.enabled = false;
+  }
+
+  if (!provider.languages) {
+    provider.languages = [];
+  }
+  if (!provider.base_url) {
+    provider.base_url = 'https://google.com';
+  }
+};

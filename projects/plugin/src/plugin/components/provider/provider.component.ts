@@ -1,153 +1,184 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AlertController, IonList, IonListHeader, IonLabel, IonIcon, IonItem, IonInput, IonSpinner, IonItemSliding, IonItemOptions, IonItemOption, IonToggle } from '@ionic/angular/standalone';
+import {
+  AlertController,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonSpinner,
+  IonToggle,
+} from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { listOutline, logoDropbox, speedometerOutline, trashOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs/operators';
-import { ProviderList } from '../../entities/provider';
+import { fixProvider, ProviderList } from '../../entities/provider';
 import { Settings } from '../../entities/settings';
 import { ProviderService } from '../../services/provider.service';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
-import { addIcons } from "ionicons";
-import { speedometerOutline, logoDropbox, trashOutline, listOutline } from "ionicons/icons";
 
 interface ProdviderArray {
-    key: string;
-    name: string;
-    enabled: boolean;
+  key: string;
+  name: string;
+  enabled: boolean;
 }
 
 @Component({
-    selector: 'wk-providers',
-    templateUrl: './provider.component.html',
-    styleUrls: ['./provider.component.scss'],
-    standalone: true,
-    imports: [NgIf, FormsModule, NgFor, TranslateModule, IonList, IonListHeader, IonLabel, IonIcon, IonItem, IonInput, IonSpinner, IonItemSliding, IonItemOptions, IonItemOption, IonToggle],
+  selector: 'wk-providers',
+  templateUrl: './provider.component.html',
+  styleUrls: ['./provider.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    FormsModule,
+    NgFor,
+    TranslateModule,
+    IonList,
+    IonListHeader,
+    IonLabel,
+    IonIcon,
+    IonItem,
+    IonInput,
+    IonSpinner,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    IonToggle,
+  ],
 })
 export class ProviderComponent implements OnInit {
-    @Output() providerAdded = new EventEmitter<boolean>();
+  @Output() providerAdded = new EventEmitter<boolean>();
 
-    providerArray: ProdviderArray[] = [];
+  providerArray: ProdviderArray[] = [];
 
-    providersUrls = [];
+  providersUrls = [];
 
-    providerList: ProviderList = null;
+  providerList: ProviderList = null;
 
-    isLoading = false;
+  isLoading = false;
 
-    settings: Settings = null;
+  settings: Settings = null;
 
-    constructor(
-        private providerService: ProviderService,
-        private alertController: AlertController,
-        private translateService: TranslateService,
-        private toastService: ToastService,
-        private ngZone: NgZone,
-        private settingsService: SettingsService,
-    ) {
-        addIcons({ speedometerOutline, logoDropbox, trashOutline, listOutline });
+  constructor(
+    private providerService: ProviderService,
+    private alertController: AlertController,
+    private translateService: TranslateService,
+    private toastService: ToastService,
+    private ngZone: NgZone,
+    private settingsService: SettingsService,
+  ) {
+    addIcons({ speedometerOutline, logoDropbox, trashOutline, listOutline });
+  }
+
+  async ngOnInit() {
+    this.providersUrls = await this.providerService.getProviderUrls();
+
+    this.providerList = await this.providerService.getProviders();
+
+    this.providerArray = [];
+
+    this.settings = await this.settingsService.get();
+
+    if (!this.providerList) {
+      return;
     }
 
-    async ngOnInit() {
-        this.providersUrls = await this.providerService.getProviderUrls();
+    Object.keys(this.providerList).forEach((key) => {
+      const provider = this.providerList[key];
+      fixProvider(provider);
 
-        this.providerList = await this.providerService.getProviders();
+      this.providerArray.push({
+        key: key,
+        enabled: provider.enabled,
+        name: ProviderService.getNameWithEmojiFlag(provider),
+      });
+    });
 
-        this.providerArray = [];
+    if (this.providerArray.length > 0) {
+      this.providerAdded.emit(true);
+    }
+  }
 
-        this.settings = await this.settingsService.get();
+  async setUrl(index?: number) {
+    let providerUrl = '';
 
-        if (!this.providerList) {
-            return;
-        }
+    if (index !== undefined) {
+      if (this.providersUrls[index]) {
+        providerUrl = this.providersUrls[index];
+      }
+    }
 
-        Object.keys(this.providerList).forEach((key) => {
-            const provider = this.providerList[key];
-            this.providerArray.push({
-                key: key,
-                enabled: provider.enabled,
-                name: ProviderService.getNameWithEmojiFlag(provider),
+    const alert = await this.alertController.create({
+      header: 'Provider URL',
+      inputs: [
+        {
+          name: 'url',
+          type: 'url',
+          placeholder: 'Provider URL',
+          value: providerUrl,
+        },
+      ],
+      buttons: [
+        {
+          text: this.translateService.instant('alerts.cancelButton'),
+          role: 'cancel',
+          cssClass: 'secondary',
+        },
+        {
+          text: 'Ok',
+          handler: (data) => {
+            this.ngZone.run(() => {
+              this.isLoading = true;
+
+              this.providerService
+                .addProviderUrl(data.url)
+                .pipe(finalize(() => (this.isLoading = false)))
+                .subscribe(
+                  (success) => {
+                    if (success) {
+                      this.toastService.simpleMessage('toasts.providers.providerUrlAdded');
+
+                      this.ngOnInit();
+                    } else {
+                      this.toastService.simpleMessage('toasts.providers.providerUrlFailedToAdd');
+                    }
+                  },
+                  (err) => {
+                    this.toastService.simpleMessage('toasts.providers.providerUrlFailedToAdd');
+                  },
+                );
             });
-        });
+          },
+        },
+      ],
+    });
 
-        if (this.providerArray.length > 0) {
-            this.providerAdded.emit(true);
-        }
-    }
+    alert.present();
+  }
 
-    async setUrl(index?: number) {
-        let providerUrl = '';
+  toggleProvider(key: string, enabled: boolean) {
+    this.providerList[key].enabled = enabled;
+    this.providerService.setProviders(this.providerList);
+  }
 
-        if (index !== undefined) {
-            if (this.providersUrls[index]) {
-                providerUrl = this.providersUrls[index];
-            }
-        }
+  deleteProvider(url: string) {
+    this.isLoading = true;
 
-        const alert = await this.alertController.create({
-            header: 'Provider URL',
-            inputs: [
-                {
-                    name: 'url',
-                    type: 'url',
-                    placeholder: 'Provider URL',
-                    value: providerUrl,
-                },
-            ],
-            buttons: [
-                {
-                    text: this.translateService.instant('alerts.cancelButton'),
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                },
-                {
-                    text: 'Ok',
-                    handler: (data) => {
-                        this.ngZone.run(() => {
-                            this.isLoading = true;
+    this.providerService.deleteProviderUrl(url).subscribe(() => {
+      this.ngOnInit();
+      this.isLoading = false;
+    });
+  }
 
-                            this.providerService
-                                .addProviderUrl(data.url)
-                                .pipe(finalize(() => (this.isLoading = false)))
-                                .subscribe(
-                                    (success) => {
-                                        if (success) {
-                                            this.toastService.simpleMessage('toasts.providers.providerUrlAdded');
-
-                                            this.ngOnInit();
-                                        } else {
-                                            this.toastService.simpleMessage('toasts.providers.providerUrlFailedToAdd');
-                                        }
-                                    },
-                                    (err) => {
-                                        this.toastService.simpleMessage('toasts.providers.providerUrlFailedToAdd');
-                                    },
-                                );
-                        });
-                    },
-                },
-            ],
-        });
-
-        alert.present();
-    }
-
-    toggleProvider(key: string, enabled: boolean) {
-        this.providerList[key].enabled = enabled;
-        this.providerService.setProviders(this.providerList);
-    }
-
-    deleteProvider(url: string) {
-        this.isLoading = true;
-
-        this.providerService.deleteProviderUrl(url).subscribe(() => {
-            this.ngOnInit();
-            this.isLoading = false;
-        });
-    }
-
-    async setSettings() {
-        return await this.settingsService.set(this.settings);
-    }
+  async setSettings() {
+    return await this.settingsService.set(this.settings);
+  }
 }
