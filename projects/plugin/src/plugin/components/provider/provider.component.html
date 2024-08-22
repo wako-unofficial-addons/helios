@@ -6,8 +6,8 @@
     </ion-label>
   </ion-list-header>
   <ion-item>
-    <ion-label class="label-provider-speed ion-text-wrap">{{ 'pages.providers.list.providerSimultaneousLabel' | translate }}</ion-label>
     <ion-input
+      [label]="'pages.providers.list.providerSimultaneousLabel' | translate"
       type="number"
       class="ion-text-right"
       size="1"
@@ -48,7 +48,8 @@
     </ion-label>
   </ion-list-header>
   <ion-item *ngFor="let provider of providerArray">
-    <ion-label>{{ provider.name }} </ion-label>
-    <ion-toggle [(ngModel)]="provider.enabled" (ngModelChange)="toggleProvider(provider.key, $event)"></ion-toggle>
+    <ion-toggle [(ngModel)]="provider.enabled" (ngModelChange)="toggleProvider(provider.key, $event)">
+      {{ provider.name }}
+    </ion-toggle>
   </ion-item>
 </ion-list>

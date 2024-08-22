@@ -3,3 +3,7 @@
   max-width: 80% !important;
   overflow: inherit !important;
 }
+
+::ng-deep .label-text-wrapper .label-text {
+  white-space: normal !important;
+}

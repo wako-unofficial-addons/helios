@@ -6,8 +6,11 @@
     </ion-label>
   </ion-list-header>
   <ion-item>
-    <ion-label>{{ 'pages.settings.list.play-button.item' | translate }}</ion-label>
-    <ion-select [ngModel]="settings.defaultPlayButtonAction" (ngModelChange)="changeDefaultPlayButtonAction($event)">
+    <ion-select
+      [label]="'pages.settings.list.play-button.item' | translate"
+      [ngModel]="settings.defaultPlayButtonAction"
+      (ngModelChange)="changeDefaultPlayButtonAction($event)"
+    >
       <ion-select-option *ngFor="let action of availablePlayButtonActions" [value]="action">{{
         'actionSheets.open-source.options.' + action | translate
       }}</ion-select-option>

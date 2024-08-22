@@ -1,29 +1,33 @@
 <ion-card>
   <ion-card-header>
     <ion-card-title>
-      <img src="https://www.premiumize.me/icon.svg" class="pm-icon" alt=""/>
+      <img src="https://www.premiumize.me/icon.svg" class="pm-icon" alt="" />
       Premiumize.me
       <ion-spinner *ngIf="isLoadingPremiumize"></ion-spinner>
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-text [innerHTML]="'pages.debrid-account.list.premiumize.explain' | translate">
-    </ion-text>
+    <ion-text [innerHTML]="'pages.debrid-account.list.premiumize.explain' | translate"> </ion-text>
     <ion-list lines="full">
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
-        <ion-label>{{ 'shared.enabled' | translate }}</ion-label>
-        <ion-toggle [(ngModel)]="isPremiumizeEnabled" (ngModelChange)="toggleEnabledPM($event)"></ion-toggle>
+        <ion-toggle [(ngModel)]="isPremiumizeEnabled" (ngModelChange)="toggleEnabledPM($event)">
+          {{ 'shared.enabled' | translate }}
+        </ion-toggle>
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
-        <ion-label
-          class="ion-text-wrap">{{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}</ion-label>
-        <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)"></ion-toggle>
+        <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)">
+          <span class="ion-text-wrap">
+            {{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}
+          </span>
+        </ion-toggle>
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged">
-        <ion-label
-          class="ion-text-wrap">{{ 'pages.debrid-account.list.premiumize.preferTranscodedFilesChromecast' | translate }}</ion-label>
-        <ion-toggle [(ngModel)]="preferTranscodedFilesChromecast"
-                    (ngModelChange)="togglePreferTranscodedChromecast($event)"></ion-toggle>
+        <ion-toggle
+          [(ngModel)]="preferTranscodedFilesChromecast"
+          (ngModelChange)="togglePreferTranscodedChromecast($event)"
+        >
+          {{ 'pages.debrid-account.list.premiumize.preferTranscodedFilesChromecast' | translate }}</ion-toggle
+        >
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isPremiumizeLogged" button (click)="logoutPremiumize()">
         <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
@@ -41,7 +45,7 @@
 <ion-card>
   <ion-card-header>
     <ion-card-title>
-      <img src="https://fcdn.real-debrid.com/0762/images/logo.png" class="rd-icon" alt="RealDebrid"/>
+      <img src="https://fcdn.real-debrid.com/0762/images/logo.png" class="rd-icon" alt="RealDebrid" />
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
@@ -51,8 +55,9 @@
 
     <ion-list lines="full">
       <ion-item class="ion-no-padding" *ngIf="isRealDebridLogged">
-        <ion-label>{{ 'shared.enabled' | translate }}</ion-label>
-        <ion-toggle [(ngModel)]="isRealDebridEnabled" (ngModelChange)="toggleEnabledRD($event)"></ion-toggle>
+        <ion-toggle [(ngModel)]="isRealDebridEnabled" (ngModelChange)="toggleEnabledRD($event)">
+          {{ 'shared.enabled' | translate }}
+        </ion-toggle>
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isRealDebridLogged" button (click)="logoutRealDebrid()">
         <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
@@ -67,21 +72,20 @@
   </ion-card-content>
 </ion-card>
 
-
 <ion-card>
   <ion-card-header>
     <ion-card-title>
-      <img src="https://cdn.alldebrid.com/lib/images/default/logo_alldebrid.png" class="rd-icon" alt="All Debrid"/>
+      <img src="https://cdn.alldebrid.com/lib/images/default/logo_alldebrid.png" class="rd-icon" alt="All Debrid" />
       <ion-spinner *ngIf="isLoadingAllDebrid"></ion-spinner>
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-text [innerHTML]="'pages.debrid-account.list.allDebrid.explain' | translate">
-    </ion-text>
+    <ion-text [innerHTML]="'pages.debrid-account.list.allDebrid.explain' | translate"> </ion-text>
     <ion-list lines="full">
       <ion-item class="ion-no-padding" *ngIf="isAllDebridLogged">
-        <ion-label>{{ 'shared.enabled' | translate }}</ion-label>
-        <ion-toggle [(ngModel)]="isAllDebridEnabled" (ngModelChange)="toggleEnabledAD($event)"></ion-toggle>
+        <ion-toggle [(ngModel)]="isAllDebridEnabled" (ngModelChange)="toggleEnabledAD($event)">
+          {{ 'shared.enabled' | translate }}
+        </ion-toggle>
       </ion-item>
       <ion-item class="ion-no-padding" *ngIf="isAllDebridLogged" button (click)="logoutAllDebrid()">
         <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>

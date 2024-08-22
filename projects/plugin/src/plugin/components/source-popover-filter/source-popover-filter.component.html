@@ -15,8 +15,7 @@
     </ion-item>
   </ion-radio-group> -->
   <ion-item>
-    <ion-label class="ion-text-wrap">Group Streams By Quality</ion-label>
-    <ion-toggle [(ngModel)]="filter.groupStreamsByQuality"></ion-toggle>
+    <ion-toggle [(ngModel)]="filter.groupStreamsByQuality"> Group Streams By Quality </ion-toggle>
   </ion-item>
 
   <ion-radio-group [(ngModel)]="filter.sortTorrentsBy">
@@ -40,13 +39,10 @@
     </ion-item>
   </ion-radio-group>
   <ion-item>
-    <ion-label class="ion-text-wrap">Group Torrents By Quality</ion-label>
-    <ion-toggle [(ngModel)]="filter.groupTorrentsByQuality"></ion-toggle>
+    <ion-toggle [(ngModel)]="filter.groupTorrentsByQuality">Group Torrents By Quality</ion-toggle>
   </ion-item>
 
   <ion-item button (click)="close()">
-    <ion-label>
-      Close
-    </ion-label>
+    <ion-label> Close </ion-label>
   </ion-item>
 </ion-list>

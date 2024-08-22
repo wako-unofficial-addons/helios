@@ -16,13 +16,25 @@
 </ion-toolbar>
 <ion-toolbar>
   <ion-item>
-    <ion-label>{{ 'modals.search-manual.category' | translate }}</ion-label>
-    <ion-select [(ngModel)]="category" [cancelText]="'alerts.cancelButton' | translate">
-      <ion-select-option value="movie">{{ 'modals.search-manual.categoryOptions.movies' | translate }}</ion-select-option>
+    <ion-select
+      [label]="'modals.search-manual.category' | translate"
+      [(ngModel)]="category"
+      [cancelText]="'alerts.cancelButton' | translate"
+    >
+      <ion-select-option value="movie">{{
+        'modals.search-manual.categoryOptions.movies' | translate
+      }}</ion-select-option>
       <ion-select-option value="tv">{{ 'modals.search-manual.categoryOptions.tv' | translate }}</ion-select-option>
-      <ion-select-option value="anime">{{ 'modals.search-manual.categoryOptions.anime' | translate }}</ion-select-option>
+      <ion-select-option value="anime">{{
+        'modals.search-manual.categoryOptions.anime' | translate
+      }}</ion-select-option>
     </ion-select>
   </ion-item>
 </ion-toolbar>
 
-<wk-source-list [manualSearchCategory]="category" [manualSearchValue]="searchInput" [kodiOpenMedia]="kodiOpenMedia" [searchOnOpen]="searchOnOpen"></wk-source-list>
+<wk-source-list
+  [manualSearchCategory]="category"
+  [manualSearchValue]="searchInput"
+  [kodiOpenMedia]="kodiOpenMedia"
+  [searchOnOpen]="searchOnOpen"
+></wk-source-list>

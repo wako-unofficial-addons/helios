@@ -18,6 +18,16 @@ import {
   WakoShare,
 } from '@wako-app/mobile-sdk';
 
+import { addIcons } from 'ionicons';
+import {
+  browsersOutline,
+  closeOutline,
+  cloudDownloadOutline,
+  copyOutline,
+  listOutline,
+  openOutline,
+  shareOutline,
+} from 'ionicons/icons';
 import { ClipboardService } from 'ngx-clipboard';
 import { EMPTY, NEVER, Observable, from, lastValueFrom, of } from 'rxjs';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
@@ -62,7 +72,17 @@ export class OpenSourceService {
     private cachedTorrentService: CachedTorrentSourceService,
     private sourceService: SourceService,
     private heliosPlaylistService: HeliosPlaylistService,
-  ) {}
+  ) {
+    addIcons({
+      browsersOutline,
+      cloudDownloadOutline,
+      copyOutline,
+      listOutline,
+      openOutline,
+      shareOutline,
+      closeOutline,
+    });
+  }
 
   openTorrentSource(torrent: TorrentSource, kodiOpenMedia?: KodiOpenMedia) {
     TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((torrentUrl) => {
@@ -401,26 +421,26 @@ export class OpenSourceService {
           buttonOptions.cssClass = 'ad';
           break;
         case 'open-browser':
-          buttonOptions.icon = 'browsers';
+          buttonOptions.icon = 'browsers-outline';
           break;
         case 'copy-url':
           buttonOptions.role = 'copy-url';
-          buttonOptions.icon = 'copy';
+          buttonOptions.icon = 'copy-outline';
           buttonOptions.handler = () => {
             this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
           };
           break;
 
         case 'share-url':
-          buttonOptions.icon = 'share';
+          buttonOptions.icon = 'share-outline';
           break;
 
         case 'open-with':
-          buttonOptions.icon = 'open';
+          buttonOptions.icon = 'open-outline';
           break;
 
         case 'download-vlc':
-          buttonOptions.icon = 'cloud-download';
+          buttonOptions.icon = 'cloud-download-outline';
           break;
 
         case 'open-vlc':
@@ -440,7 +460,7 @@ export class OpenSourceService {
           break;
 
         case 'add-to-playlist':
-          buttonOptions.icon = 'list';
+          buttonOptions.icon = 'list-outline';
           break;
 
         case 'open-infuse':
@@ -1424,35 +1444,35 @@ export class OpenSourceService {
 
       switch (action) {
         case 'open-browser':
-          buttonOptions.icon = 'browsers';
+          buttonOptions.icon = 'browsers-outline';
           buttonOptions.handler = () => {
             this.openBrowserUrl(playlistVideo.url);
           };
           break;
         case 'copy-url':
           buttonOptions.role = 'copy-url';
-          buttonOptions.icon = 'copy';
+          buttonOptions.icon = 'copy-outline';
           buttonOptions.handler = () => {
             this.toastService.simpleMessage('toasts.copyToClipboard', { element: 'Video URL' });
           };
           break;
 
         case 'share-url':
-          buttonOptions.icon = 'share';
+          buttonOptions.icon = 'share-outline';
           buttonOptions.handler = () => {
             this.share(playlistVideo.url, playlistVideo.label);
           };
           break;
 
         case 'open-with':
-          buttonOptions.icon = 'open';
+          buttonOptions.icon = 'open-outline';
           buttonOptions.handler = () => {
             this.openWith(playlistVideo.url, playlistVideo.label);
           };
           break;
 
         case 'download-vlc':
-          buttonOptions.icon = 'cloud-download';
+          buttonOptions.icon = 'cloud-download-outline';
           buttonOptions.handler = () => {
             this.downloadWithVlc(playlistVideo.url);
           };

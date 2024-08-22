@@ -2,13 +2,14 @@
   <ion-list-header>
     <ion-label>
       <ion-icon name="funnel-outline"></ion-icon>
-      {{ 'pages.settings.list.fileSizeFilter.header' | translate }} ({{category}})
+      {{ 'pages.settings.list.fileSizeFilter.header' | translate }} ({{ category }})
     </ion-label>
   </ion-list-header>
 
   <ion-item>
-    <ion-label>{{ 'pages.settings.list.fileSizeFilter.enabled' | translate }}</ion-label>
-    <ion-toggle [(ngModel)]="filter.enabled" (ngModelChange)="setSettings()"></ion-toggle>
+    <ion-toggle [(ngModel)]="filter.enabled" (ngModelChange)="setSettings()">{{
+      'pages.settings.list.fileSizeFilter.enabled' | translate
+    }}</ion-toggle>
   </ion-item>
 
   <ion-item>
