@@ -104,6 +104,10 @@
           "preferTranscoded": "Προτίμηση διακωδικοποιημένων αρχείων",
           "preferTranscodedFilesChromecast": "Προτίμηση διακωδικοποιημένων αρχείων για το Chromecast",
           "noAccount": "Δεν διαθέτετε λογαριασμό Premiumize; Πατήστε εδώ"
+        },
+        "torbox": {
+          "explain": "Το Torbox είναι μια υπηρεσία λήψης και streaming torrent που βασίζεται στο cloud και σας επιτρέπει να έχετε γρήγορη πρόσβαση και streaming περιεχομένου",
+          "noAccount": "Δεν έχετε λογαριασμό Torbox; Κάντε κλικ εδώ"
         }
       }
     },
@@ -147,7 +151,9 @@
       "addedToAD": "Η πηγή προστέθηκε στο λογαριασμό AD σας",
       "failedToAddToAD": "Η προσθήκη της πηγής στο λογαριασμό AD σας απέτυχε: {{error}}",
       "sourceNotCached": "Αποτυχία λήψης της διεύθυνσης URL του βίντεο",
-      "permissionDenied": "{{debridService}} - Η άδεια απορρίφθηκε - Παρακαλώ ελέγξτε το λογαριασμό σας"
+      "permissionDenied": "{{debridService}} - Η άδεια απορρίφθηκε - Παρακαλώ ελέγξτε το λογαριασμό σας",
+      "addedToTorbox": "Η πηγή προστέθηκε στον λογαριασμό σας Torbox",
+      "failedToAddToTorbox": "Αποτυχία προσθήκης της πηγής στον λογαριασμό σας Torbox: {{error}}"
     },
     "elementumNotInstalled": "Για να χρησιμοποιήσετε το πρόσθετο Elementum του Kodi, πρέπει να είναι εγκατεστημένο",
     "playlist": "Η λίστα {{playlistName}} δημιουργήθηκε/ενημερώθηκε. Περιέχει {{items}} στοιχεία"

@@ -39,7 +39,7 @@ import { SourceService } from './services/sources/source.service';
 import { TorrentSourceService } from './services/sources/torrent-source.service';
 import { ToastService } from './services/toast.service';
 import { CloudAccountListComponent } from './settings/cloud-account/cloud-account-list/cloud-account-list.component';
-import { CloudFilesComponent } from './settings/cloud-files/cloud-account-files.component';
+
 import { ProvidersComponent } from './settings/providers/providers.component';
 import { SettingsComponent } from './settings/settings.component';
 
@@ -50,7 +50,6 @@ const components = [
   SettingsComponent,
   ProvidersComponent,
   CloudAccountListComponent,
-  CloudFilesComponent,
   OpenButtonComponent,
   PluginDetailComponent,
   SourceListComponent,

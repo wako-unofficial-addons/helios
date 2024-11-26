@@ -18,8 +18,8 @@ export declare type PlayButtonAction =
   | 'cast'
   | 'let-me-choose'
   | 'open-outplayer'
-  | 'wako-player';
-
+  | 'wako-player'
+  | 'add-to-torbox';
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
   'copy-url',
@@ -32,6 +32,7 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'add-to-pm',
   'add-to-rd',
   'add-to-ad',
+  'add-to-torbox',
   'add-to-playlist',
   'open-infuse',
   'cast',
@@ -49,6 +50,7 @@ export const PlayButtonActionAndroid: PlayButtonAction[] = [
   'add-to-pm',
   'add-to-rd',
   'add-to-ad',
+  'add-to-torbox',
   'add-to-playlist',
   'cast',
 ];
@@ -95,10 +97,16 @@ export interface AllDebridSettings {
   name: string;
 }
 
+export interface TorboxSettings {
+  disabled?: boolean;
+  apiKey: string;
+}
+
 export class Settings {
   premiumize: PremiumizeSettings = null;
   realDebrid: RealDebridSettings = null;
   allDebrid: AllDebridSettings = null;
+  torbox?: TorboxSettings;
 
   defaultPlayButtonAction: PlayButtonAction = 'let-me-choose';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ExplorerFile, ExplorerFolderItem, ExplorerItem } from '@wako-app/mobile-sdk';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { first, map, mapTo, switchMap } from 'rxjs/operators';
 import { AllDebridMagnetStatusMagnetDto } from './all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
 import { AllDebridLinkUnlockForm } from './all-debrid/forms/link/all-debrid-link-unlock.form';
@@ -18,6 +18,11 @@ import { RealDebridFolderListForm } from './real-debrid/forms/torrents/real-debr
 import { RealDebridUnrestrictLinkForm } from './real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
 import { RealDebridApiService } from './real-debrid/services/real-debrid-api.service';
 import { isVideoFile } from './tools';
+import { TorboxTorrentListForm } from './torbox/forms/torrent/torbox-torrent-list.form';
+import { TorboxApiService } from './torbox/services/torbox-api.service';
+import { TorboxControlTorrentForm } from './torbox/forms/control/torbox-control-torrent.form';
+import { TorboxDownloadRequestForm } from './torbox/forms/download/torbox-download-request.form';
+import { TorboxTorrentItem } from './torbox/dtos/torrent/torbox-torrent-list.dto';
 
 interface CustomDataRD {
   type: 'RD';
@@ -49,7 +54,7 @@ export class ExplorerService {
           parentId: null,
           label: torrent.filename,
           items: [],
-          goToParentAction: this.getFromRD()
+          goToParentAction: this.getFromRD(),
         };
 
         torrent.files.forEach((file, index) => {
@@ -58,8 +63,8 @@ export class ExplorerService {
             size: torrent.bytes,
             customData: {
               type: 'RD',
-              link: torrent.links[index]
-            }
+              link: torrent.links[index],
+            },
           };
 
           explorerFolderItem.items.push({
@@ -70,7 +75,7 @@ export class ExplorerService {
             type: 'file',
             file: explorerFile,
             fetchChildren: null,
-            deleteAction: null
+            deleteAction: null,
           });
         });
 
@@ -80,7 +85,7 @@ export class ExplorerService {
         explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
 
         return explorerFolderItem;
-      })
+      }),
     );
   }
 
@@ -94,7 +99,7 @@ export class ExplorerService {
           title: 'Real Debrid',
           label: 'Real Debrid',
           items: [],
-          goToParentAction: null
+          goToParentAction: null,
         };
 
         torrents.forEach((torrent) => {
@@ -109,8 +114,8 @@ export class ExplorerService {
                 size: torrent.bytes,
                 customData: {
                   type: 'RD',
-                  link
-                }
+                  link,
+                },
               };
 
               explorerFolderItem.items.push({
@@ -121,7 +126,7 @@ export class ExplorerService {
                 type: 'file',
                 file: file,
                 fetchChildren: null,
-                deleteAction: RealDebridTorrentsDeleteForm.submit(torrent.id).pipe(mapTo(true))
+                deleteAction: RealDebridTorrentsDeleteForm.submit(torrent.id).pipe(mapTo(true)),
               });
             });
           } else {
@@ -132,7 +137,7 @@ export class ExplorerService {
               pluginId: 'plugin.helios',
               type: 'folder',
               fetchChildren: this.fetchChildrenRD(torrent.filename, torrent.id),
-              deleteAction: RealDebridTorrentsDeleteForm.submit(torrent.id).pipe(mapTo(true))
+              deleteAction: RealDebridTorrentsDeleteForm.submit(torrent.id).pipe(mapTo(true)),
             });
           }
         });
@@ -141,7 +146,7 @@ export class ExplorerService {
         explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
 
         return explorerFolderItem;
-      })
+      }),
     );
   }
 
@@ -155,7 +160,7 @@ export class ExplorerService {
           title: 'All Debrid',
           label: 'All Debrid',
           items: [],
-          goToParentAction: null
+          goToParentAction: null,
         };
 
         if (data.status !== 'success') {
@@ -182,8 +187,8 @@ export class ExplorerService {
               customData: {
                 type: 'AD',
                 magnet,
-                link
-              }
+                link,
+              },
             };
 
             explorerFolderItem.items.push({
@@ -194,7 +199,7 @@ export class ExplorerService {
               type: 'file',
               file: file,
               fetchChildren: null,
-              deleteAction: AllDebridMagnetDeleteForm.submit(magnet.id).pipe(mapTo(true))
+              deleteAction: AllDebridMagnetDeleteForm.submit(magnet.id).pipe(mapTo(true)),
             });
           });
         });
@@ -203,7 +208,124 @@ export class ExplorerService {
         explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
 
         return explorerFolderItem;
-      })
+      }),
+    );
+  }
+
+  private fetchChildrenTB(parentTitle: string, torrent: TorboxTorrentItem) {
+    return of(null).pipe(
+      map(() => {
+        const explorerFolderItem: ExplorerFolderItem = {
+          isRoot: false,
+          title: parentTitle,
+          folderId: null,
+          parentId: null,
+          label: torrent.name,
+          items: [],
+          goToParentAction: this.getFromTB(),
+        };
+
+        torrent.files.forEach((file) => {
+          const explorerFile: ExplorerFile = {
+            id: torrent.id.toString(),
+            size: file.size,
+            customData: {
+              type: 'TB',
+              torrent,
+              file,
+            },
+          };
+
+          explorerFolderItem.items.push({
+            id: `${torrent.id}_${file.id}`,
+            createdAt: new Date(torrent.created_at).toISOString(),
+            label: file.short_name,
+            pluginId: 'plugin.helios',
+            type: 'file',
+            file: explorerFile,
+            fetchChildren: null,
+            deleteAction: null,
+          });
+        });
+
+        this.sortByNameAsc(explorerFolderItem.items);
+
+        explorerFolderItem.title += ` (${explorerFolderItem.items.length})`;
+        explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
+
+        return explorerFolderItem;
+      }),
+    );
+  }
+
+  private getFromTB() {
+    return TorboxTorrentListForm.submit({ bypass_cache: true }).pipe(
+      map((data) => {
+        const explorerFolderItem: ExplorerFolderItem = {
+          isRoot: true,
+          folderId: null,
+          parentId: null,
+          title: 'Torbox',
+          label: 'Torbox',
+          items: [],
+          goToParentAction: null,
+        };
+
+        if (!data.success || !data.data) {
+          return explorerFolderItem;
+        }
+
+        data.data.forEach((torrent) => {
+          if (torrent.download_state !== 'cached' && torrent.download_state !== 'completed') {
+            return;
+          }
+
+          if (torrent.files.length === 1) {
+            const file = torrent.files[0];
+            const explorerFile: ExplorerFile = {
+              id: torrent.id.toString(),
+              size: file.size,
+              customData: {
+                type: 'TB',
+                torrent,
+                file,
+              },
+            };
+
+            explorerFolderItem.items.push({
+              id: torrent.id.toString(),
+              createdAt: new Date(torrent.created_at).toISOString(),
+              label: file.short_name,
+              pluginId: 'plugin.helios',
+              type: 'file',
+              file: explorerFile,
+              fetchChildren: null,
+              deleteAction: TorboxControlTorrentForm.submit({
+                torrent_id: torrent.id.toString(),
+                operation: 'delete',
+              }).pipe(mapTo(true)),
+            });
+          } else {
+            explorerFolderItem.items.push({
+              id: torrent.id.toString(),
+              createdAt: new Date(torrent.created_at).toISOString(),
+              label: torrent.name,
+              pluginId: 'plugin.helios',
+              type: 'folder',
+              fetchChildren: this.fetchChildrenTB(torrent.name, torrent),
+              deleteAction: TorboxControlTorrentForm.submit({
+                torrent_id: torrent.id.toString(),
+                operation: 'delete',
+              }).pipe(mapTo(true)),
+            });
+          }
+        });
+
+        explorerFolderItem.title += ` (${explorerFolderItem.items.length})`;
+        explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
+
+        return explorerFolderItem;
+      }),
     );
   }
 
@@ -216,26 +338,31 @@ export class ExplorerService {
         if (PremiumizeApiService.hasApiKey()) {
           obss.push(this.getFromPM());
         }
-        if (!!RealDebridApiService.getToken()) {
+        if (RealDebridApiService.getToken()) {
           obss.push(this.getFromRD());
         }
-
         if (AllDebridApiService.hasApiKey()) {
           obss.push(this.getFromAD());
         }
+        if (TorboxApiService.hasApiKey()) {
+          obss.push(this.getFromTB());
+        }
 
         return forkJoin(obss);
-      })
+      }),
     );
   }
 
   async getLinkFromFile(file: ExplorerFile) {
-    const customData: CustomDataRD = file.customData;
+    const customData: any = file.customData;
     if (customData.type === 'RD') {
       return this.getLinkFromFileRD(file);
     }
     if (customData.type === 'AD') {
       return this.getLinkFromFileAD(file);
+    }
+    if (customData.type === 'TB') {
+      return this.getLinkFromFileTB(file);
     }
     return null;
   }
@@ -258,6 +385,20 @@ export class ExplorerService {
     return unrestrictedLink.data.link;
   }
 
+  async getLinkFromFileTB(file: ExplorerFile) {
+    const customData: any = file.customData;
+    const torrent = customData.torrent;
+    const torrentFile = customData.file;
+
+    const response = await TorboxDownloadRequestForm.submit({
+      torrent_id: torrent.id.toString(),
+      file_id: torrentFile.id.toString(),
+      zip_link: false,
+    }).toPromise();
+
+    return response.data;
+  }
+
   getFromPM(folderId?: string) {
     return PremiumizeFolderListForm.submit(folderId).pipe(
       map((data) => {
@@ -272,7 +413,7 @@ export class ExplorerService {
           parentId: data.parent_id,
           label: data.name,
           items: [],
-          goToParentAction: data.name === 'root' ? null : this.getFromPM(data.parent_id)
+          goToParentAction: data.name === 'root' ? null : this.getFromPM(data.parent_id),
         };
         data.content.forEach((item) => {
           if (item.type === 'file' && !item.stream_link && !item.link) {
@@ -285,7 +426,7 @@ export class ExplorerService {
               id: item.id,
               size: item.size,
               link: item.link,
-              streamLink: item.stream_link
+              streamLink: item.stream_link,
             };
           }
 
@@ -297,7 +438,8 @@ export class ExplorerService {
             type: item.type,
             file: file,
             fetchChildren: item.type === 'folder' ? this.getFromPM(item.id) : null,
-            deleteAction: item.type === 'folder' ? this.deleteFolderFromPMById(item.id) : this.deleteFileFromPMById(item.id)
+            deleteAction:
+              item.type === 'folder' ? this.deleteFolderFromPMById(item.id) : this.deleteFileFromPMById(item.id),
           });
         });
 
@@ -305,7 +447,7 @@ export class ExplorerService {
         explorerFolderItem.label += ` (${explorerFolderItem.items.length})`;
 
         return explorerFolderItem;
-      })
+      }),
     );
   }
 

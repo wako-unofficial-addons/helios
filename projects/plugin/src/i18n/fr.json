@@ -88,6 +88,10 @@
           "explain": "Premiumize.me est un outils de téléchargement sans restriction (et plus encore) qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
           "preferTranscoded": "Prefer transcoded files",
           "noAccount": "Pas de compte Premiumize ? Cliquez ici"
+        },
+        "torbox": {
+          "explain": "Torbox est un service de téléchargement et de streaming de torrents basé sur le cloud qui vous permet d'accéder et de diffuser rapidement du contenu",
+          "noAccount": "Pas de compte Torbox ? Cliquez ici"
         }
       }
     }
@@ -120,9 +124,14 @@
       "addedToRD": "La source a été ajoutée à votre compte RD",
       "failedToAddToRD": "Impossible d'ajouter la source à votre compte RD: {{error}}",
       "sourceNotCached": "Impossible de récupérer l'URL de la vidéo",
-      "permissionDenied": "Accés refusé (compte {{debridService}} verrouillé)"
+      "permissionDenied": "Accés refusé (compte {{debridService}} verrouillé)",
+      "addedToTorbox": "La source a été ajoutée à votre compte Torbox",
+      "failedToAddToTorbox": "Impossible d'ajouter la source à votre compte Torbox : {{error}}"
     },
-    "elementumNotInstalled": "Pour utiliser Elementum kodi add-on, vous devez l'installer sur kodi"
+    "elementumNotInstalled": "Pour utiliser Elementum kodi add-on, vous devez l'installer sur kodi",
+    "torbox": {
+      "invalidCredentials": "Identifiants invalides"
+    }
   },
   "actionSheets": {
     "open-source": {

@@ -108,6 +108,10 @@
           "preferTranscoded": "Prefer transcoded files",
           "preferTranscodedFilesChromecast": "Prefer transcoded files for Chromecast",
           "noAccount": "No Premiumize account? Click here"
+        },
+        "torbox": {
+          "explain": "Torbox is a cloud-based torrent downloader and streaming service that allows you to quickly access and stream content",
+          "noAccount": "No Torbox account? Click here"
         }
       }
     },
@@ -151,10 +155,15 @@
       "addedToAD": "Source has been added to you AD account",
       "failedToAddToAD": "Failed to add the source to your AD account: {{error}}",
       "sourceNotCached": "Failed to retrieved the video URL",
-      "permissionDenied": "Permission denied (account {{debridService}} locked)"
+      "permissionDenied": "Permission denied (account {{debridService}} locked)",
+      "addedToTorbox": "Source has been added to your Torbox account",
+      "failedToAddToTorbox": "Failed to add the source to your Torbox account: {{error}}"
     },
     "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi",
-    "playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items"
+    "playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items",
+    "torbox": {
+      "invalidCredentials": "Invalid credentials"
+    }
   },
   "actionSheets": {
     "open-source": {
@@ -175,6 +184,7 @@
         "add-to-rd": "Add to RealDebrid",
         "add-to-playlist": "Add to wako's playlist",
         "add-to-ad": "Add to All Debrid",
+        "add-to-torbox": "Add to Torbox",
         "cast": "Chromecast",
         "letMeChoose": "Let Me choose"
       },

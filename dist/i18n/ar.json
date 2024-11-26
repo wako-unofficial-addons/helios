@@ -106,6 +106,10 @@
           "preferTranscoded": "تفضيل الملفّات المحوّلة",
           "preferTranscodedFilesChromecast": "تفضيل الملفّات المحوّلة لـ كرومكاست",
           "noAccount": "لا يوجد حساب Premiumize ؟ أضغط هنا"
+        },
+        "torbox": {
+          "explain": "Torbox هي خدمة تنزيل وبث تورنت سحابية تتيح لك الوصول السريع إلى المحتوى وبثه",
+          "noAccount": "ليس لديك حساب Torbox؟ انقر هنا"
         }
       }
     },
@@ -149,7 +153,9 @@
       "addedToAD": "تمّت إضافة المصدر إلى حساب AD الخاصّ بك",
       "failedToAddToAD": "فشلت إضافة المصدر إلى حساب AD الخاصّ بك: {{error}}",
       "sourceNotCached": "فشل استرداد عنوان رابط للفيديو",
-      "permissionDenied": "تم رفض الإذن (الحساب {{debridService}} مغلق)"
+      "permissionDenied": "تم رفض الإذن (الحساب {{debridService}} مغلق)",
+      "addedToTorbox": "تمت إضافة المصدر إلى حساب Torbox الخاص بك",
+      "failedToAddToTorbox": "فشل في إضافة المصدر إلى حساب Torbox الخاص بك: {{error}}"
     },
     "elementumNotInstalled": "لاستخدام الوظيفة الإضافيّة Elementum kodi ، يجب عليك تثبيتها على كودي",
     "playlist": "تمّ إنشاء / تحديث قائمة التشغيل {{playlistName}}. يحتوي على {{items}} عنصر"

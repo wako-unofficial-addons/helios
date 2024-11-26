@@ -11,233 +11,273 @@ import { RealDebridOauthCredentialsForm } from './real-debrid/forms/oauth/real-d
 import { WakoHttpError } from '@wako-app/mobile-sdk';
 import { AllDebridApiService } from './all-debrid/services/all-debrid-api.service';
 import { SettingsService } from './settings.service';
-import { AllDebridSettings, PremiumizeSettings, RealDebridSettings } from '../entities/settings';
+import { AllDebridSettings, PremiumizeSettings, RealDebridSettings, TorboxSettings } from '../entities/settings';
+import { TorboxApiService } from './torbox/services/torbox-api.service';
 
 export const REAL_DEBRID_CLIENT_ID = 'X245A4XAIBGVM';
 
 @Injectable()
 export class DebridAccountService {
-    hasAtLeastOneAccount$ = new ReplaySubject<boolean>(1);
-    ready$ = new ReplaySubject<boolean>(1);
+  hasAtLeastOneAccount$ = new ReplaySubject<boolean>(1);
+  ready$ = new ReplaySubject<boolean>(1);
 
-    private realDebridRefreshTokenInterval;
-    private realDebridAuthInterval;
+  private realDebridRefreshTokenInterval;
+  private realDebridAuthInterval;
 
-    constructor(private settingsService: SettingsService, private platform: Platform) {
-        this.hasAtLeastOneAccount();
+  constructor(
+    private settingsService: SettingsService,
+    private platform: Platform,
+  ) {
+    this.hasAtLeastOneAccount();
 
-        if (this.platform.is('cordova')) {
-            this.platform.resume.subscribe(() => {
-                this.initialize();
-            });
+    if (this.platform.is('cordova')) {
+      this.platform.resume.subscribe(() => {
+        this.initialize();
+      });
+    }
+
+    this.settingsService.settings$.subscribe(() => {
+      this.hasAtLeastOneAccount();
+    });
+  }
+
+  async initialize() {
+    const settings = await this.settingsService.get();
+
+    const premiumizeSettings = settings.premiumize;
+    if (premiumizeSettings && premiumizeSettings.disabled !== true) {
+      PremiumizeApiService.setApiKey(premiumizeSettings.apiKey);
+    }
+
+    const realDebridSettings = settings.realDebrid;
+    if (realDebridSettings && realDebridSettings.disabled !== true) {
+      RealDebridApiService.setToken(realDebridSettings.access_token);
+
+      this.realDebridRefreshToken().subscribe();
+    }
+
+    RealDebridApiService.handle401 = this.realDebridRefreshToken();
+
+    const allDebridSettings = settings.allDebrid;
+    if (allDebridSettings && allDebridSettings.disabled !== true) {
+      AllDebridApiService.setApiKey(allDebridSettings.apiKey);
+      AllDebridApiService.setName(allDebridSettings.name);
+    }
+
+    const torboxSettings = settings.torbox;
+    if (torboxSettings && torboxSettings.disabled !== true) {
+      TorboxApiService.setApiKey(torboxSettings.apiKey);
+    }
+
+    this.ready$.next(true);
+  }
+
+  async hasAtLeastOneAccount() {
+    const settings = await this.settingsService.get();
+
+    const premiumizeSettings = settings.premiumize;
+    const realDebridSettings = settings.realDebrid;
+    const allDebridSettings = settings.allDebrid;
+    const torboxSettings = settings.torbox;
+
+    let has = false;
+    if (premiumizeSettings && premiumizeSettings.disabled !== true) {
+      has = true;
+    } else if (realDebridSettings && realDebridSettings.disabled !== true) {
+      has = true;
+    } else if (allDebridSettings && allDebridSettings.disabled !== true) {
+      has = true;
+    } else if (torboxSettings && torboxSettings.disabled !== true) {
+      has = true;
+    }
+
+    this.hasAtLeastOneAccount$.next(has);
+
+    return has;
+  }
+
+  async getPremiumizeSettings(): Promise<PremiumizeSettings> {
+    const settings = await this.settingsService.get();
+    return settings.premiumize;
+  }
+
+  async setPremiumizeSettings(premiummizeSettings: PremiumizeSettings) {
+    const settings = await this.settingsService.get();
+    settings.premiumize = premiummizeSettings;
+
+    return await this.settingsService.set(settings);
+  }
+
+  deletePremiumizeSettings() {
+    return this.setPremiumizeSettings(null);
+  }
+
+  //
+  //
+  // REAL DEBRID
+  //
+  //
+
+  private realDebridRefreshToken(): Observable<RealDebridOauthTokenDto> {
+    return from(this.getRealDebridSettings()).pipe(
+      switchMap((settings) => {
+        if (!settings) {
+          return of(null);
         }
+        return RealDebridOauthTokenForm.submit(settings.client_id, settings.client_secret, settings.refresh_token).pipe(
+          switchMap((token) => {
+            console.log('RD token refreshed', token);
 
-        this.settingsService.settings$.subscribe(() => {
-            this.hasAtLeastOneAccount();
-        });
-    }
+            RealDebridApiService.setToken(token.access_token);
 
-    async initialize() {
-        const settings = await this.settingsService.get();
+            return from(
+              this.setRealDebridSettings({
+                disabled: settings.disabled,
+                client_id: settings.client_id,
+                client_secret: settings.client_secret,
+                access_token: token.access_token,
+                refresh_token: token.refresh_token,
+                expires_in: token.expires_in,
+              }),
+            ).pipe(mapTo(token));
+          }),
+          catchError((err) => {
+            if (err instanceof WakoHttpError && err.status === 403) {
+              this.deleteRealDebridSettings();
+              RealDebridApiService.setToken(null);
+            }
 
-        const premiumizeSettings = settings.premiumize;
-        if (premiumizeSettings && premiumizeSettings.disabled !== true) {
-            PremiumizeApiService.setApiKey(premiumizeSettings.apiKey);
-        }
-
-        const realDebridSettings = settings.realDebrid;
-        if (realDebridSettings && realDebridSettings.disabled !== true) {
-            RealDebridApiService.setToken(realDebridSettings.access_token);
-
-            this.realDebridRefreshToken().subscribe();
-        }
-
-        RealDebridApiService.handle401 = this.realDebridRefreshToken();
-
-        const allDebridSettings = settings.allDebrid;
-        if (allDebridSettings && allDebridSettings.disabled !== true) {
-            AllDebridApiService.setApiKey(allDebridSettings.apiKey);
-            AllDebridApiService.setName(allDebridSettings.name);
-        }
-
-        this.ready$.next(true);
-    }
-
-    async hasAtLeastOneAccount() {
-        const settings = await this.settingsService.get();
-
-        const premiumizeSettings = settings.premiumize;
-        const realDebridSettings = settings.realDebrid;
-        const alllDebridSettings = settings.allDebrid;
-
-        let has = false;
-        if (premiumizeSettings && premiumizeSettings.disabled !== true) {
-            has = true;
-        } else if (realDebridSettings && realDebridSettings.disabled !== true) {
-            has = true;
-        } else if (alllDebridSettings && alllDebridSettings.disabled !== true) {
-            has = true;
-        }
-
-        this.hasAtLeastOneAccount$.next(has);
-
-        return has;
-    }
-
-    async getPremiumizeSettings(): Promise<PremiumizeSettings> {
-        const settings = await this.settingsService.get();
-        return settings.premiumize;
-    }
-
-    async setPremiumizeSettings(premiummizeSettings: PremiumizeSettings) {
-        const settings = await this.settingsService.get();
-        settings.premiumize = premiummizeSettings;
-
-        return await this.settingsService.set(settings);
-    }
-
-    deletePremiumizeSettings() {
-        return this.setPremiumizeSettings(null);
-    }
-
-    //
-    //
-    // REAL DEBRID
-    //
-    //
-
-    private realDebridRefreshToken(): Observable<RealDebridOauthTokenDto> {
-        return from(this.getRealDebridSettings()).pipe(
-            switchMap((settings) => {
-                if (!settings) {
-                    return of(null);
-                }
-                return RealDebridOauthTokenForm.submit(settings.client_id, settings.client_secret, settings.refresh_token).pipe(
-                    switchMap((token) => {
-                        console.log('RD token refreshed', token);
-
-                        RealDebridApiService.setToken(token.access_token);
-
-                        return from(
-                            this.setRealDebridSettings({
-                                disabled: settings.disabled,
-                                client_id: settings.client_id,
-                                client_secret: settings.client_secret,
-                                access_token: token.access_token,
-                                refresh_token: token.refresh_token,
-                                expires_in: token.expires_in
-                            })
-                        ).pipe(mapTo(token));
-                    }),
-                    catchError((err) => {
-                        if (err instanceof WakoHttpError && err.status === 403) {
-                            this.deleteRealDebridSettings();
-                            RealDebridApiService.setToken(null);
-                        }
-
-                        return throwError(err);
-                    })
-                );
-            })
+            return throwError(err);
+          }),
         );
+      }),
+    );
+  }
+
+  private initializeRefreshTokenRealDebridInterval(settings: RealDebridSettings) {
+    if (this.realDebridRefreshTokenInterval) {
+      clearInterval(this.realDebridRefreshTokenInterval);
     }
 
-    private initializeRefreshTokenRealDebridInterval(settings: RealDebridSettings) {
-        if (this.realDebridRefreshTokenInterval) {
-            clearInterval(this.realDebridRefreshTokenInterval);
+    this.realDebridRefreshTokenInterval = setInterval(
+      () => {
+        this.realDebridRefreshToken().subscribe();
+      },
+      (settings.expires_in - 700) * 1000,
+    );
+  }
+
+  async getRealDebridSettings(): Promise<RealDebridSettings> {
+    const settings = await this.settingsService.get();
+    return settings.realDebrid;
+  }
+
+  async setRealDebridSettings(realDebridSettings: RealDebridSettings) {
+    const settings = await this.settingsService.get();
+    settings.realDebrid = realDebridSettings;
+
+    const d = await this.settingsService.set(settings);
+
+    if (realDebridSettings) {
+      this.initializeRefreshTokenRealDebridInterval(realDebridSettings);
+    }
+
+    return d;
+  }
+
+  deleteRealDebridSettings() {
+    return this.setRealDebridSettings(null);
+  }
+
+  stopRealDebridAuthInterval() {
+    clearInterval(this.realDebridAuthInterval);
+  }
+
+  authRealDebrid(clientId: string, data: RealDebridOauthCodeDto) {
+    return new Observable((observer) => {
+      const endTime = Date.now() + data.expires_in * 1000;
+
+      this.realDebridAuthInterval = setInterval(() => {
+        if (Date.now() > endTime) {
+          this.stopRealDebridAuthInterval();
+          observer.error('Cannot get code');
+          return;
         }
 
-        this.realDebridRefreshTokenInterval = setInterval(() => {
-            this.realDebridRefreshToken().subscribe();
-        }, (settings.expires_in - 700) * 1000);
-    }
+        RealDebridOauthCredentialsForm.submit(clientId, data.device_code)
+          .pipe(
+            catchError((err) => {
+              if (err instanceof WakoHttpError && err.status === 403) {
+                return NEVER;
+              }
+              return throwError(err);
+            }),
+          )
+          .subscribe((credentials) => {
+            this.stopRealDebridAuthInterval();
 
-    async getRealDebridSettings(): Promise<RealDebridSettings> {
-        const settings = await this.settingsService.get();
-        return settings.realDebrid;
-    }
+            RealDebridOauthTokenForm.submit(
+              credentials.client_id,
+              credentials.client_secret,
+              data.device_code,
+            ).subscribe((token) => {
+              this.setRealDebridSettings({
+                disabled: false,
+                client_id: credentials.client_id,
+                client_secret: credentials.client_secret,
+                access_token: token.access_token,
+                refresh_token: token.refresh_token,
+                expires_in: token.expires_in,
+              }).then(() => {
+                observer.next(true);
+                observer.complete();
+              });
+            });
+          });
+      }, data.interval * 1000);
+    });
+  }
 
-    async setRealDebridSettings(realDebridSettings: RealDebridSettings) {
-        const settings = await this.settingsService.get();
-        settings.realDebrid = realDebridSettings;
+  //
+  //
+  // ALL DEBRID
+  //
+  //
 
-        const d = await this.settingsService.set(settings);
+  async getAllDebridSettings(): Promise<AllDebridSettings> {
+    const settings = await this.settingsService.get();
+    return settings.allDebrid;
+  }
 
-        if (realDebridSettings) {
-            this.initializeRefreshTokenRealDebridInterval(realDebridSettings);
-        }
+  async setAllDebridSettings(allDebridSettings: AllDebridSettings) {
+    const settings = await this.settingsService.get();
+    settings.allDebrid = allDebridSettings;
 
-        return d;
-    }
+    return await this.settingsService.set(settings);
+  }
 
-    deleteRealDebridSettings() {
-        return this.setRealDebridSettings(null);
-    }
+  deleteAllDebridSettings() {
+    return this.setAllDebridSettings(null);
+  }
 
-    stopRealDebridAuthInterval() {
-        clearInterval(this.realDebridAuthInterval);
-    }
+  //
+  //
+  // TORBOX
+  //
+  //
 
-    authRealDebrid(clientId: string, data: RealDebridOauthCodeDto) {
-        return new Observable((observer) => {
-            const endTime = Date.now() + data.expires_in * 1000;
+  async getTorboxSettings(): Promise<TorboxSettings> {
+    const settings = await this.settingsService.get();
+    return settings.torbox;
+  }
 
-            this.realDebridAuthInterval = setInterval(() => {
-                if (Date.now() > endTime) {
-                    this.stopRealDebridAuthInterval();
-                    observer.error('Cannot get code');
-                    return;
-                }
+  async setTorboxSettings(torboxSettings: TorboxSettings) {
+    const settings = await this.settingsService.get();
+    settings.torbox = torboxSettings;
+    return await this.settingsService.set(settings);
+  }
 
-                RealDebridOauthCredentialsForm.submit(clientId, data.device_code)
-                    .pipe(
-                        catchError((err) => {
-                            if (err instanceof WakoHttpError && err.status === 403) {
-                                return NEVER;
-                            }
-                            return throwError(err);
-                        })
-                    )
-                    .subscribe((credentials) => {
-                        this.stopRealDebridAuthInterval();
-
-                        RealDebridOauthTokenForm.submit(credentials.client_id, credentials.client_secret, data.device_code).subscribe((token) => {
-                            this.setRealDebridSettings({
-                                disabled: false,
-                                client_id: credentials.client_id,
-                                client_secret: credentials.client_secret,
-                                access_token: token.access_token,
-                                refresh_token: token.refresh_token,
-                                expires_in: token.expires_in
-                            }).then(() => {
-                                observer.next(true);
-                                observer.complete();
-                            });
-                        });
-                    });
-            }, data.interval * 1000);
-        });
-    }
-
-    //
-    //
-    // ALL DEBRID
-    //
-    //
-
-    async getAllDebridSettings(): Promise<AllDebridSettings> {
-        const settings = await this.settingsService.get();
-        return settings.allDebrid;
-    }
-
-    async setAllDebridSettings(allDebridSettings: AllDebridSettings) {
-        const settings = await this.settingsService.get();
-        settings.allDebrid = allDebridSettings;
-
-        return await this.settingsService.set(settings);
-    }
-
-    deleteAllDebridSettings() {
-        return this.setAllDebridSettings(null);
-    }
+  deleteTorboxSettings() {
+    return this.setTorboxSettings(null);
+  }
 }

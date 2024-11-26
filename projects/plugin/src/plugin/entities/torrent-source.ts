@@ -14,5 +14,5 @@ export interface TorrentSource extends BaseSource {
   isPackage: boolean;
   hash: string;
   isCached: boolean;
-  cachedService?: 'PM' | 'RD' | 'AD';
+  cachedService?: 'PM' | 'RD' | 'AD' | 'TB';
 }

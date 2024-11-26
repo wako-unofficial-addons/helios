@@ -18,8 +18,11 @@ import {
   getSourcesByQuality,
   removeDuplicates,
   sortTorrentsByPackage,
-  sortTorrentsBySize
+  sortTorrentsBySize,
 } from '../tools';
+import { TorboxSourcesFromTorrentsQuery } from '../../queries/debrids/torbox/torbox-sources-from-torrents.query';
+import { TorboxGetLinksQuery } from '../../queries/debrids/torbox/torbox-get-links.query';
+import { TorboxGetStreamLinkQuery } from '../../queries/debrids/torbox/torbox-get-stream-link.query';
 
 @Injectable()
 export class CachedTorrentSourceService {
@@ -31,13 +34,17 @@ export class CachedTorrentSourceService {
         return RealDebridSourcesFromTorrentsQuery.getData(torrents, sourceQuery).pipe(
           switchMap((rdSources) => {
             return AllDebridSourcesFromTorrentsQuery.getData(torrents).pipe(
-              map((adSources) => {
-                return adSources.concat(...pmSources, ...rdSources);
-              })
+              switchMap((adSources) => {
+                return TorboxSourcesFromTorrentsQuery.getData(torrents).pipe(
+                  map((tbSources) => {
+                    return adSources.concat(...pmSources, ...rdSources, ...tbSources);
+                  }),
+                );
+              }),
             );
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -49,14 +56,17 @@ export class CachedTorrentSourceService {
       obs = RealDebridGetStreamLinkQuery.getData(source, sourceQuery);
     } else if (source.allDebridMagnetStatusMagnet) {
       obs = AllDebridGetStreamLinkQuery.getData(source, sourceQuery);
+    } else if (source.torboxTransferFiles) {
+      obs = TorboxGetStreamLinkQuery.getData(source, sourceQuery);
     }
+
     return obs;
   }
 
   getBestSource(
     streamLinkSources: StreamLinkSource[],
     sourceQuery: SourceQuery,
-    lastPlayedSource?: LastPlayedSource
+    lastPlayedSource?: LastPlayedSource,
   ): Observable<StreamLinkSource> {
     if (streamLinkSources.length === 0) {
       return of(null);
@@ -73,7 +83,11 @@ export class CachedTorrentSourceService {
     let bestSource: StreamLinkSource = null;
     const bestSourceObss: Observable<StreamLinkSource | StreamLinkSource[]>[] = [];
 
-    const allSources = sourceQuality.sources2160p.concat(sourceQuality.sources1080p, sourceQuality.sources720p, sourceQuality.sourcesOther);
+    const allSources = sourceQuality.sources2160p.concat(
+      sourceQuality.sources1080p,
+      sourceQuality.sources720p,
+      sourceQuality.sourcesOther,
+    );
 
     if (lastPlayedSource) {
       let maxScore = 0;
@@ -128,10 +142,10 @@ export class CachedTorrentSourceService {
                 }
 
                 return bestSource;
-              })
+              }),
             );
-          })
-        )
+          }),
+        ),
       );
     });
 
@@ -143,7 +157,7 @@ export class CachedTorrentSourceService {
             hasPmPremiumAccount = false;
           }
           return hasPmPremiumAccount;
-        })
+        }),
       );
     }
 
@@ -163,9 +177,9 @@ export class CachedTorrentSourceService {
             }
 
             return bestSource;
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }

@@ -90,6 +90,10 @@
           "explain": "Premiumize.me è un downloader illimitato (e altro) che ti consente di scaricare rapidamente file ospitati su Internet.<br><br>Inoltre Premiumize ti consente di testare il loro servizio gratuitamente (puoi riprodurre un file con una dimensione massima di 5 GB ogni 120 minuti)",
           "preferTranscoded": "Preferisci file transcodificati",
           "noAccount": "Nessun account Premiumize? Clicca qui"
+        },
+        "torbox": {
+          "explain": "Torbox è un servizio di download e streaming di torrent basato su cloud che ti permette di accedere e riprodurre rapidamente i contenuti",
+          "noAccount": "Nessun account Torbox? Clicca qui"
         }
       }
     },
@@ -128,7 +132,9 @@
       "addedToRD": "La fonte è stata aggiunta al tuo account RD",
       "failedToAddToRD": "Impossibile aggiungere la fonte al tuo account RD: {{error}}",
       "sourceNotCached": "Impossibile recuperare l'URL del video",
-      "permissionDenied": "Autorizzazione Negata (conto {{debridService}} bloccato)"
+      "permissionDenied": "Autorizzazione Negata (conto {{debridService}} bloccato)",
+      "addedToTorbox": "La fonte è stata aggiunta al tuo account Torbox",
+      "failedToAddToTorbox": "Impossibile aggiungere la fonte al tuo account Torbox: {{error}}"
     },
     "elementumNotInstalled": "Per utilizzare l'add-on Kodi Elementum, è necessario installarlo su Kodi",
     "playlist": "La playlist {{playlistName}} è stata creata/aggiornata. Contiene {{items}} elementi"

@@ -1,17 +1,4 @@
 <wk-support></wk-support>
-
-<ion-list lines="full">
-  <ion-list-header>
-    <ion-label class="ion-text-wrap">
-      <ion-icon name="settings-outline" slot="start"></ion-icon>
-      {{ 'pages.settings.list.wizard.header' | translate }}
-    </ion-label>
-  </ion-list-header>
-  <ion-item button (click)="openSetupWizard()">
-    <ion-label class="ion-text-wrap">{{ 'pages.settings.list.wizard.item' | translate }}</ion-label>
-  </ion-item>
-</ion-list>
-
 <ion-list lines="full">
   <ion-list-header>
     <ion-label class="ion-text-wrap">
@@ -21,9 +8,6 @@
   </ion-list-header>
   <ion-item button (click)="openCloudAccount()">
     <ion-label class="ion-text-wrap">{{ 'pages.settings.list.debrid-account.item' | translate }}</ion-label>
-  </ion-item>
-  <ion-item button (click)="openCloudFiles()">
-    <ion-label class="ion-text-wrap">Cloud Files</ion-label>
   </ion-item>
 </ion-list>
 
@@ -36,6 +20,18 @@
   </ion-list-header>
   <ion-item button (click)="openProviders()">
     <ion-label class="ion-text-wrap">{{ 'pages.settings.list.provider.item' | translate }}</ion-label>
+  </ion-item>
+</ion-list>
+
+<ion-list lines="full">
+  <ion-list-header>
+    <ion-label class="ion-text-wrap">
+      <ion-icon name="settings-outline" slot="start"></ion-icon>
+      {{ 'pages.settings.list.wizard.header' | translate }}
+    </ion-label>
+  </ion-list-header>
+  <ion-item button (click)="openSetupWizard()">
+    <ion-label class="ion-text-wrap">{{ 'pages.settings.list.wizard.item' | translate }}</ion-label>
   </ion-item>
 </ion-list>
 

@@ -57,6 +57,7 @@ import {
   getOpenMediaFromKodiOpenMedia,
   incrementEpisodeCode,
 } from './tools';
+import { TorboxTransferCreateForm } from './torbox/forms/transfer/torbox-transfer-create.form';
 
 @Injectable()
 export class OpenSourceService {
@@ -274,6 +275,8 @@ export class OpenSourceService {
 
     const allDebridSettings = await this.debridAccountService.getAllDebridSettings();
 
+    const torboxSettings = await this.debridAccountService.getTorboxSettings();
+
     const buttons = [];
 
     if (hasCloudAccount) {
@@ -301,6 +304,15 @@ export class OpenSourceService {
           text: this.translateService.instant('actionSheets.open-source.options.add-to-ad'),
           handler: () => {
             this.open(torrent, 'add-to-ad', kodiOpenMedia);
+          },
+        });
+      }
+      if (torboxSettings) {
+        buttons.push({
+          cssClass: 'torbox',
+          text: this.translateService.instant('actionSheets.open-source.options.add-to-torbox'),
+          handler: () => {
+            this.open(torrent, 'add-to-torbox', kodiOpenMedia);
           },
         });
       }
@@ -419,6 +431,9 @@ export class OpenSourceService {
           break;
         case 'add-to-ad':
           buttonOptions.cssClass = 'ad';
+          break;
+        case 'add-to-torbox':
+          buttonOptions.cssClass = 'torbox';
           break;
         case 'open-browser':
           buttonOptions.icon = 'browsers-outline';
@@ -544,6 +559,10 @@ export class OpenSourceService {
       {
         class: '.ad',
         imgUrl: 'https://raw.githubusercontent.com/wako-unofficial-addons/assets/main/ad.png',
+      },
+      {
+        class: '.torbox',
+        imgUrl: 'https://torbox.app/logo.png',
       },
       {
         class: '.kodi',
@@ -770,6 +789,24 @@ export class OpenSourceService {
           this.toastService.simpleMessage('toasts.open-source.addedToPM');
         } else {
           this.toastService.simpleMessage('toasts.open-source.failedToAddToPM', { error: data.message });
+        }
+      });
+  }
+
+  private async addToTorbox(url: string) {
+    const loader = await this.loadingController.create({
+      spinner: 'crescent',
+    });
+
+    loader.present();
+
+    TorboxTransferCreateForm.submit(url)
+      .pipe(finalize(() => loader.dismiss()))
+      .subscribe((data) => {
+        if (data.success) {
+          this.toastService.simpleMessage('toasts.open-source.addedToTorbox');
+        } else {
+          this.toastService.simpleMessage('toasts.open-source.failedToAddToTorbox', { error: data?.detail });
         }
       });
   }
@@ -1123,6 +1160,11 @@ export class OpenSourceService {
             this.addToAD(url);
           });
           break;
+        case 'add-to-torbox':
+          TorrentGetUrlQuery.getData(torrent.url, torrent.subPageUrl).subscribe((url) => {
+            this.addToTorbox(url);
+          });
+          break;
         case 'open-elementum':
           this.openElementum(torrent, kodiOpenMedia);
           if (settings.enableEpisodeAutomaticPlaylist) {
@@ -1178,6 +1220,9 @@ export class OpenSourceService {
           break;
         case 'add-to-ad':
           this.addToAD(streamLinkSource.originalUrl);
+          break;
+        case 'add-to-torbox':
+          this.addToTorbox(streamLinkSource.originalUrl);
           break;
         case 'open-browser':
           let url = streamLink.url ?? streamLink.transcodedUrl;
@@ -1434,7 +1479,12 @@ export class OpenSourceService {
         return;
       }
 
-      if (action === 'add-to-pm' || action === 'add-to-rd' || action === 'add-to-playlist') {
+      if (
+        action === 'add-to-pm' ||
+        action === 'add-to-rd' ||
+        action === 'add-to-torbox' ||
+        action === 'add-to-playlist'
+      ) {
         return;
       }
 
