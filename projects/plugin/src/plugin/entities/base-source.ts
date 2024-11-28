@@ -1,7 +1,6 @@
 import { SourceQuality } from './source-quality';
 
 export class BaseSource {
-
   videoMetaData?: SourceVideoMetadata;
 
   constructor(
@@ -10,9 +9,8 @@ export class BaseSource {
     public size: number,
     public quality: SourceQuality,
     public provider: string,
-    public type: 'torrent' | 'cached_torrent' | 'debrid' | 'hoster'
-  ) {
-  }
+    public type: 'torrent' | 'cached_torrent' | 'unchecked_cached_torrent',
+  ) {}
 }
 
 export interface SourceVideoMetadata {

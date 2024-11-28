@@ -6,7 +6,7 @@ import { StreamLink, StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
 
 export function logData(...data: any) {
-  wakoLog('plugin.helios', data);
+  // wakoLog('plugin.helios', data);
 }
 
 export function countryCodeToEmoji(country: string) {

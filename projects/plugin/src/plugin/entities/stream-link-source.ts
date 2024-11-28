@@ -19,7 +19,7 @@ export class StreamLinkSource extends BaseSource {
     public override title: string,
     public override size: number,
     public override quality: SourceQuality,
-    public override type: 'torrent' | 'cached_torrent' | 'debrid' | 'hoster',
+    public override type: 'torrent' | 'cached_torrent' | 'unchecked_cached_torrent',
     public isPackage: boolean,
     public debridService: 'PM' | 'RD' | 'AD' | 'TB',
     public override provider: string,

@@ -25,6 +25,12 @@
           <ion-col class="ion-text-left ion-no-margin ion-no-padding">
             <ion-badge color="dark">{{ source.provider }}</ion-badge>
           </ion-col>
+          <ion-col
+            *ngIf="source.type === 'unchecked_cached_torrent'"
+            class="ion-text-right ion-no-margin ion-no-padding"
+          >
+            <ion-badge color="warning">Not checked</ion-badge>
+          </ion-col>
         </ion-row>
       </ion-grid>
     </p>

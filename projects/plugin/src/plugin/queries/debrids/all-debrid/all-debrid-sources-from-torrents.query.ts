@@ -71,28 +71,33 @@ export class AllDebridSourcesFromTorrentsQuery {
     const obss = [];
 
     allGroups.forEach((hashes) => {
-      obss.push(
-        AllDebridMagnetInstantForm.submit(hashes).pipe(
-          map((dto) => {
-            if (dto.status === 'success') {
-              hashes.forEach((h, index) => {
-                const response = dto.data.magnets[index];
-                if (response && response.instant) {
-                  isCachedMap.set(h, true);
-                }
-              });
-            }
-            return dto;
-          })
-        )
-      );
+      hashes.forEach((h) => {
+        isCachedMap.set(h, true);
+      });
+      // obss.push(
+      //   AllDebridMagnetInstantForm.submit(hashes).pipe(
+      //     map((dto) => {
+      //       if (dto.status === 'success') {
+      //         hashes.forEach((h, index) => {
+      //           const response = dto.data.magnets[index];
+      //           if (response && response.instant) {
+      //             isCachedMap.set(h, true);
+      //           }
+      //         });
+      //       }
+      //       return dto;
+      //     })
+      //   )
+      // );
     });
 
-    if (obss.length === 0) {
-      return of(isCachedMap);
-    }
+    return of(isCachedMap);
 
-    return forkJoin(...obss).pipe(mapTo(isCachedMap));
+    // if (obss.length === 0) {
+    //   return of(isCachedMap);
+    // }
+
+    // return forkJoin(...obss).pipe(mapTo(isCachedMap));
   }
 
   static getData(torrents: TorrentSource[]) {
@@ -118,12 +123,12 @@ export class AllDebridSourcesFromTorrentsQuery {
               torrent.title,
               torrent.size,
               torrent.quality,
-              'cached_torrent',
+              'unchecked_cached_torrent',
               torrent.isPackage,
               'AD',
               torrent.provider,
               torrent.url,
-              torrent.hash
+              torrent.hash,
             );
 
             debridSource.allDebridMagnetStatusMagnet = AllDebridGetLinksQuery.getData(torrent.url, torrent.isPackage);
@@ -138,7 +143,7 @@ export class AllDebridSourcesFromTorrentsQuery {
         logData(err);
 
         return of(streamLinkSources);
-      })
+      }),
     );
   }
 }
