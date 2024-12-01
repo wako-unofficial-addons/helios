@@ -1,49 +1,75 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Platform, IonList, IonListHeader, IonLabel, IonIcon, IonItem, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import {
+  Platform,
+  IonList,
+  IonListHeader,
+  IonLabel,
+  IonIcon,
+  IonItem,
+  IonSelect,
+  IonSelectOption,
+} from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { PlayButtonAction, PlayButtonActionAndroid, PlayButtonActionIos, Settings } from '../../entities/settings';
 import { SettingsService } from '../../services/settings.service';
-import { addIcons } from "ionicons";
-import { playOutline } from "ionicons/icons";
+import { addIcons } from 'ionicons';
+import { playOutline } from 'ionicons/icons';
 
 @Component({
-    selector: 'wk-play-button',
-    templateUrl: './play-button.component.html',
-    styleUrls: ['./play-button.component.scss'],
-    standalone: true,
-    imports: [NgIf, FormsModule, NgFor, TranslateModule, IonList, IonListHeader, IonLabel, IonIcon, IonItem, IonSelect, IonSelectOption],
+  selector: 'wk-play-button',
+  templateUrl: './play-button.component.html',
+  styleUrls: ['./play-button.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    FormsModule,
+    NgFor,
+    TranslateModule,
+    IonList,
+    IonListHeader,
+    IonLabel,
+    IonIcon,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
+  ],
 })
 export class PlayButtonComponent implements OnInit {
-    settings: Settings;
+  settings: Settings;
 
-    availablePlayButtonActions: PlayButtonAction[] = [];
+  defaultPlayButtonAction: PlayButtonAction;
 
-    constructor(
-        private settingsService: SettingsService,
-        private platform: Platform,
-    ) {
-        addIcons({ playOutline });
-    }
+  availablePlayButtonActions: PlayButtonAction[] = [];
 
-    async ngOnInit() {
-        this.settings = await this.settingsService.get();
+  constructor(
+    private settingsService: SettingsService,
+    private platform: Platform,
+  ) {
+    addIcons({ playOutline });
+  }
 
-        this.availablePlayButtonActions = [];
+  async ngOnInit() {
+    this.settings = await this.settingsService.get();
+    this.defaultPlayButtonAction = this.settingsService.getSavedDefaultPlayButtonAction();
 
-        const playActions = this.platform.is('ios') ? PlayButtonActionIos.slice(0) : PlayButtonActionAndroid.slice(0);
+    this.availablePlayButtonActions = [];
 
-        playActions.reverse().forEach((action) => {
-            if (this.settings.availablePlayButtonActions.includes(action)) {
-                this.availablePlayButtonActions.push(action);
-            }
-        });
-    }
+    const savedAvailablePlayButtonActions = this.settingsService.getSavedAvailablePlayButtonActions();
 
-    changeDefaultPlayButtonAction(value) {
-        this.settings.defaultPlayButtonAction = value;
+    const playActions = this.settingsService.getAllAvailablePlayButtonActions(this.platform.is('ios'));
 
-        this.settingsService.set(this.settings);
-    }
+    playActions.reverse().forEach((action) => {
+      if (savedAvailablePlayButtonActions.includes(action)) {
+        this.availablePlayButtonActions.push(action);
+      }
+    });
+  }
+
+  changeDefaultPlayButtonAction(value: PlayButtonAction) {
+    this.settingsService.setDefaultPlayButtonAction(value, this.settings);
+
+    this.settingsService.set(this.settings);
+  }
 }

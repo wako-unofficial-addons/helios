@@ -69,9 +69,11 @@ export class SettingsComponent implements OnInit {
     this.availablePlayButtonActions = [];
     this.playButtonActionsSettings = [];
 
-    const playActions = this.platform.is('ios') ? PlayButtonActionIos.slice(0) : PlayButtonActionAndroid.slice(0);
+    const savedAvailablePlayButtonActions = this.settingsService.getSavedAvailablePlayButtonActions();
 
-    this.settings.availablePlayButtonActions.forEach((action) => {
+    const playActions = this.settingsService.getAllAvailablePlayButtonActions(this.platform.is('ios'));
+
+    savedAvailablePlayButtonActions.forEach((action) => {
       if (playActions.includes(action)) {
         this.playButtonActionsSettings.push({
           action,
@@ -81,11 +83,11 @@ export class SettingsComponent implements OnInit {
     });
 
     playActions.reverse().forEach((action) => {
-      if (this.settings.availablePlayButtonActions.includes(action)) {
+      if (savedAvailablePlayButtonActions.includes(action)) {
         this.availablePlayButtonActions.push(action);
       }
 
-      if (!this.settings.availablePlayButtonActions.includes(action)) {
+      if (!savedAvailablePlayButtonActions.includes(action)) {
         this.playButtonActionsSettings.push({
           action,
           enabled: false,
@@ -133,7 +135,7 @@ export class SettingsComponent implements OnInit {
       }
     });
 
-    this.settings.availablePlayButtonActions = actions;
+    this.settingsService.setAvailablePlayButtonActions(actions, this.settings);
 
     this.settingsService.set(this.settings);
   }

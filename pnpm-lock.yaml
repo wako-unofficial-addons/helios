@@ -38,8 +38,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
       '@wako-app/mobile-sdk':
-        specifier: 10.0.2
-        version: 10.0.2(z6dvwqwspzkymavkmlyajlwlmi)
+        specifier: 10.0.3
+        version: 10.0.3(y4ewvmzwljh2a52jll5c2ynf5i)
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
@@ -2332,9 +2332,9 @@ packages:
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0 || ^5.0.0
 
-  '@wako-app/mobile-sdk@10.0.2':
+  '@wako-app/mobile-sdk@10.0.3':
     resolution:
-      { integrity: sha512-LenENchm2OTyStuEEBDDX42u4F76zv4UA4dmKrb7YzvF+28Bjf5miQsfSwmS7xihj6buQG882+P75YktAKYx5Q== }
+      { integrity: sha512-K/8+IYQCwpSpagufqhzXIPxMVqbvWaCv2fO21DJ0kDyWFrygbpINVFlmhdWJZmZn7ohiVWXWoMx6FR5OxfUxVA== }
     peerDependencies:
       '@angular/cdk': '>=18'
       '@angular/common': '>=18'
@@ -2977,6 +2977,17 @@ packages:
   caniuse-lite@1.0.30001684:
     resolution:
       { integrity: sha512-G1LRwLIQjBQoyq0ZJGqGIJUXzJ8irpbjHLpVRXDvBEScFJ9b17sgK6vlx0GAJFE21okD7zXl08rRRUfq6HdoEQ== }
+
+  capacitor-video-player@https://codeload.github.com/wako-app/capacitor-video-player/tar.gz/93aa4a8f68e5b1dbadc11a7389f84f60a0a20672:
+    resolution:
+      {
+        tarball: https://codeload.github.com/wako-app/capacitor-video-player/tar.gz/93aa4a8f68e5b1dbadc11a7389f84f60a0a20672,
+      }
+    version: 6.0.0
+    engines: { node: '>=16.0.0' }
+    peerDependencies:
+      '@capacitor/core': ^6.0.0
+      hls.js: ^1.4.0
 
   caseless@0.12.0:
     resolution:
@@ -4405,6 +4416,10 @@ packages:
     resolution:
       { integrity: sha512-vUptKVTpIJhcczKBbgnS+RtcuYMB8+oNzPK2/Hp3hanz8JmpATdmmgLgSaadVREkDm+e2giHwY3ZRkyjSIDDFA== }
     engines: { node: '>= 0.4' }
+
+  hls.js@1.5.17:
+    resolution:
+      { integrity: sha512-wA66nnYFvQa1o4DO/BFgLNRKnBTVXpNeldGRBJ2Y0SvFtdwvFKCbqa9zhHoZLoxHhZ+jYsj3aIBkWQQCPNOhMw== }
 
   homedir-polyfill@1.0.3:
     resolution:
@@ -9829,12 +9844,15 @@ snapshots:
     dependencies:
       vite: 5.4.6(@types/node@20.17.8)(less@4.2.0)(sass@1.77.6)(terser@5.31.6)
 
-  '@wako-app/mobile-sdk@10.0.2(z6dvwqwspzkymavkmlyajlwlmi)':
+  '@wako-app/mobile-sdk@10.0.3(y4ewvmzwljh2a52jll5c2ynf5i)':
     dependencies:
+      '@angular/animations': 18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))
       '@angular/cdk': 18.2.14(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
       '@angular/common': 18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
       '@angular/core': 18.2.13(rxjs@7.8.1)(zone.js@0.14.10)
       '@angular/forms': 18.2.13(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@18.2.13(@angular/animations@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(rxjs@7.8.1)
+      '@angular/platform-browser': 18.2.13(@angular/animations@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))
+      '@angular/platform-browser-dynamic': 18.2.13(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/compiler@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@18.2.13(@angular/animations@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))
       '@angular/router': 18.2.13(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@18.2.13(@angular/animations@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(rxjs@7.8.1)
       '@capacitor/app-launcher': 6.0.3(@capacitor/core@6.2.0)
       '@capacitor/browser': 6.0.4(@capacitor/core@6.2.0)
@@ -9843,12 +9861,16 @@ snapshots:
       '@ionic/angular': 8.4.1(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(@angular/forms@18.2.13(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@18.2.13(@angular/animations@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(rxjs@7.8.1))(@angular/router@18.2.13(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@18.2.13(@angular/animations@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10)))(rxjs@7.8.1))(rxjs@7.8.1)(zone.js@0.14.10)
       '@ionic/storage-angular': 4.0.0(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
       '@ngx-translate/core': 16.0.3(@angular/common@18.2.13(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.13(rxjs@7.8.1)(zone.js@0.14.10))
+      capacitor-video-player: https://codeload.github.com/wako-app/capacitor-video-player/tar.gz/93aa4a8f68e5b1dbadc11a7389f84f60a0a20672(@capacitor/core@6.2.0)(hls.js@1.5.17)
       cordova-sqlite-storage: 6.1.0
       ionicons: 7.4.0
       localforage-cordovasqlitedriver: 1.8.0
       rxjs: 7.8.1
       systemjs: 6.14.2
       tslib: 2.6.2
+    transitivePeerDependencies:
+      - '@angular/compiler'
+      - hls.js
 
   '@webassemblyjs/ast@1.14.1':
     dependencies:
@@ -10415,6 +10437,11 @@ snapshots:
   camelcase@5.3.1: {}
 
   caniuse-lite@1.0.30001684: {}
+
+  capacitor-video-player@https://codeload.github.com/wako-app/capacitor-video-player/tar.gz/93aa4a8f68e5b1dbadc11a7389f84f60a0a20672(@capacitor/core@6.2.0)(hls.js@1.5.17):
+    dependencies:
+      '@capacitor/core': 6.2.0
+      hls.js: 1.5.17
 
   caseless@0.12.0: {}
 
@@ -11858,6 +11885,8 @@ snapshots:
   hasown@2.0.0:
     dependencies:
       function-bind: 1.1.2
+
+  hls.js@1.5.17: {}
 
   homedir-polyfill@1.0.3:
     dependencies:

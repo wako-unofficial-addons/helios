@@ -75,7 +75,7 @@ export class HeliosPlaylistService {
   }
 
   async setPlaylist(source: StreamLinkSource | TorrentSource, kodiOpenMedia: KodiOpenMedia) {
-    const playlist = await this.getPlaylist(source.id, source.title, kodiOpenMedia);
+    const playlist = this.getPlaylist(source.id, source.title, kodiOpenMedia);
 
     let savedPlaylist = await this.playListService.get(playlist.id);
 

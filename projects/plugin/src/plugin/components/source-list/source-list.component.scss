@@ -1,7 +1,21 @@
-ion-list-header {
-  ion-label {
-    font-size: 1.2em;
-  }
+:host {
+  display: block;
+  height: 100%;
+}
+
+.ion-content {
+  --background: transparent;
+}
+
+.source-list-container {
+  height: 100%;
+}
+
+.quality-header {
+  padding: 16px;
+  font-size: 1.2em;
+  font-weight: 500;
+  background: var(--ion-color-step-50);
 }
 
 .hidden {

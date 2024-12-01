@@ -177,7 +177,8 @@
         "add-to-playlist": "Προσθήκη στη λίστα αναπαραγωγής του wako",
         "add-to-ad": "Προσθήκη στο All Debrid",
         "cast": "Chromecast",
-        "letMeChoose": "Χειροκίνητη επιλογή"
+        "letMeChoose": "Χειροκίνητη επιλογή",
+        "wako-player": "Αναπαραγωγή στο Wako"
       },
       "selectLink": {
         "openTitle": "Η πηγή έχει πολλαπλούς συνδέσμους, ποιόν θέλετε να ανοίξετε;"

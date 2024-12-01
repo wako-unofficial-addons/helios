@@ -12,6 +12,7 @@ import {
   KodiGetAddonDetailsForm,
   NPLAYER_IMAGE,
   OpenMedia,
+  WakoVideoPlayerService,
   PlaylistVideo,
   VLC_IMAGE,
   WakoHttpError,
@@ -27,6 +28,8 @@ import {
   listOutline,
   openOutline,
   shareOutline,
+  playCircleOutline,
+  playOutline,
 } from 'ionicons/icons';
 import { ClipboardService } from 'ngx-clipboard';
 import { EMPTY, NEVER, Observable, from, lastValueFrom, of } from 'rxjs';
@@ -82,6 +85,8 @@ export class OpenSourceService {
       openOutline,
       shareOutline,
       closeOutline,
+      playCircleOutline,
+      playOutline,
     });
   }
 
@@ -105,17 +110,8 @@ export class OpenSourceService {
     action: 'default' | 'more' = 'default',
   ) {
     const streamLinks = await this.getStreamLinksWithLoader(streamLinkSource, sourceQuery);
-    const settings = await this.settingsService.get();
 
-    let actions = action === 'default' ? [settings.defaultPlayButtonAction] : settings.availablePlayButtonActions;
-
-    if (actions.length === 1 && actions[0] === 'let-me-choose') {
-      actions = settings.availablePlayButtonActions;
-    }
-
-    // if (actions.length > 1) {
-    //   actions.unshift('wako-player');
-    // }
+    const actions = this.settingsService.getPlayButtonActions(action === 'default');
 
     streamLinkSource.streamLinks = streamLinks;
 
@@ -318,7 +314,7 @@ export class OpenSourceService {
       }
     }
 
-    if (settings.availablePlayButtonActions.includes('share-url')) {
+    if (this.settingsService.getSavedAvailablePlayButtonActions().includes('share-url')) {
       buttons.push({
         icon: 'share',
         text: this.translateService.instant('actionSheets.open-source.options.share-url'),
@@ -328,7 +324,7 @@ export class OpenSourceService {
       });
     }
 
-    if (settings.availablePlayButtonActions.includes('open-elementum') && currentHost) {
+    if (this.settingsService.getSavedAvailablePlayButtonActions().includes('open-elementum') && currentHost) {
       buttons.push({
         cssClass: 'kodi',
         text: this.translateService.instant('actionSheets.open-source.options.open-elementum'),
@@ -338,7 +334,7 @@ export class OpenSourceService {
       });
     }
 
-    if (settings.availablePlayButtonActions.includes('add-to-playlist')) {
+    if (this.settingsService.getSavedAvailablePlayButtonActions().includes('add-to-playlist')) {
       buttons.push({
         icon: 'list',
         text: this.translateService.instant('actionSheets.open-source.options.add-to-playlist'),
@@ -348,7 +344,7 @@ export class OpenSourceService {
       });
     }
 
-    if (settings.availablePlayButtonActions.includes('copy-url')) {
+    if (this.settingsService.getSavedAvailablePlayButtonActions().includes('copy-url')) {
       buttons.push({
         role: 'copy-url',
         icon: 'copy',
@@ -366,7 +362,7 @@ export class OpenSourceService {
 
     buttons.forEach((button) => {
       if (!button.icon) {
-        button.icon = 'arrow-dropright';
+        button.icon = 'play-outline';
       }
     });
 
@@ -486,9 +482,9 @@ export class OpenSourceService {
           buttonOptions.cssClass = 'cast';
           break;
 
-        // case 'wako-player':
-        //   // buttonOptions.cssClass = 'cast';
-        // break;
+        case 'wako-player':
+          buttonOptions.cssClass = 'play-circle-outline';
+          break;
       }
 
       if (!buttonOptions.handler) {
@@ -507,7 +503,7 @@ export class OpenSourceService {
 
     buttons.forEach((button) => {
       if (!button.icon) {
-        button.icon = 'arrow-dropright';
+        button.icon = 'play-outline';
       }
     });
 
@@ -995,6 +991,10 @@ export class OpenSourceService {
       streamUrl = getElementumUrlBySourceUrl((source as TorrentSource).url, sourceQuery);
     } else {
       const streamLink = (source as StreamLinkSource).streamLinks[0];
+      if (!streamLink) {
+        this.toastService.simpleMessage('toasts.noStreamLinkFound');
+        throw new Error('No stream link found');
+      }
       streamUrl = getTranscoded ? streamLink.transcodedUrl : streamLink.url;
     }
 
@@ -1011,7 +1011,16 @@ export class OpenSourceService {
       switchMap((sourceQuery) => {
         return from(this.heliosPlaylistService.setPlaylist(source, kodiOpenMedia)).pipe(
           switchMap((playlist) => {
-            if (kodiOpenMedia && kodiOpenMedia.episode) {
+            if (kodiOpenMedia && kodiOpenMedia.movie) {
+              playlist.items.push({
+                label: sourceQuery.movie.title,
+                url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
+                currentSeconds: 0,
+                pluginId: 'plugin.helios',
+                openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
+                customData: this.getCustomDataFromSource(source, sourceQuery),
+              });
+            } else if (kodiOpenMedia && kodiOpenMedia.episode) {
               playlist.items.push({
                 label: sourceQuery.episode.episodeCode,
                 url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
@@ -1112,14 +1121,14 @@ export class OpenSourceService {
             }
             return from(this.heliosPlaylistService.savePlaylist(playlist)).pipe(
               tap(() => {
-                this.toastService.simpleMessage(
-                  'toasts.playlist',
-                  {
-                    playlistName: playlist.label,
-                    items: playlist.items.length,
-                  },
-                  5000,
-                );
+                // this.toastService.simpleMessage(
+                //   'toasts.playlist',
+                //   {
+                //     playlistName: playlist.label,
+                //     items: playlist.items.length,
+                //   },
+                //   5000,
+                // );
               }),
             );
           }),
@@ -1310,43 +1319,14 @@ export class OpenSourceService {
           playVideo = true;
           break;
 
-        // case 'wako-player':
-        //   const player = await CapacitorVideoPlayer.initPlayer({
-        //     mode: 'fullscreen',
-        //     playerId: 'fullscreen',
-        //     pipEnabled: false,
-        //     chromecast: false,
-        //     title: title,
-        //     artwork: posterUrl,
-        //     url: streamLink.url,
-        //     displayMode: 'landscape',
-        //   });
-
-        //   // On ok press show the player
-        //   document.addEventListener('keyup', async (e: KeyboardEvent) => {
-        //     if (
-        //       e.key === 'ArrowDown' ||
-        //       e.key === 'ArrowUp' ||
-        //       e.key === 'ArrowLeft' ||
-        //       e.key === 'ArrowRight' ||
-        //       e.key === 'Enter'
-        //     ) {
-        //       CapacitorVideoPlayer.showController();
-        //     }
-        //   });
-
-        //   setTimeout(() => {
-        //     CapacitorVideoPlayer.exitPlayer();
-        //   }, 10000);
-
-        //   const isLandscape = window.screen.orientation.type.match('landscape') !== null;
-        //   if (!isLandscape) {
-        //     (CapacitorVideoPlayer as any).addListener('jeepCapVideoPlayerExit', (state) => {
-        //       (window.screen.orientation as any).lock('portrait');
-        //     });
-        //   }
-
-        //   break;
+        case 'wako-player':
+          WakoVideoPlayerService.openVideoUrl({
+            videoUrl: streamLink.url,
+            startAt: null,
+            openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
+          });
+          playVideo = true;
+          break;
 
         default:
           SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).subscribe((sourceQuery) => {
@@ -1470,19 +1450,15 @@ export class OpenSourceService {
       return;
     }
 
-    const settings = await this.settingsService.get();
-
     const buttons = [];
 
-    settings.availablePlayButtonActions.forEach((action) => {
-      if (action.match('elementum')) {
-        return;
-      }
-
+    this.settingsService.getSavedAvailablePlayButtonActions().forEach((action) => {
       if (
         action === 'add-to-pm' ||
         action === 'add-to-rd' ||
         action === 'add-to-torbox' ||
+        action === 'add-to-ad' ||
+        action === 'open-elementum' ||
         action === 'add-to-playlist'
       ) {
         return;
@@ -1602,6 +1578,18 @@ export class OpenSourceService {
             this.cast(videoUrl1, kodiOpenMedia, playlistVideo.currentSeconds, playlistVideo.openMedia, videoUrl2);
           };
           break;
+
+        case 'wako-player':
+          buttonOptions.cssClass = 'wako-player';
+
+          buttonOptions.handler = () => {
+            WakoVideoPlayerService.openVideoUrl({
+              videoUrl: playlistVideo.url,
+              startAt: playlistVideo.currentSeconds,
+              openMedia: playlistVideo.openMedia,
+            });
+          };
+          break;
       }
 
       buttons.push(buttonOptions);
@@ -1614,7 +1602,7 @@ export class OpenSourceService {
 
     buttons.forEach((button) => {
       if (!button.icon) {
-        button.icon = 'arrow-dropright';
+        button.icon = 'play-outline';
       }
     });
 

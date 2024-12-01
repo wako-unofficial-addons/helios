@@ -19,7 +19,9 @@ export declare type PlayButtonAction =
   | 'let-me-choose'
   | 'open-outplayer'
   | 'wako-player'
-  | 'add-to-torbox';
+  | 'add-to-torbox'
+  | 'wako-player';
+
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
   'copy-url',
@@ -53,6 +55,17 @@ export const PlayButtonActionAndroid: PlayButtonAction[] = [
   'add-to-torbox',
   'add-to-playlist',
   'cast',
+];
+
+export const PlayButtonActionAndroidTv: PlayButtonAction[] = [
+  'wako-player',
+  'open-vlc',
+  'open-with',
+  'add-to-pm',
+  'add-to-rd',
+  'add-to-ad',
+  'add-to-torbox',
+  'add-to-playlist',
 ];
 
 export interface SettingsQuality {
@@ -109,8 +122,10 @@ export class Settings {
   torbox?: TorboxSettings;
 
   defaultPlayButtonAction: PlayButtonAction = 'let-me-choose';
+  defaultPlayButtonActionTv: PlayButtonAction = 'let-me-choose';
 
   availablePlayButtonActions: PlayButtonAction[] = [];
+  availablePlayButtonActionsTv: PlayButtonAction[] = [];
 
   qualities: SettingsQuality[] = [
     {
@@ -165,5 +180,6 @@ export class Settings {
   constructor() {
     // default actions
     this.availablePlayButtonActions = ['open-kodi', 'cast', 'open-vlc', 'share-url'];
+    this.availablePlayButtonActionsTv = PlayButtonActionAndroidTv;
   }
 }

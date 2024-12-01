@@ -97,8 +97,7 @@ const directives = [HideKeyboardEnterDirective];
     ExplorerService,
     ...WakoProviders,
     provideIonicAngular({
-      swipeBackEnabled: true,
-      backButtonText: '',
+      animated: false,
       mode: 'md',
     }),
   ], // Add your services here. Do not use provideIn: 'root' in your services

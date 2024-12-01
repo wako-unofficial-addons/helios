@@ -29,7 +29,7 @@ export class SourceService {
     private cachedTorrentSourceService: CachedTorrentSourceService,
     private torrentSourceService: TorrentSourceService,
     private settingsService: SettingsService,
-    private providerService: ProviderService
+    private providerService: ProviderService,
   ) {}
 
   private getByProvider(sourceQuery: SourceQuery, provider: Provider) {
@@ -38,7 +38,10 @@ export class SourceService {
         return from(this.settingsService.get()).pipe(
           switchMap((settings) => {
             if (sourceQuery.movie || sourceQuery.episode) {
-              torrentSourceDetail.sources = TorrentsFilterOnWantedQualityQuery.getData(torrentSourceDetail.sources, settings.qualities);
+              torrentSourceDetail.sources = TorrentsFilterOnWantedQualityQuery.getData(
+                torrentSourceDetail.sources,
+                settings.qualities,
+              );
             }
 
             const startTime = Date.now();
@@ -56,13 +59,13 @@ export class SourceService {
                   provider: provider.name,
                   torrentSourceDetail: torrentSourceDetail,
                   cachedTorrentDetail: streamLinkSourceDetail,
-                  timeElapsedTotal: torrentSourceDetail.timeElapsed + streamLinkSourceDetail.timeElapsed
+                  timeElapsedTotal: torrentSourceDetail.timeElapsed + streamLinkSourceDetail.timeElapsed,
                 } as SourceByProvider;
-              })
+              }),
             );
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -76,9 +79,9 @@ export class SourceService {
       {
         id,
         title,
-        provider
+        provider,
       } as LastPlayedSource,
-      '1m'
+      '1m',
     );
   }
 
@@ -89,7 +92,7 @@ export class SourceService {
           return HeliosCacheService.get<LastPlayedSource>(GET_LAST_SHOW_PLAYED_SOURCE_CACHE_KEY);
         }
         return of(data);
-      })
+      }),
     );
   }
 
@@ -100,9 +103,9 @@ export class SourceService {
         id,
         title,
         provider,
-        showTraktId
+        showTraktId,
       } as LastPlayedSource,
-      '1m'
+      '1m',
     );
 
     return await HeliosCacheService.set(
@@ -111,9 +114,9 @@ export class SourceService {
         id,
         title,
         provider,
-        showTraktId
+        showTraktId,
       } as LastPlayedSource,
-      '1m'
+      '1m',
     );
   }
 
@@ -121,9 +124,9 @@ export class SourceService {
     sourceQuery: SourceQuery,
     sourceByProviders: SourceByProvider[],
     settings: Settings,
-    lastPlayedSource: LastPlayedSource
+    lastPlayedSource: LastPlayedSource,
   ) {
-    if (settings.defaultPlayButtonAction === 'open-elementum') {
+    if (this.settingsService.getSavedDefaultPlayButtonAction() === 'open-elementum') {
       const torrentSources: TorrentSource[] = [];
 
       sourceByProviders.forEach((sourceByProvider) => {
@@ -148,7 +151,7 @@ export class SourceService {
     providers: Provider[],
     settings: Settings,
     lastPlayedSource: LastPlayedSource,
-    totalProviderInSequence = 4
+    totalProviderInSequence = 4,
   ) {
     // Let's proceed X providers by X providers
     let obss: Observable<SourceByProvider>[] = [];
@@ -159,9 +162,14 @@ export class SourceService {
         groupObss.unshift(
           this.getByProvider(sourceQuery, provider).pipe(
             switchMap((sourceByProvider) => {
-              return this.getBestSourceFromSourceByProviders(sourceQuery, [sourceByProvider], settings, lastPlayedSource);
-            })
-          )
+              return this.getBestSourceFromSourceByProviders(
+                sourceQuery,
+                [sourceByProvider],
+                settings,
+                lastPlayedSource,
+              );
+            }),
+          ),
         );
         return;
       }
@@ -170,9 +178,14 @@ export class SourceService {
         groupObss.push(
           forkJoin(...obss).pipe(
             switchMap((sourceByProviders) => {
-              return this.getBestSourceFromSourceByProviders(sourceQuery, sourceByProviders, settings, lastPlayedSource);
-            })
-          )
+              return this.getBestSourceFromSourceByProviders(
+                sourceQuery,
+                sourceByProviders,
+                settings,
+                lastPlayedSource,
+              );
+            }),
+          ),
         );
         obss = [];
       }
@@ -183,8 +196,8 @@ export class SourceService {
         forkJoin(...obss).pipe(
           switchMap((sourceByProviders) => {
             return this.getBestSourceFromSourceByProviders(sourceQuery, sourceByProviders, settings, lastPlayedSource);
-          })
-        )
+          }),
+        ),
       );
     }
 
@@ -205,18 +218,18 @@ export class SourceService {
             sourceQuery.episode.absoluteNumber = episode.production_code;
           }
         });
-      })
+      }),
     );
   }
 
   private getBestSource(sourceQuery: SourceQuery, stopIfFirstSourceIsNull = false, type?: 'torrent' | 'stream') {
     return from(this.settingsService.get()).pipe(
-      switchMap((settings) => {
+      switchMap(() => {
         if (!type) {
-          type = settings.defaultPlayButtonAction === 'open-elementum' ? 'torrent' : 'stream';
+          type = this.settingsService.getSavedDefaultPlayButtonAction() === 'open-elementum' ? 'torrent' : 'stream';
         }
         return this.getBestSourceFromProviders(sourceQuery, stopIfFirstSourceIsNull);
-      })
+      }),
     );
   }
 
@@ -246,7 +259,7 @@ export class SourceService {
             return getLatestPlayedSource;
           }),
           switchMap((lastPlayedSource) => {
-            const groupObss = this.getBestSourcesObservables(sourceQuery, providers, settings, lastPlayedSource, 4);
+            const groupObss = this.getBestSourcesObservables(sourceQuery, providers, settings, lastPlayedSource, 10);
 
             totalToDo = groupObss.length;
 
@@ -254,9 +267,9 @@ export class SourceService {
               takeUntil(bestSourceReturned$),
               tap(() => {
                 done++;
-              })
+              }),
             );
-          })
+          }),
         )
         .subscribe(
           (bestSource) => {
@@ -270,7 +283,12 @@ export class SourceService {
                 if (sourceQuery.movie) {
                   this.setLastMoviePlayedSource(bestSource.id, bestSource.title, bestSource.provider);
                 } else {
-                  this.setLastEpisodePlayedSource(bestSource.id, bestSource.title, bestSource.provider, sourceQuery.episode.showTraktId);
+                  this.setLastEpisodePlayedSource(
+                    bestSource.id,
+                    bestSource.title,
+                    bestSource.provider,
+                    sourceQuery.episode.showTraktId,
+                  );
                 }
               }
             }
@@ -280,7 +298,7 @@ export class SourceService {
               observer.complete();
             }
           },
-          (err) => observer.error(err)
+          (err) => observer.error(err),
         );
     });
   }
@@ -289,7 +307,7 @@ export class SourceService {
     return SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).pipe(
       switchMap((sourceQuery) => {
         return this.getBestSource(sourceQuery);
-      })
+      }),
     );
   }
 
@@ -333,9 +351,9 @@ export class SourceService {
             }
 
             return concat(...gourpObss);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -369,10 +387,10 @@ export class SourceService {
           map((source) => {
             return {
               source,
-              sourceQuery: _sourceQuery
+              sourceQuery: _sourceQuery,
             };
-          })
-        )
+          }),
+        ),
       );
     }
 
@@ -411,7 +429,7 @@ export class SourceService {
         return of(true);
       }),
       last(),
-      mapTo(nextSources)
+      mapTo(nextSources),
     );
   }
 }

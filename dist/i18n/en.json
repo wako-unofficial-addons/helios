@@ -163,7 +163,8 @@
     "playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items",
     "torbox": {
       "invalidCredentials": "Invalid credentials"
-    }
+    },
+    "noStreamLinkFound": "No stream link found"
   },
   "actionSheets": {
     "open-source": {
@@ -186,7 +187,8 @@
         "add-to-ad": "Add to All Debrid",
         "add-to-torbox": "Add to Torbox",
         "cast": "Chromecast",
-        "letMeChoose": "Let Me choose"
+        "letMeChoose": "Let Me choose",
+        "wako-player": "Play on Wako"
       },
       "selectLink": {
         "openTitle": "This source has multiple links, which one you want to open?"

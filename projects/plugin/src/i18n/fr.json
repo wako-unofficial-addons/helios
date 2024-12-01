@@ -149,7 +149,8 @@
         "open-with": "Play avec...",
         "add-to-pm": "Ajouter à Premiumize.me",
         "add-to-rd": "Ajouter à RealDebrid",
-        "letMeChoose": "Let Me choose"
+        "letMeChoose": "Let Me choose",
+        "wako-player": "Lire avec Wako"
       },
       "selectLink": {
         "openTitle": "Cette source a plusieurs liens, lequel voulez-vous ouvrir ?"

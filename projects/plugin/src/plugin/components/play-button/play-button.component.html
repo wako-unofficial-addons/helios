@@ -8,7 +8,7 @@
   <ion-item>
     <ion-select
       [label]="'pages.settings.list.play-button.item' | translate"
-      [ngModel]="settings.defaultPlayButtonAction"
+      [ngModel]="defaultPlayButtonAction"
       (ngModelChange)="changeDefaultPlayButtonAction($event)"
     >
       <ion-select-option *ngFor="let action of availablePlayButtonActions" [value]="action">{{

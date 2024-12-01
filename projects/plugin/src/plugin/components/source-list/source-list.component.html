@@ -1,251 +1,167 @@
-<div *ngIf="initialized">
-  <ion-progress-bar [style.visibility]="searching ? '' : 'hidden'" [value]="progressBarValue"></ion-progress-bar>
+<div *ngIf="initialized" class="ion-content">
+  <div class="source-list-container">
+    <ion-progress-bar *ngIf="searching" [value]="progressBarValue"></ion-progress-bar>
 
-  <ion-card *ngIf="sourceQuery && (providers.length === 0 || !hasProvider)" (click)="openProviderModal()">
-    <ion-card-header>
-      <ion-card-title *ngIf="providers.length === 0 && hasProvider">
-        {{ 'source-list.noProviderSetCategory' | translate: { category: sourceQuery.category } }}
-      </ion-card-title>
-      <ion-card-title *ngIf="providers.length === 0 && !hasProvider">
-        {{ 'source-list.noProviderSet' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      {{ 'shared.clickToAddProvider' | translate }}
-    </ion-card-content>
-  </ion-card>
+    <ion-card *ngIf="sourceQuery && (providers.length === 0 || !hasProvider)" (click)="openProviderModal()">
+      <ion-card-header>
+        <ion-card-title *ngIf="providers.length === 0 && hasProvider">
+          {{ 'source-list.noProviderSetCategory' | translate: { category: sourceQuery.category } }}
+        </ion-card-title>
+        <ion-card-title *ngIf="providers.length === 0 && !hasProvider">
+          {{ 'source-list.noProviderSet' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        {{ 'shared.clickToAddProvider' | translate }}
+      </ion-card-content>
+    </ion-card>
 
-  <div *ngIf="providers.length > 0">
-    <ion-segment (ionChange)="segment = $any($event).detail.value" [value]="segment" scrollable>
-      <ion-segment-button value="debrid">
-        <ion-label> {{ 'sources.segments.debrid' | translate }} ({{ totalStreamLinkSource }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="torrents">
-        <ion-label> {{ 'sources.segments.torrents' | translate }} ({{ totalTorrentSource }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="stats">
-        <ion-label>
-          {{ 'sources.segments.stats' | translate }}
-        </ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-    <ion-searchbar
-      wkHideKeyboardEnter
-      *ngIf="segment === 'debrid' || segment === 'torrents'"
-      (ionChange)="onSearch($event)"
-      [value]="searchInput"
-      [placeholder]="'source-list.manualFilter' | translate"
-      mode="ios"
-      [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
-    ></ion-searchbar>
-
-    <div [ngSwitch]="segment">
-      <ion-list [ngClass]="{ hidden: segment !== 'debrid' }">
-        <ion-card *ngIf="!hasDebridAccount" (click)="openDebridAccountModal()">
-          <ion-card-header>
-            <ion-card-title>
-              {{ 'shared.noDebridAccountSet' | translate }}
-            </ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            {{ 'shared.clickToAddDebridAccount' | translate }}
-          </ion-card-content>
-        </ion-card>
-
-        <ion-card *ngIf="hasDebridAccount && !searching && totalStreamLinkSource === 0">
-          <ion-card-content>
-            {{ 'shared.noSourceFound' | translate }}
-          </ion-card-content>
-        </ion-card>
-
-        <div *ngIf="!settings.sourceFilter.groupStreamsByQuality">
-          <wk-debrid-source-item
-            *ngFor="let source of streamLinkSources"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [sourceQuery]="sourceQuery"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-debrid-source-item>
-        </div>
-
-        <div *ngIf="settings.sourceFilter.groupStreamsByQuality">
-          <div *ngIf="streamLinkSourcesByQuality.sources2160p.length > 0">
-            <ion-list-header>
-              <ion-label> 2160p/4k ({{ streamLinkSourcesByQuality.sources2160p.length }})</ion-label>
-            </ion-list-header>
-            <wk-debrid-source-item
-              *ngFor="let source of streamLinkSourcesByQuality.sources2160p"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [sourceQuery]="sourceQuery"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-debrid-source-item>
-          </div>
-
-          <div *ngIf="streamLinkSourcesByQuality.sources1080p.length > 0">
-            <ion-list-header>
-              <ion-label> 1080p ({{ streamLinkSourcesByQuality.sources1080p.length }})</ion-label>
-            </ion-list-header>
-            <wk-debrid-source-item
-              *ngFor="let source of streamLinkSourcesByQuality.sources1080p"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [sourceQuery]="sourceQuery"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-debrid-source-item>
-          </div>
-
-          <div *ngIf="streamLinkSourcesByQuality.sources720p.length > 0">
-            <ion-list-header>
-              <ion-label> 720p ({{ streamLinkSourcesByQuality.sources720p.length }})</ion-label>
-            </ion-list-header>
-            <wk-debrid-source-item
-              *ngFor="let source of streamLinkSourcesByQuality.sources720p"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [sourceQuery]="sourceQuery"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-debrid-source-item>
-          </div>
-
-          <div *ngIf="streamLinkSourcesByQuality.sourcesOther.length > 0">
-            <ion-list-header>
-              <ion-label> Other ({{ streamLinkSourcesByQuality.sourcesOther.length }})</ion-label>
-            </ion-list-header>
-            <wk-debrid-source-item
-              *ngFor="let source of streamLinkSourcesByQuality.sourcesOther"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [sourceQuery]="sourceQuery"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-debrid-source-item>
-          </div>
-        </div>
-      </ion-list>
-
-      <ion-list [ngClass]="{ hidden: segment !== 'torrents' }">
-        <ion-card *ngIf="!searching && totalTorrentSource === 0">
-          <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
-        </ion-card>
-
-        <div *ngIf="!settings.sourceFilter.groupTorrentsByQuality">
-          <wk-torrent-source-item
-            *ngFor="let source of torrentSources"
-            [kodiOpenMedia]="kodiOpenMedia"
-            [source]="source"
-            [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-          ></wk-torrent-source-item>
-        </div>
-
-        <div *ngIf="settings.sourceFilter.groupTorrentsByQuality">
-          <div *ngIf="torrentSourcesByQuality.sources2160p.length > 0">
-            <ion-list-header>
-              <ion-label> 2160p/4k ({{ torrentSourcesByQuality.sources2160p.length }})</ion-label>
-            </ion-list-header>
-            <wk-torrent-source-item
-              *ngFor="let source of torrentSourcesByQuality.sources2160p"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-torrent-source-item>
-          </div>
-
-          <div *ngIf="torrentSourcesByQuality.sources1080p.length > 0">
-            <ion-list-header>
-              <ion-label> 1080p ({{ torrentSourcesByQuality.sources1080p.length }})</ion-label>
-            </ion-list-header>
-            <wk-torrent-source-item
-              *ngFor="let source of torrentSourcesByQuality.sources1080p"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-torrent-source-item>
-          </div>
-
-          <div *ngIf="torrentSourcesByQuality.sources720p.length > 0">
-            <ion-list-header>
-              <ion-label> 720p ({{ torrentSourcesByQuality.sources720p.length }})</ion-label>
-            </ion-list-header>
-            <wk-torrent-source-item
-              *ngFor="let source of torrentSourcesByQuality.sources720p"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-torrent-source-item>
-          </div>
-
-          <div *ngIf="torrentSourcesByQuality.sourcesOther.length > 0">
-            <ion-list-header>
-              <ion-label> Other ({{ torrentSourcesByQuality.sourcesOther.length }})</ion-label>
-            </ion-list-header>
-            <wk-torrent-source-item
-              *ngFor="let source of torrentSourcesByQuality.sourcesOther"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [source]="source"
-              [isBestSource]="lastPlayedSource && lastPlayedSource.id === source.id"
-            ></wk-torrent-source-item>
-          </div>
-        </div>
-      </ion-list>
-
-      <ion-list *ngSwitchCase="'stats'">
-        <ion-item lines="full">
-          {{ 'sources.statsInfo' | translate }}
-        </ion-item>
-        <ion-item-sliding *ngFor="let sourceByProvider of sourceByProviders">
-          <ion-item lines="full">
-            <ion-label class="ion-text-wrap">
-              {{ sourceByProvider.provider }}
-              <ion-text *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">
-                Error: {{ sourceByProvider.torrentSourceDetail.errorMessage }}</ion-text
-              >
-            </ion-label>
-
-            <ion-note
-              slot="end"
-              [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
-              >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
-            >
-            <ion-note
-              slot="end"
-              [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
-              >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
-              ms
-            </ion-note>
-            <ion-badge color="danger" *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">Error</ion-badge>
-          </ion-item>
-          <ion-item-options side="end">
-            <ion-item-option
-              *ngIf="getProviderStatus(sourceByProvider.provider)"
-              color="dark"
-              (click)="toggleProvider(sourceByProvider.provider, false)"
-            >
-              <ion-icon slot="top" name="remove-circle-outline"></ion-icon>
-              Disable
-            </ion-item-option>
-            <ion-item-option
-              *ngIf="!getProviderStatus(sourceByProvider.provider)"
-              color="dark"
-              (click)="toggleProvider(sourceByProvider.provider, true)"
-            >
-              <ion-icon slot="top" name="add-outline"></ion-icon>
-              Enable
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-        <ion-item lines="full" *ngFor="let data of providerIsLoading | keyvalue">
+    <div *ngIf="providers.length > 0">
+      <ion-segment (ionChange)="segment = $any($event).detail.value" [value]="segment" scrollable>
+        <ion-segment-button value="debrid">
+          <ion-label> {{ 'sources.segments.debrid' | translate }} ({{ totalStreamLinkSource }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="torrents">
+          <ion-label> {{ 'sources.segments.torrents' | translate }} ({{ totalTorrentSource }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="stats">
           <ion-label>
-            {{ data.value.name }}
+            {{ 'sources.segments.stats' | translate }}
           </ion-label>
-          <ion-spinner name="dots"></ion-spinner>
-        </ion-item>
+        </ion-segment-button>
+      </ion-segment>
 
-        <ion-item lines="full">
-          <ion-label> Total </ion-label>
-          <ion-note slot="end"> {{ totalTimeElapsed }} ms </ion-note>
-        </ion-item>
-      </ion-list>
+      <ion-searchbar
+        wkHideKeyboardEnter
+        *ngIf="segment === 'debrid' || segment === 'torrents'"
+        (ionChange)="onSearch($event)"
+        [value]="searchInput"
+        [placeholder]="'source-list.manualFilter' | translate"
+        mode="ios"
+        [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
+      ></ion-searchbar>
+
+      <div [ngSwitch]="segment">
+        <ion-list *ngSwitchCase="'debrid'" class="source-list">
+          <ion-card *ngIf="!hasDebridAccount" (click)="openDebridAccountModal()">
+            <ion-card-header>
+              <ion-card-title>
+                {{ 'shared.noDebridAccountSet' | translate }}
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{ 'shared.clickToAddDebridAccount' | translate }}
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card *ngIf="hasDebridAccount && !searching && totalStreamLinkSource === 0">
+            <ion-card-content>
+              {{ 'shared.noSourceFound' | translate }}
+            </ion-card-content>
+          </ion-card>
+
+          <ng-container *ngFor="let item of visibleDebridSources; trackBy: trackByFlatItem">
+            <div class="quality-header" *ngIf="item.isHeader">
+              {{ item.quality === 'other' ? 'Other' : item.quality }}
+              ({{ item.count }})
+            </div>
+            <wk-debrid-source-item
+              *ngIf="!item.isHeader"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [sourceQuery]="sourceQuery"
+              [source]="item.source"
+              [isBestSource]="lastPlayedSource?.id === item.source.id"
+            >
+            </wk-debrid-source-item>
+          </ng-container>
+
+          <ion-infinite-scroll (ionInfinite)="loadMoreDebridSources($event)">
+            <ion-infinite-scroll-content></ion-infinite-scroll-content>
+          </ion-infinite-scroll>
+        </ion-list>
+
+        <ion-list *ngSwitchCase="'torrents'">
+          <ion-card *ngIf="!searching && totalTorrentSource === 0">
+            <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
+          </ion-card>
+
+          <ng-container *ngFor="let item of visibleTorrentSources; trackBy: trackByFlatItem">
+            <div class="quality-header" *ngIf="item.isHeader">
+              {{ item.quality === 'other' ? 'Other' : item.quality }}
+              ({{ item.count }})
+            </div>
+            <wk-torrent-source-item
+              *ngIf="!item.isHeader"
+              [kodiOpenMedia]="kodiOpenMedia"
+              [source]="item.source"
+              [isBestSource]="lastPlayedSource?.id === item.source.id"
+            >
+            </wk-torrent-source-item>
+          </ng-container>
+
+          <ion-infinite-scroll (ionInfinite)="loadMoreTorrentSources($event)">
+            <ion-infinite-scroll-content></ion-infinite-scroll-content>
+          </ion-infinite-scroll>
+        </ion-list>
+
+        <ion-list *ngSwitchCase="'stats'">
+          <ion-item lines="full">
+            {{ 'sources.statsInfo' | translate }}
+          </ion-item>
+          <ion-item-sliding *ngFor="let sourceByProvider of sourceByProviders">
+            <ion-item lines="full">
+              <ion-label class="ion-text-wrap">
+                {{ sourceByProvider.provider }}
+                <ion-text *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">
+                  Error: {{ sourceByProvider.torrentSourceDetail.errorMessage }}</ion-text
+                >
+              </ion-label>
+
+              <ion-note
+                slot="end"
+                [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
+                >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
+              >
+              <ion-note
+                slot="end"
+                [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
+                >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
+                ms
+              </ion-note>
+              <ion-badge color="danger" *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">Error</ion-badge>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option
+                *ngIf="getProviderStatus(sourceByProvider.provider)"
+                color="dark"
+                (click)="toggleProvider(sourceByProvider.provider, false)"
+              >
+                <ion-icon slot="top" name="remove-circle-outline"></ion-icon>
+                Disable
+              </ion-item-option>
+              <ion-item-option
+                *ngIf="!getProviderStatus(sourceByProvider.provider)"
+                color="dark"
+                (click)="toggleProvider(sourceByProvider.provider, true)"
+              >
+                <ion-icon slot="top" name="add-outline"></ion-icon>
+                Enable
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+          <ion-item lines="full" *ngFor="let data of providerIsLoading | keyvalue">
+            <ion-label>
+              {{ data.value.name }}
+            </ion-label>
+            <ion-spinner name="dots"></ion-spinner>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label> Total </ion-label>
+            <ion-note slot="end"> {{ totalTimeElapsed }} ms </ion-note>
+          </ion-item>
+        </ion-list>
+      </div>
     </div>
   </div>
 </div>

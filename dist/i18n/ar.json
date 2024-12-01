@@ -179,7 +179,8 @@
         "add-to-playlist": "أضف إلى قائمة تشغيل واكو",
         "add-to-ad": "أضف إلى All Debrid",
         "cast": "كرومكاست",
-        "letMeChoose": "دعني اختار"
+        "letMeChoose": "دعني اختار",
+        "wako-player": "تشغيل على Wako"
       },
       "selectLink": {
         "openTitle": "يحتوي هذا المصدر على روابط متعدّدة ، ما الرابط الذي تريد فتحه؟"

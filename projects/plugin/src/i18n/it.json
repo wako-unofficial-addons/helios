@@ -155,7 +155,8 @@
         "add-to-pm": "Aggiungi a Premiumize.me",
         "add-to-rd": "Aggiungi a RealDebrid",
         "add-to-playlist": "Aggiungi alla playlist di wako",
-        "letMeChoose": "Fammi scegliere"
+        "letMeChoose": "Fammi scegliere",
+        "wako-player": "Riproduci su Wako"
       },
       "selectLink": {
         "openTitle": "Questa fonte ha molteplici link, quale vuoi aprire?"
