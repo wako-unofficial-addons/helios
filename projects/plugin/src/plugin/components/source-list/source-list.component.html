@@ -75,7 +75,10 @@
             </wk-debrid-source-item>
           </ng-container>
 
-          <ion-infinite-scroll (ionInfinite)="loadMoreDebridSources($event)">
+          <ion-infinite-scroll
+            (ionInfinite)="loadMoreDebridSources($event)"
+            [disabled]="!searching && totalStreamLinkSource === 0"
+          >
             <ion-infinite-scroll-content></ion-infinite-scroll-content>
           </ion-infinite-scroll>
         </ion-list>
@@ -99,7 +102,10 @@
             </wk-torrent-source-item>
           </ng-container>
 
-          <ion-infinite-scroll (ionInfinite)="loadMoreTorrentSources($event)">
+          <ion-infinite-scroll
+            (ionInfinite)="loadMoreTorrentSources($event)"
+            [disabled]="!searching && totalTorrentSource === 0"
+          >
             <ion-infinite-scroll-content></ion-infinite-scroll-content>
           </ion-infinite-scroll>
         </ion-list>
