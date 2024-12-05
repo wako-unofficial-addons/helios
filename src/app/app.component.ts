@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 
-import { NgIf } from '@angular/common';
 import { IonApp, IonRouterOutlet, Platform } from '@ionic/angular/standalone';
 import { AppService } from './services/app.service';
 
@@ -9,7 +8,7 @@ import { AppService } from './services/app.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [NgIf, IonApp, IonRouterOutlet, IonApp, IonRouterOutlet, IonApp, IonRouterOutlet],
+  imports: [IonApp, IonRouterOutlet, IonApp, IonRouterOutlet, IonApp, IonRouterOutlet],
 })
 export class AppComponent {
   ready = false;

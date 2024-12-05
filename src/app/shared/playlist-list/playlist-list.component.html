@@ -1,9 +1,15 @@
-<ion-button *ngIf="playlists.length > 0" (click)="clearPlaylist()" color="danger">Clear Playlist</ion-button>
-<ion-list *ngFor="let playlist of playlists">
-  <ion-list-header> Playlist {{ playlist.label }} </ion-list-header>
-  <ion-item *ngFor="let item of playlist.items" (click)="openItem(item)">
-    <ion-label class="ion-text-wrap">
-      {{ item.label }}
-    </ion-label>
-  </ion-item>
-</ion-list>
+@if (playlists.length > 0) {
+  <ion-button (click)="clearPlaylist()" color="danger">Clear Playlist</ion-button>
+}
+@for (playlist of playlists; track playlist) {
+  <ion-list>
+    <ion-list-header> Playlist {{ playlist.label }} </ion-list-header>
+    @for (item of playlist.items; track item) {
+      <ion-item (click)="openItem(item)">
+        <ion-label class="ion-text-wrap">
+          {{ item.label }}
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+}

@@ -1,4 +1,3 @@
-import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, NgZone, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -37,9 +36,7 @@ interface ProdviderArray {
   styleUrls: ['./provider.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
     FormsModule,
-    NgFor,
     TranslateModule,
     IonList,
     IonListHeader,

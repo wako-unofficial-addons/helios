@@ -1,126 +1,150 @@
 <ion-header>
   <ion-toolbar>
     <ion-title> {{ 'pages.tuto.title' | translate }}</ion-title>
-    <ion-buttons *ngIf="checked" slot="secondary">
-      <ion-button (click)="close()">
-        {{ 'pages.tuto.skip' | translate }}
-      </ion-button>
-    </ion-buttons>
+    @if (checked) {
+      <ion-buttons slot="secondary">
+        <ion-button (click)="close()">
+          {{ 'pages.tuto.skip' | translate }}
+        </ion-button>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <div *ngIf="slideIndex === 0">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title> About Helios </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        Helios is a FREE and open-source third-party add-on developed by the community.<br />It is a source finder, it
-        scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are
-        <strong>publicly available</strong> on the internet.
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="disclaimer">
-      <ion-card-header>
-        <ion-card-title> Disclaimer </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or
-        developers have no control over the content on these third party sites provided by the end user. Helios claims
-        no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content
-        displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a
-        violation of national, federal or terrestrial laws applicable to them. <br /><br />Helios doesn't come with any
-        providers, you have to add them manually.<br /><br />Helios is not developed nor endorsed by wako, for support
-        create issue on its github or discuss with the community on reddit: https://www.reddit.com/r/Addons4Wako/
-      </ion-card-content>
-    </ion-card>
+  @if (slideIndex === 0) {
+    <div>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title> About Helios </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Helios is a FREE and open-source third-party add-on developed by the community.<br />It is a source finder, it
+          scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are
+          <strong>publicly available</strong> on the internet.
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="disclaimer">
+        <ion-card-header>
+          <ion-card-title> Disclaimer </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or
+          developers have no control over the content on these third party sites provided by the end user. Helios claims
+          no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content
+          displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a
+          violation of national, federal or terrestrial laws applicable to them. <br /><br />Helios doesn't come with
+          any providers, you have to add them manually.<br /><br />Helios is not developed nor endorsed by wako, for
+          support create issue on its github or discuss with the community on reddit:
+          https://www.reddit.com/r/Addons4Wako/
+        </ion-card-content>
+      </ion-card>
+      <ion-card>
+        <ion-card-content class="accept ion-activatable ion-no-padding" (click)="toggleChecked()">
+          <ion-checkbox [checked]="checked" slot="start"></ion-checkbox>
+          <ion-label class="ion-text-nowrap"> I have read and agree with this</ion-label>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  }
 
-    <ion-card>
-      <ion-card-content class="accept ion-activatable ion-no-padding" (click)="toggleChecked()">
-        <ion-checkbox [checked]="checked" slot="start"></ion-checkbox>
-        <ion-label class="ion-text-nowrap"> I have read and agree with this</ion-label>
-        <ion-ripple-effect></ion-ripple-effect>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  @if (slideIndex === 1) {
+    <div>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            {{ 'pages.tuto.slide2.title' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content [innerHTML]="'pages.tuto.slide2.description' | translate"> </ion-card-content>
+      </ion-card>
+      <wk-providers></wk-providers>
+    </div>
+  }
 
-  <div *ngIf="slideIndex === 1">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          {{ 'pages.tuto.slide2.title' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content [innerHTML]="'pages.tuto.slide2.description' | translate"> </ion-card-content>
-    </ion-card>
-    <wk-providers></wk-providers>
-  </div>
+  @if (slideIndex === 2) {
+    <div>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            {{ 'pages.tuto.slide3.title' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content [innerHTML]="'pages.tuto.slide3.description' | translate"> </ion-card-content>
+      </ion-card>
+      <wk-quality></wk-quality>
+    </div>
+  }
 
-  <div *ngIf="slideIndex === 2">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          {{ 'pages.tuto.slide3.title' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content [innerHTML]="'pages.tuto.slide3.description' | translate"> </ion-card-content>
-    </ion-card>
-    <wk-quality></wk-quality>
-  </div>
+  @if (slideIndex === 3) {
+    <div>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            {{ 'pages.tuto.slide4.title' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content [innerHTML]="'pages.tuto.slide4.description' | translate"> </ion-card-content>
+      </ion-card>
+      <wk-debrid-account></wk-debrid-account>
+    </div>
+  }
 
-  <div *ngIf="slideIndex === 3">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          {{ 'pages.tuto.slide4.title' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content [innerHTML]="'pages.tuto.slide4.description' | translate"> </ion-card-content>
-    </ion-card>
-    <wk-debrid-account></wk-debrid-account>
-  </div>
+  @if (slideIndex === 4) {
+    <div>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            {{ 'pages.tuto.slide5.title' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content [innerHTML]="'pages.tuto.slide5.description' | translate"> </ion-card-content>
+      </ion-card>
+      <wk-play-button></wk-play-button>
+    </div>
+  }
 
-  <div *ngIf="slideIndex === 4">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          {{ 'pages.tuto.slide5.title' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content [innerHTML]="'pages.tuto.slide5.description' | translate"> </ion-card-content>
-    </ion-card>
-    <wk-play-button></wk-play-button>
-  </div>
+  @if (slideIndex === 5) {
+    <div>
+      <wk-support></wk-support>
+    </div>
+  }
 
-  <div *ngIf="slideIndex === 5">
-    <wk-support></wk-support>
-  </div>
-
-  <div *ngIf="slideIndex === 6">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          {{ 'pages.tuto.slide6.title' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content [innerHTML]="'pages.tuto.slide6.description' | translate"> </ion-card-content>
-      <ion-card-content>
-        <ion-button expand="block" (click)="close()">{{ 'pages.tuto.slide6.button' | translate }}</ion-button>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  @if (slideIndex === 6) {
+    <div>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            {{ 'pages.tuto.slide6.title' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content [innerHTML]="'pages.tuto.slide6.description' | translate"> </ion-card-content>
+        <ion-card-content>
+          <ion-button expand="block" (click)="close()">{{ 'pages.tuto.slide6.button' | translate }}</ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  }
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <ion-buttons *ngIf="checked" slot="start">
-      <ion-button *ngIf="slideIndex > 1" (click)="prev()">
-        {{ 'pages.tuto.prev' | translate }}
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons *ngIf="checked" slot="end">
-      <ion-button *ngIf="slideIndex < totalSlides" (click)="next()">
-        {{ 'pages.tuto.next' | translate }}
-      </ion-button>
-    </ion-buttons>
+    @if (checked) {
+      <ion-buttons slot="start">
+        @if (slideIndex > 1) {
+          <ion-button (click)="prev()">
+            {{ 'pages.tuto.prev' | translate }}
+          </ion-button>
+        }
+      </ion-buttons>
+    }
+    @if (checked) {
+      <ion-buttons slot="end">
+        @if (slideIndex < totalSlides) {
+          <ion-button (click)="next()">
+            {{ 'pages.tuto.next' | translate }}
+          </ion-button>
+        }
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-footer>

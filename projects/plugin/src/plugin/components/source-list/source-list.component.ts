@@ -1,4 +1,4 @@
-import { KeyValuePipe, NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 
 import {
   Component,
@@ -73,13 +73,9 @@ import { removeCircleOutline, addOutline } from 'ionicons/icons';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgIf,
     HideKeyboardEnterDirective,
-    NgSwitch,
-    NgFor,
     DebridSourceItemComponent,
     TorrentSourceItemComponent,
-    NgSwitchCase,
     KeyValuePipe,
     TranslateModule,
     IonProgressBar,

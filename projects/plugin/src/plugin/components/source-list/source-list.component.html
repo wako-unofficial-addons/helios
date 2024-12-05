@@ -1,173 +1,195 @@
-<div *ngIf="initialized" class="ion-content">
-  <div class="source-list-container">
-    <ion-progress-bar *ngIf="searching" [value]="progressBarValue"></ion-progress-bar>
-
-    <ion-card *ngIf="sourceQuery && (providers.length === 0 || !hasProvider)" (click)="openProviderModal()">
-      <ion-card-header>
-        <ion-card-title *ngIf="providers.length === 0 && hasProvider">
-          {{ 'source-list.noProviderSetCategory' | translate: { category: sourceQuery.category } }}
-        </ion-card-title>
-        <ion-card-title *ngIf="providers.length === 0 && !hasProvider">
-          {{ 'source-list.noProviderSet' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        {{ 'shared.clickToAddProvider' | translate }}
-      </ion-card-content>
-    </ion-card>
-
-    <div *ngIf="providers.length > 0">
-      <ion-segment (ionChange)="segment = $any($event).detail.value" [value]="segment" scrollable>
-        <ion-segment-button value="debrid">
-          <ion-label> {{ 'sources.segments.debrid' | translate }} ({{ totalStreamLinkSource }})</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="torrents">
-          <ion-label> {{ 'sources.segments.torrents' | translate }} ({{ totalTorrentSource }})</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="stats">
-          <ion-label>
-            {{ 'sources.segments.stats' | translate }}
-          </ion-label>
-        </ion-segment-button>
-      </ion-segment>
-
-      <ion-searchbar
-        wkHideKeyboardEnter
-        *ngIf="segment === 'debrid' || segment === 'torrents'"
-        (ionInput)="onSearch($event)"
-        [value]="searchInput"
-        [placeholder]="'source-list.manualFilter' | translate"
-        mode="ios"
-        [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
-      ></ion-searchbar>
-
-      <div [ngSwitch]="segment">
-        <ion-list *ngSwitchCase="'debrid'" class="source-list">
-          <ion-card *ngIf="!hasDebridAccount" (click)="openDebridAccountModal()">
-            <ion-card-header>
+@if (initialized) {
+  <div class="ion-content">
+    <div class="source-list-container">
+      @if (searching) {
+        <ion-progress-bar [value]="progressBarValue"></ion-progress-bar>
+      }
+      @if (sourceQuery && (providers.length === 0 || !hasProvider)) {
+        <ion-card (click)="openProviderModal()">
+          <ion-card-header>
+            @if (providers.length === 0 && hasProvider) {
               <ion-card-title>
-                {{ 'shared.noDebridAccountSet' | translate }}
+                {{ 'source-list.noProviderSetCategory' | translate: { category: sourceQuery.category } }}
               </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              {{ 'shared.clickToAddDebridAccount' | translate }}
-            </ion-card-content>
-          </ion-card>
-
-          <ion-card *ngIf="hasDebridAccount && !searching && totalStreamLinkSource === 0">
-            <ion-card-content>
-              {{ 'shared.noSourceFound' | translate }}
-            </ion-card-content>
-          </ion-card>
-
-          <ng-container *ngFor="let item of visibleDebridSources; trackBy: trackByFlatItem">
-            <div class="quality-header" *ngIf="item.isHeader">
-              {{ item.quality === 'other' ? 'Other' : item.quality }}
-              ({{ item.count }})
-            </div>
-            <wk-debrid-source-item
-              *ngIf="!item.isHeader"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [sourceQuery]="sourceQuery"
-              [source]="item.source"
-              [isBestSource]="lastPlayedSource?.id === item.source.id"
-            >
-            </wk-debrid-source-item>
-          </ng-container>
-
-          <ion-infinite-scroll
-            (ionInfinite)="loadMoreDebridSources($event)"
-            [disabled]="!searching && totalStreamLinkSource === 0"
-          >
-            <ion-infinite-scroll-content></ion-infinite-scroll-content>
-          </ion-infinite-scroll>
-        </ion-list>
-
-        <ion-list *ngSwitchCase="'torrents'">
-          <ion-card *ngIf="!searching && totalTorrentSource === 0">
-            <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
-          </ion-card>
-
-          <ng-container *ngFor="let item of visibleTorrentSources; trackBy: trackByFlatItem">
-            <div class="quality-header" *ngIf="item.isHeader">
-              {{ item.quality === 'other' ? 'Other' : item.quality }}
-              ({{ item.count }})
-            </div>
-            <wk-torrent-source-item
-              *ngIf="!item.isHeader"
-              [kodiOpenMedia]="kodiOpenMedia"
-              [source]="item.source"
-              [isBestSource]="lastPlayedSource?.id === item.source.id"
-            >
-            </wk-torrent-source-item>
-          </ng-container>
-
-          <ion-infinite-scroll
-            (ionInfinite)="loadMoreTorrentSources($event)"
-            [disabled]="!searching && totalTorrentSource === 0"
-          >
-            <ion-infinite-scroll-content></ion-infinite-scroll-content>
-          </ion-infinite-scroll>
-        </ion-list>
-
-        <ion-list *ngSwitchCase="'stats'">
-          <ion-item lines="full">
-            {{ 'sources.statsInfo' | translate }}
-          </ion-item>
-          <ion-item-sliding *ngFor="let sourceByProvider of sourceByProviders">
-            <ion-item lines="full">
-              <ion-label class="ion-text-wrap">
-                {{ sourceByProvider.provider }}
-                <ion-text *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">
-                  Error: {{ sourceByProvider.torrentSourceDetail.errorMessage }}</ion-text
-                >
+            }
+            @if (providers.length === 0 && !hasProvider) {
+              <ion-card-title>
+                {{ 'source-list.noProviderSet' | translate }}
+              </ion-card-title>
+            }
+          </ion-card-header>
+          <ion-card-content>
+            {{ 'shared.clickToAddProvider' | translate }}
+          </ion-card-content>
+        </ion-card>
+      }
+      @if (providers.length > 0) {
+        <div>
+          <ion-segment (ionChange)="segment = $any($event).detail.value" [value]="segment" scrollable>
+            <ion-segment-button value="debrid">
+              <ion-label> {{ 'sources.segments.debrid' | translate }} ({{ totalStreamLinkSource }})</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="torrents">
+              <ion-label> {{ 'sources.segments.torrents' | translate }} ({{ totalTorrentSource }})</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="stats">
+              <ion-label>
+                {{ 'sources.segments.stats' | translate }}
               </ion-label>
-
-              <ion-note
-                slot="end"
-                [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
-                >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
-              >
-              <ion-note
-                slot="end"
-                [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
-                >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
-                ms
-              </ion-note>
-              <ion-badge color="danger" *ngIf="sourceByProvider.torrentSourceDetail.errorMessage">Error</ion-badge>
-            </ion-item>
-            <ion-item-options side="end">
-              <ion-item-option
-                *ngIf="getProviderStatus(sourceByProvider.provider)"
-                color="dark"
-                (click)="toggleProvider(sourceByProvider.provider, false)"
-              >
-                <ion-icon slot="top" name="remove-circle-outline"></ion-icon>
-                Disable
-              </ion-item-option>
-              <ion-item-option
-                *ngIf="!getProviderStatus(sourceByProvider.provider)"
-                color="dark"
-                (click)="toggleProvider(sourceByProvider.provider, true)"
-              >
-                <ion-icon slot="top" name="add-outline"></ion-icon>
-                Enable
-              </ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
-          <ion-item lines="full" *ngFor="let data of providerIsLoading | keyvalue">
-            <ion-label>
-              {{ data.value.name }}
-            </ion-label>
-            <ion-spinner name="dots"></ion-spinner>
-          </ion-item>
-
-          <ion-item lines="full">
-            <ion-label> Total </ion-label>
-            <ion-note slot="end"> {{ totalTimeElapsed }} ms </ion-note>
-          </ion-item>
-        </ion-list>
-      </div>
+            </ion-segment-button>
+          </ion-segment>
+          @if (segment === 'debrid' || segment === 'torrents') {
+            <ion-searchbar
+              wkHideKeyboardEnter
+              (ionInput)="onSearch($event)"
+              [value]="searchInput"
+              [placeholder]="'source-list.manualFilter' | translate"
+              mode="ios"
+              [showCancelButton]="searchInput.length > 0 ? 'always' : 'focus'"
+            ></ion-searchbar>
+          }
+          <div>
+            @switch (segment) {
+              @case ('debrid') {
+                <ion-list class="source-list">
+                  @if (!hasDebridAccount) {
+                    <ion-card (click)="openDebridAccountModal()">
+                      <ion-card-header>
+                        <ion-card-title>
+                          {{ 'shared.noDebridAccountSet' | translate }}
+                        </ion-card-title>
+                      </ion-card-header>
+                      <ion-card-content>
+                        {{ 'shared.clickToAddDebridAccount' | translate }}
+                      </ion-card-content>
+                    </ion-card>
+                  }
+                  @if (hasDebridAccount && !searching && totalStreamLinkSource === 0) {
+                    <ion-card>
+                      <ion-card-content>
+                        {{ 'shared.noSourceFound' | translate }}
+                      </ion-card-content>
+                    </ion-card>
+                  }
+                  @for (item of visibleDebridSources; track trackByFlatItem($index, item)) {
+                    @if (item.isHeader) {
+                      <div class="quality-header">
+                        {{ item.quality === 'other' ? 'Other' : item.quality }}
+                        ({{ item.count }})
+                      </div>
+                    }
+                    @if (!item.isHeader) {
+                      <wk-debrid-source-item
+                        [kodiOpenMedia]="kodiOpenMedia"
+                        [sourceQuery]="sourceQuery"
+                        [source]="item.source"
+                        [isBestSource]="lastPlayedSource?.id === item.source.id"
+                      >
+                      </wk-debrid-source-item>
+                    }
+                  }
+                  <ion-infinite-scroll
+                    (ionInfinite)="loadMoreDebridSources($event)"
+                    [disabled]="!searching && totalStreamLinkSource === 0"
+                  >
+                    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+                  </ion-infinite-scroll>
+                </ion-list>
+              }
+              @case ('torrents') {
+                <ion-list>
+                  @if (!searching && totalTorrentSource === 0) {
+                    <ion-card>
+                      <ion-card-content>{{ 'shared.noSourceFound' | translate }}</ion-card-content>
+                    </ion-card>
+                  }
+                  @for (item of visibleTorrentSources; track trackByFlatItem($index, item)) {
+                    @if (item.isHeader) {
+                      <div class="quality-header">
+                        {{ item.quality === 'other' ? 'Other' : item.quality }}
+                        ({{ item.count }})
+                      </div>
+                    }
+                    @if (!item.isHeader) {
+                      <wk-torrent-source-item
+                        [kodiOpenMedia]="kodiOpenMedia"
+                        [source]="item.source"
+                        [isBestSource]="lastPlayedSource?.id === item.source.id"
+                      >
+                      </wk-torrent-source-item>
+                    }
+                  }
+                  <ion-infinite-scroll
+                    (ionInfinite)="loadMoreTorrentSources($event)"
+                    [disabled]="!searching && totalTorrentSource === 0"
+                  >
+                    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+                  </ion-infinite-scroll>
+                </ion-list>
+              }
+              @case ('stats') {
+                <ion-list>
+                  <ion-item lines="full">
+                    {{ 'sources.statsInfo' | translate }}
+                  </ion-item>
+                  @for (sourceByProvider of sourceByProviders; track sourceByProvider) {
+                    <ion-item-sliding>
+                      <ion-item lines="full">
+                        <ion-label class="ion-text-wrap">
+                          {{ sourceByProvider.provider }}
+                          @if (sourceByProvider.torrentSourceDetail.errorMessage) {
+                            <ion-text> Error: {{ sourceByProvider.torrentSourceDetail.errorMessage }}</ion-text>
+                          }
+                        </ion-label>
+                        <ion-note
+                          slot="end"
+                          [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
+                          >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
+                        >
+                        <ion-note
+                          slot="end"
+                          [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
+                          >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
+                          ms
+                        </ion-note>
+                        @if (sourceByProvider.torrentSourceDetail.errorMessage) {
+                          <ion-badge color="danger">Error</ion-badge>
+                        }
+                      </ion-item>
+                      <ion-item-options side="end">
+                        @if (getProviderStatus(sourceByProvider.provider)) {
+                          <ion-item-option color="dark" (click)="toggleProvider(sourceByProvider.provider, false)">
+                            <ion-icon slot="top" name="remove-circle-outline"></ion-icon>
+                            Disable
+                          </ion-item-option>
+                        }
+                        @if (!getProviderStatus(sourceByProvider.provider)) {
+                          <ion-item-option color="dark" (click)="toggleProvider(sourceByProvider.provider, true)">
+                            <ion-icon slot="top" name="add-outline"></ion-icon>
+                            Enable
+                          </ion-item-option>
+                        }
+                      </ion-item-options>
+                    </ion-item-sliding>
+                  }
+                  @for (data of providerIsLoading | keyvalue; track data) {
+                    <ion-item lines="full">
+                      <ion-label>
+                        {{ data.value.name }}
+                      </ion-label>
+                      <ion-spinner name="dots"></ion-spinner>
+                    </ion-item>
+                  }
+                  <ion-item lines="full">
+                    <ion-label> Total </ion-label>
+                    <ion-note slot="end"> {{ totalTimeElapsed }} ms </ion-note>
+                  </ion-item>
+                </ion-list>
+              }
+            }
+          </div>
+        </div>
+      }
     </div>
   </div>
-</div>
+}

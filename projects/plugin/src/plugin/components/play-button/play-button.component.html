@@ -1,22 +1,26 @@
-<ion-list lines="full" *ngIf="settings">
-  <ion-list-header>
-    <ion-label>
-      <ion-icon name="play-outline"></ion-icon>
-      {{ 'pages.settings.list.play-button.header' | translate }}
-    </ion-label>
-  </ion-list-header>
-  <ion-item>
-    <ion-select
-      [label]="'pages.settings.list.play-button.item' | translate"
-      [ngModel]="defaultPlayButtonAction"
-      (ngModelChange)="changeDefaultPlayButtonAction($event)"
-    >
-      <ion-select-option *ngFor="let action of availablePlayButtonActions" [value]="action">{{
-        'actionSheets.open-source.options.' + action | translate
-      }}</ion-select-option>
-      <ion-select-option value="let-me-choose">
-        {{ 'actionSheets.open-source.options.letMeChoose' | translate }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-</ion-list>
+@if (settings) {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        <ion-icon name="play-outline"></ion-icon>
+        {{ 'pages.settings.list.play-button.header' | translate }}
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-select
+        [label]="'pages.settings.list.play-button.item' | translate"
+        [ngModel]="defaultPlayButtonAction"
+        (ngModelChange)="changeDefaultPlayButtonAction($event)"
+      >
+        @for (action of availablePlayButtonActions; track action) {
+          <ion-select-option [value]="action">{{
+            'actionSheets.open-source.options.' + action | translate
+          }}</ion-select-option>
+        }
+        <ion-select-option value="let-me-choose">
+          {{ 'actionSheets.open-source.options.letMeChoose' | translate }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+}

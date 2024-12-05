@@ -1,28 +1,30 @@
-<ion-list lines="full" *ngIf="settings">
-  <ion-list-header>
-    <ion-label>
-      <ion-icon name="funnel-outline"></ion-icon>
-      {{ 'pages.settings.list.fileSizeFilter.header' | translate }} ({{ category }})
-    </ion-label>
-  </ion-list-header>
-
-  <ion-item>
-    <ion-toggle [(ngModel)]="filter.enabled" (ngModelChange)="setSettings()">{{
-      'pages.settings.list.fileSizeFilter.enabled' | translate
-    }}</ion-toggle>
-  </ion-item>
-
-  <ion-item>
-    <em>{{ 'pages.settings.list.fileSizeFilter.packageWarning' | translate }}</em>
-  </ion-item>
-
-  <ion-item *ngIf="filter.enabled">
-    <ion-label position="floating">{{ 'pages.settings.list.fileSizeFilter.maxSize' | translate }}</ion-label>
-    <ion-input inputmode="numeric" [(ngModel)]="filter.maxSize" (ngModelChange)="setSettings()"></ion-input>
-  </ion-item>
-
-  <ion-item *ngIf="filter.enabled">
-    <ion-label position="floating">{{ 'pages.settings.list.fileSizeFilter.minSize' | translate }}</ion-label>
-    <ion-input inputmode="numeric" [(ngModel)]="filter.minSize" (ngModelChange)="setSettings()"></ion-input>
-  </ion-item>
-</ion-list>
+@if (settings) {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        <ion-icon name="funnel-outline"></ion-icon>
+        {{ 'pages.settings.list.fileSizeFilter.header' | translate }} ({{ category }})
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-toggle [(ngModel)]="filter.enabled" (ngModelChange)="setSettings()">{{
+        'pages.settings.list.fileSizeFilter.enabled' | translate
+      }}</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <em>{{ 'pages.settings.list.fileSizeFilter.packageWarning' | translate }}</em>
+    </ion-item>
+    @if (filter.enabled) {
+      <ion-item>
+        <ion-label position="floating">{{ 'pages.settings.list.fileSizeFilter.maxSize' | translate }}</ion-label>
+        <ion-input inputmode="numeric" [(ngModel)]="filter.maxSize" (ngModelChange)="setSettings()"></ion-input>
+      </ion-item>
+    }
+    @if (filter.enabled) {
+      <ion-item>
+        <ion-label position="floating">{{ 'pages.settings.list.fileSizeFilter.minSize' | translate }}</ion-label>
+        <ion-input inputmode="numeric" [(ngModel)]="filter.minSize" (ngModelChange)="setSettings()"></ion-input>
+      </ion-item>
+    }
+  </ion-list>
+}

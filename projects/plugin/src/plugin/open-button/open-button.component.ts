@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import {
   LoadingController,
@@ -36,7 +35,7 @@ import { playOutline, listOutline } from 'ionicons/icons';
   templateUrl: './open-button.component.html',
   styleUrls: ['./open-button.component.scss'],
   standalone: true,
-  imports: [NgIf, FileSizePipe, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonItemOption],
+  imports: [FileSizePipe, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonItemOption],
 })
 export class OpenButtonComponent implements OnInit {
   @Input() movie: Movie;

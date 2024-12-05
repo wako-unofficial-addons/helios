@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -36,7 +35,6 @@ import { TorboxApiService } from '../../services/torbox/services/torbox-api.serv
   styleUrls: ['./debrid-account.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
     FormsModule,
     TranslateModule,
     IonCard,

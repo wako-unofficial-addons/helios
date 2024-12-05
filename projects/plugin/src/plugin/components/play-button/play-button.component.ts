@@ -1,4 +1,3 @@
-import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -23,9 +22,7 @@ import { playOutline } from 'ionicons/icons';
   styleUrls: ['./play-button.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
     FormsModule,
-    NgFor,
     TranslateModule,
     IonList,
     IonListHeader,

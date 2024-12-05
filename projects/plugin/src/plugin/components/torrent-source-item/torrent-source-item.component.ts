@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { IonBadge, IonCol, IonGrid, IonIcon, IonRippleEffect, IonRow } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -13,7 +12,7 @@ import { OpenSourceService } from '../../services/open-source.service';
   templateUrl: './torrent-source-item.component.html',
   styleUrls: ['./torrent-source-item.component.scss'],
   standalone: true,
-  imports: [NgIf, FileSizePipe, IonRippleEffect, IonIcon, IonGrid, IonRow, IonCol, IonBadge],
+  imports: [FileSizePipe, IonRippleEffect, IonIcon, IonGrid, IonRow, IonCol, IonBadge],
 })
 export class TorrentSourceItemComponent {
   @Input()

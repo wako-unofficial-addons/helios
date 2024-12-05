@@ -1,5 +1,16 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { AlertController, IonCard, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonList, IonItem, IonCardSubtitle } from '@ionic/angular/standalone';
+import {
+  AlertController,
+  IonCard,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonList,
+  IonItem,
+  IonCardSubtitle,
+} from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import { SourceQuery } from '../../entities/source-query';
 import { StreamLink, StreamLinkSource } from '../../entities/stream-link-source';
@@ -12,166 +23,165 @@ import { RealDebridTorrentsInfoForm } from '../../services/real-debrid/forms/tor
 import { RealDebridFolderListForm } from '../../services/real-debrid/forms/torrents/real-debrid-torrents-list.form';
 import { RealDebridUnrestrictLinkForm } from '../../services/real-debrid/forms/unrestrict/real-debrid-unrestrict-link.form';
 
-import { NgFor, NgIf } from '@angular/common';
 import { DebridAccountService } from '../../services/debrid-account.service';
 import { PremiumizeItemDeleteForm } from '../../services/premiumize/forms/item/premiumize-item-delete.form';
-import { addIcons } from "ionicons";
-import { arrowBack, home, folderOpenOutline, documentOutline, play, trash } from "ionicons/icons";
+import { addIcons } from 'ionicons';
+import { arrowBack, home, folderOpenOutline, documentOutline, play, trash } from 'ionicons/icons';
 
 @Component({
-    selector: 'wk-debrid-files',
-    templateUrl: './debrid-files.component.html',
-    styleUrls: ['./debrid-files.component.scss'],
-    standalone: true,
-    imports: [NgIf, NgFor, IonCard, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonList, IonItem, IonCardSubtitle],
+  selector: 'wk-debrid-files',
+  templateUrl: './debrid-files.component.html',
+  styleUrls: ['./debrid-files.component.scss'],
+  standalone: true,
+  imports: [IonCard, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonList, IonItem, IonCardSubtitle],
 })
 export class DebridFilesComponent implements OnInit {
-    public status;
+  public status;
 
-    public responsePM;
-    public responseRD;
+  public responsePM;
+  public responseRD;
 
-    public pmActive;
-    public rdActive;
+  public pmActive;
+  public rdActive;
 
-    constructor(
-        private ngZone: NgZone,
-        private openSourceService: OpenSourceService,
-        private alertController: AlertController,
-        private translateService: TranslateService,
-        private debridAccountService: DebridAccountService,
-    ) {
-        addIcons({ arrowBack, home, folderOpenOutline, documentOutline, play, trash });
-    }
+  constructor(
+    private ngZone: NgZone,
+    private openSourceService: OpenSourceService,
+    private alertController: AlertController,
+    private translateService: TranslateService,
+    private debridAccountService: DebridAccountService,
+  ) {
+    addIcons({ arrowBack, home, folderOpenOutline, documentOutline, play, trash });
+  }
 
-    ngOnInit() {
-        this.listAll('', 'init');
-    }
+  ngOnInit() {
+    this.listAll('', 'init');
+  }
 
-    public async listAll(folderID, debrid?) {
-        if (debrid == 'pm') {
-            this.status = 'pm';
-            this.responseRD = null;
+  public async listAll(folderID, debrid?) {
+    if (debrid == 'pm') {
+      this.status = 'pm';
+      this.responseRD = null;
 
-            this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
-        } else if (debrid == 'rd') {
-            this.status = 'rd';
-            this.responsePM = null;
+      this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
+    } else if (debrid == 'rd') {
+      this.status = 'rd';
+      this.responsePM = null;
 
-            this.listAllRD(folderID);
-        } else if (debrid == 'init') {
-            this.status = 'init';
+      this.listAllRD(folderID);
+    } else if (debrid == 'init') {
+      this.status = 'init';
 
-            this.debridAccountService.getPremiumizeSettings().then(async (settings) => {
-                if (settings !== null) {
-                    this.pmActive = true;
-                    this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
-                }
-            });
-
-            this.debridAccountService.getRealDebridSettings().then((settings) => {
-                if (settings !== null) {
-                    this.rdActive = true;
-                    this.listAllRD(folderID);
-                }
-            });
+      this.debridAccountService.getPremiumizeSettings().then(async (settings) => {
+        if (settings !== null) {
+          this.pmActive = true;
+          this.responsePM = await PremiumizeFolderListForm.submit(folderID).toPromise();
         }
-    }
+      });
 
-    public async listAllRD(folderID) {
-        let listContent;
-
-        if (folderID == '') {
-            listContent = await RealDebridFolderListForm.submit().toPromise();
-            this.responseRD = { item: false, content: listContent };
-        } else {
-            listContent = await RealDebridTorrentsInfoForm.submit(folderID).toPromise();
-            this.responseRD = {
-                item: true,
-                content: [listContent],
-            };
+      this.debridAccountService.getRealDebridSettings().then((settings) => {
+        if (settings !== null) {
+          this.rdActive = true;
+          this.listAllRD(folderID);
         }
+      });
+    }
+  }
+
+  public async listAllRD(folderID) {
+    let listContent;
+
+    if (folderID == '') {
+      listContent = await RealDebridFolderListForm.submit().toPromise();
+      this.responseRD = { item: false, content: listContent };
+    } else {
+      listContent = await RealDebridTorrentsInfoForm.submit(folderID).toPromise();
+      this.responseRD = {
+        item: true,
+        content: [listContent],
+      };
+    }
+  }
+
+  public openLink(item, debrid?) {
+    const sourceQuery = { category: 'movie' } as SourceQuery;
+
+    let streamLinkSource;
+    if (debrid == 'rd') {
+      streamLinkSource = new StreamLinkSource(
+        item.id,
+        item.name,
+        item.size,
+        'other',
+        'cached_torrent',
+        false,
+        'RD',
+        'RD',
+        item.link,
+      );
+    } else {
+      streamLinkSource = new StreamLinkSource(
+        item.id,
+        item.name,
+        item.size,
+        'other',
+        'cached_torrent',
+        false,
+        'PM',
+        'PM',
+        item.link,
+      );
     }
 
-    public openLink(item, debrid?) {
-        const sourceQuery = { category: 'movie' } as SourceQuery;
+    const streamLink = new StreamLink(item.name, item.link, item.name, true, item.stream_link);
 
-        let streamLinkSource;
-        if (debrid == 'rd') {
-            streamLinkSource = new StreamLinkSource(
-                item.id,
-                item.name,
-                item.size,
-                'other',
-                'cached_torrent',
-                false,
-                'RD',
-                'RD',
-                item.link,
-            );
-        } else {
-            streamLinkSource = new StreamLinkSource(
-                item.id,
-                item.name,
-                item.size,
-                'other',
-                'cached_torrent',
-                false,
-                'PM',
-                'PM',
-                item.link,
-            );
-        }
+    streamLinkSource.streamLinks = [streamLink];
 
-        const streamLink = new StreamLink(item.name, item.link, item.name, true, item.stream_link);
+    this.openSourceService.openStreamLinkSource(streamLinkSource, sourceQuery);
+  }
 
-        streamLinkSource.streamLinks = [streamLink];
+  public async unrestrictLink(item) {
+    let unrestrictedLink = await RealDebridUnrestrictLinkForm.submit(item).toPromise();
+    item = {
+      id: unrestrictedLink.id,
+      name: unrestrictedLink.filename,
+      size: unrestrictedLink.filesize,
+      link: unrestrictedLink.download,
+      stream_link: unrestrictedLink.download,
+    };
+    this.openLink(item, 'rd');
+  }
 
-        this.openSourceService.openStreamLinkSource(streamLinkSource, sourceQuery);
-    }
+  async removeItemAlert(itemId, itemName, folderId, debrid) {
+    const alert = await this.alertController.create({
+      header: this.translateService.instant('alerts.removeAlert'),
+      message: itemName,
+      buttons: [
+        {
+          text: this.translateService.instant('alerts.cancelButton'),
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {},
+        },
+        {
+          text: this.translateService.instant('alerts.removeButton'),
+          handler: async () => {
+            if (debrid == 'pm') {
+              await PremiumizeItemDeleteForm.submit(itemId).toPromise();
+              this.ngZone.run(() => {
+                this.listAll(folderId);
+              });
+            } else if (debrid == 'rd') {
+              await RealDebridTorrentsDeleteForm.submit(itemId).toPromise();
+              this.ngZone.run(() => {
+                this.listAll(folderId);
+              });
+            }
+          },
+        },
+      ],
+    });
 
-    public async unrestrictLink(item) {
-        let unrestrictedLink = await RealDebridUnrestrictLinkForm.submit(item).toPromise();
-        item = {
-            id: unrestrictedLink.id,
-            name: unrestrictedLink.filename,
-            size: unrestrictedLink.filesize,
-            link: unrestrictedLink.download,
-            stream_link: unrestrictedLink.download,
-        };
-        this.openLink(item, 'rd');
-    }
-
-    async removeItemAlert(itemId, itemName, folderId, debrid) {
-        const alert = await this.alertController.create({
-            header: this.translateService.instant('alerts.removeAlert'),
-            message: itemName,
-            buttons: [
-                {
-                    text: this.translateService.instant('alerts.cancelButton'),
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: () => { },
-                },
-                {
-                    text: this.translateService.instant('alerts.removeButton'),
-                    handler: async () => {
-                        if (debrid == 'pm') {
-                            await PremiumizeItemDeleteForm.submit(itemId).toPromise();
-                            this.ngZone.run(() => {
-                                this.listAll(folderId);
-                            });
-                        } else if (debrid == 'rd') {
-                            await RealDebridTorrentsDeleteForm.submit(itemId).toPromise();
-                            this.ngZone.run(() => {
-                                this.listAll(folderId);
-                            });
-                        }
-                    },
-                },
-            ],
-        });
-
-        await alert.present();
-    }
+    await alert.present();
+  }
 }

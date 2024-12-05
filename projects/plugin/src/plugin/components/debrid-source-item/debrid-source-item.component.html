@@ -3,7 +3,9 @@
     <ion-ripple-effect></ion-ripple-effect>
     <p style="font-size: 15px">
       {{ source.title }}
-      <ion-icon size="small" color="warning" *ngIf="isBestSource === true" name="trophy-outline"></ion-icon>
+      @if (isBestSource === true) {
+        <ion-icon size="small" color="warning" name="trophy-outline"></ion-icon>
+      }
       <br />
     </p>
     <p>
@@ -13,7 +15,9 @@
             <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality }}</ion-badge>
 
             <ion-badge color="light"> {{ source.size | bsFileSize }}</ion-badge>
-            <ion-icon *ngIf="source.isPackage" name="cube-outline" class="ion-margin-start"></ion-icon>
+            @if (source.isPackage) {
+              <ion-icon name="cube-outline" class="ion-margin-start"></ion-icon>
+            }
           </ion-col>
 
           <ion-col class="ion-text-right ion-no-margin ion-no-padding">
@@ -25,12 +29,11 @@
           <ion-col class="ion-text-left ion-no-margin ion-no-padding">
             <ion-badge color="dark">{{ source.provider }}</ion-badge>
           </ion-col>
-          <ion-col
-            *ngIf="source.type === 'unchecked_cached_torrent'"
-            class="ion-text-right ion-no-margin ion-no-padding"
-          >
-            <ion-badge color="warning">Not checked</ion-badge>
-          </ion-col>
+          @if (source.type === 'unchecked_cached_torrent') {
+            <ion-col class="ion-text-right ion-no-margin ion-no-padding">
+              <ion-badge color="warning">Not checked</ion-badge>
+            </ion-col>
+          }
         </ion-row>
       </ion-grid>
     </p>

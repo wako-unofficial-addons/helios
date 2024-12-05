@@ -1,4 +1,3 @@
-import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -32,10 +31,8 @@ import { settingsOutline, peopleOutline, wifiOutline, listOutline, funnelOutline
   standalone: true,
   imports: [
     SupportComponent,
-    NgIf,
     FormsModule,
     PlayButtonComponent,
-    NgFor,
     FileSizeFilterComponent,
     TranslateModule,
     IonList,

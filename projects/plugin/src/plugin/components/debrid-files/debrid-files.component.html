@@ -1,89 +1,117 @@
-<ion-card *ngIf="responsePM">
-  <ion-header *ngIf="status !== 'init'">
-    <ion-toolbar>
-      <ion-buttons slot="start" *ngIf="status == 'pm' && rdActive == true">
-        <ion-button (click)="listAll('', 'rd')" fill="solid" color="primary">RD</ion-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button (click)="listAll(responsePM.parent_id, 'pm')" fill="solid" *ngIf="responsePM.name !== 'root'">
-          <ion-icon name="arrow-back"></ion-icon>
-        </ion-button>
-        <ion-button (click)="listAll('', 'pm')" fill="solid">
-          <ion-icon name="home"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+@if (responsePM) {
+  <ion-card>
+    @if (status !== 'init') {
+      <ion-header>
+        <ion-toolbar>
+          @if (status == 'pm' && rdActive == true) {
+            <ion-buttons slot="start">
+              <ion-button (click)="listAll('', 'rd')" fill="solid" color="primary">RD</ion-button>
+            </ion-buttons>
+          }
+          <ion-buttons slot="end">
+            @if (responsePM.name !== 'root') {
+              <ion-button (click)="listAll(responsePM.parent_id, 'pm')" fill="solid">
+                <ion-icon name="arrow-back"></ion-icon>
+              </ion-button>
+            }
+            <ion-button (click)="listAll('', 'pm')" fill="solid">
+              <ion-icon name="home"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+    }
+    @for (item of responsePM.content; track item) {
+      <ion-list inset="true" lines="inset">
+        @if (item.type === 'folder') {
+          <ion-item (click)="listAll(item.id, 'pm')" button="true">
+            <ion-icon name="folder-open-outline" class="ion-margin-end" slot="start"></ion-icon>
+            <ion-card-subtitle class="title"> {{ item.name }} </ion-card-subtitle>
+          </ion-item>
+        }
+        @if (item.type === 'file') {
+          <ion-item>
+            <ion-icon name="document-outline" class="ion-margin-end" slot="start"></ion-icon>
+            <ion-button (click)="openLink(item)" class="ion-no-margin button-custom-size" fill="outline" slot="end">
+              <ion-icon name="play"></ion-icon>
+            </ion-button>
+            <ion-button
+              (click)="removeItemAlert(item.id, item.name, responsePM.folder_id, 'pm')"
+              class="ion-no-margin button-custom-size"
+              fill="outline"
+              slot="end"
+              color="danger"
+            >
+              <ion-icon class="icon-trash" name="trash"></ion-icon>
+            </ion-button>
+            <ion-card-subtitle class="title"> {{ item.name }} </ion-card-subtitle>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  </ion-card>
+}
 
-  <ion-list inset="true" lines="inset" *ngFor="let item of responsePM.content">
-    <ion-item (click)="listAll(item.id, 'pm')" button="true" *ngIf="item.type === 'folder'">
-      <ion-icon name="folder-open-outline" class="ion-margin-end" slot="start"></ion-icon>
-      <ion-card-subtitle class="title"> {{ item.name }} </ion-card-subtitle>
-    </ion-item>
-    <ion-item *ngIf="item.type === 'file'">
-      <ion-icon name="document-outline" class="ion-margin-end" slot="start"></ion-icon>
-      <ion-button (click)="openLink(item)" class="ion-no-margin button-custom-size" fill="outline" slot="end">
-        <ion-icon name="play"></ion-icon>
-      </ion-button>
-      <ion-button
-        (click)="removeItemAlert(item.id, item.name, responsePM.folder_id, 'pm')"
-        class="ion-no-margin button-custom-size"
-        fill="outline"
-        slot="end"
-        color="danger"
-      >
-        <ion-icon class="icon-trash" name="trash"></ion-icon>
-      </ion-button>
-      <ion-card-subtitle class="title"> {{ item.name }} </ion-card-subtitle>
-    </ion-item>
-  </ion-list>
-</ion-card>
-
-<ion-card *ngIf="responseRD">
-  <ion-header *ngIf="status !== 'init'">
-    <ion-toolbar>
-      <ion-buttons slot="start" *ngIf="status == 'rd' && pmActive == true">
-        <ion-button (click)="listAll('', 'pm')" fill="solid" color="primary">PM</ion-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button (click)="listAll('', 'rd')" fill="solid">
-          <ion-icon name="home"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <div *ngIf="responseRD.item == true">
-    <ion-list inset="true" lines="inset" *ngFor="let item of responseRD.content[0].files; index as i">
-      <ion-item>
-        <ion-icon name="document-outline" class="ion-margin-end" slot="start"></ion-icon>
-        <ion-card-subtitle class="title"> {{ item.path }} </ion-card-subtitle>
-        <ion-button
-          (click)="unrestrictLink(responseRD.content[0].links[i])"
-          class="ion-no-margin button-custom-size"
-          fill="outline"
-          slot="end"
-        >
-          <ion-icon name="play"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-  </div>
-  <div *ngIf="responseRD.item == false">
-    <ion-list inset="true" lines="inset" *ngFor="let item of responseRD.content">
-      <ion-item (click)="listAll(item.id, 'rd')" button="true" *ngIf="responseRD.item !== true">
-        <ion-icon name="folder-open-outline" class="ion-margin-end" slot="start"></ion-icon>
-        <ion-card-subtitle class="title"> {{ item.filename }} </ion-card-subtitle>
-        <ion-button
-          (click)="removeItemAlert(item.id, item.filename, '', 'rd')"
-          class="ion-no-margin button-custom-size"
-          fill="outline"
-          slot="end"
-          color="danger"
-        >
-          <ion-icon class="icon-trash" name="trash"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-  </div>
-</ion-card>
+@if (responseRD) {
+  <ion-card>
+    @if (status !== 'init') {
+      <ion-header>
+        <ion-toolbar>
+          @if (status == 'rd' && pmActive == true) {
+            <ion-buttons slot="start">
+              <ion-button (click)="listAll('', 'pm')" fill="solid" color="primary">PM</ion-button>
+            </ion-buttons>
+          }
+          <ion-buttons slot="end">
+            <ion-button (click)="listAll('', 'rd')" fill="solid">
+              <ion-icon name="home"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+    }
+    @if (responseRD.item == true) {
+      <div>
+        @for (item of responseRD.content[0].files; track item; let i = $index) {
+          <ion-list inset="true" lines="inset">
+            <ion-item>
+              <ion-icon name="document-outline" class="ion-margin-end" slot="start"></ion-icon>
+              <ion-card-subtitle class="title"> {{ item.path }} </ion-card-subtitle>
+              <ion-button
+                (click)="unrestrictLink(responseRD.content[0].links[i])"
+                class="ion-no-margin button-custom-size"
+                fill="outline"
+                slot="end"
+              >
+                <ion-icon name="play"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        }
+      </div>
+    }
+    @if (responseRD.item == false) {
+      <div>
+        @for (item of responseRD.content; track item) {
+          <ion-list inset="true" lines="inset">
+            @if (responseRD.item !== true) {
+              <ion-item (click)="listAll(item.id, 'rd')" button="true">
+                <ion-icon name="folder-open-outline" class="ion-margin-end" slot="start"></ion-icon>
+                <ion-card-subtitle class="title"> {{ item.filename }} </ion-card-subtitle>
+                <ion-button
+                  (click)="removeItemAlert(item.id, item.filename, '', 'rd')"
+                  class="ion-no-margin button-custom-size"
+                  fill="outline"
+                  slot="end"
+                  color="danger"
+                >
+                  <ion-icon class="icon-trash" name="trash"></ion-icon>
+                </ion-button>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      </div>
+    }
+  </ion-card>
+}
