@@ -22,6 +22,7 @@ import { SourceListComponent } from '../source-list/source-list.component';
 import { SourcePopoverFilterComponent } from '../source-popover-filter/source-popover-filter.component';
 import { addIcons } from 'ionicons';
 import { flagOutline, searchOutline, listOutline, funnelOutline, closeOutline } from 'ionicons/icons';
+import { WakoGlobal } from '@wako-app/mobile-sdk';
 
 @Component({
   templateUrl: './search-source.component.html',
@@ -54,6 +55,7 @@ export class SearchSourceComponent implements OnInit {
   showContent = true;
 
   disableSearch = true;
+  isTvLayout = false;
 
   constructor(
     private modalCtrl: ModalController,
@@ -63,6 +65,7 @@ export class SearchSourceComponent implements OnInit {
     private popoverCtrl: PopoverController,
   ) {
     addIcons({ flagOutline, searchOutline, listOutline, funnelOutline, closeOutline });
+    this.isTvLayout = WakoGlobal && WakoGlobal.isTvLayout;
   }
 
   async ngOnInit() {

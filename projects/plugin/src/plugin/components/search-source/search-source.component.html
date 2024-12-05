@@ -41,15 +41,17 @@
   }
 </ion-content>
 
-<ion-footer>
-  <ion-toolbar>
-    <ion-title>
-      {{ 'shared.cancel' | translate }}
-    </ion-title>
-    <ion-buttons slot="start">
-      <ion-button color="light" (click)="dismiss()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-footer>
+@if (!isTvLayout) {
+  <ion-footer>
+    <ion-toolbar>
+      <ion-title>
+        {{ 'shared.cancel' | translate }}
+      </ion-title>
+      <ion-buttons slot="start">
+        <ion-button color="light" (click)="dismiss()">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+}
