@@ -34,7 +34,7 @@ import {
   IonInfiniteScrollContent,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { lastValueFrom, Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { HideKeyboardEnterDirective } from '../../directives/hide-keyboard-enter.directive';
 import { KodiOpenMedia } from '../../entities/kodi-open-media';
@@ -128,23 +128,17 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   totalStreamLinkSource = 0;
   totalTorrentSource = 0;
 
-  private streamLinkSourcesByQualityCopy: SourceByQuality<StreamLinkSource>;
-  private torrentSourcesByQualityCopy: SourceByQuality<TorrentSource>;
+  allStreamLinkSources: StreamLinkSource[] = [];
+  allTorrentSources: TorrentSource[] = [];
 
-  private streamLinkSourcesCopy: StreamLinkSource[] = [];
-  private torrentSourcesCopy: TorrentSource[] = [];
-
-  streamLinkSources: StreamLinkSource[] = [];
-  torrentSources: TorrentSource[] = [];
-
-  streamLinkSourcesByQuality: SourceByQuality<StreamLinkSource> = {
+  streamLinkSourcesByQualityFiltered: SourceByQuality<StreamLinkSource> = {
     sources2160p: [],
     sources1080p: [],
     sources720p: [],
     sourcesOther: [],
   };
 
-  torrentSourcesByQuality: SourceByQuality<TorrentSource> = {
+  torrentSourcesByQualityFiltered: SourceByQuality<TorrentSource> = {
     sources2160p: [],
     sources1080p: [],
     sources720p: [],
@@ -203,7 +197,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.hasDebridAccount = await this.debridAccountService.hasAtLeastOneAccount();
 
     if (this.kodiOpenMedia) {
-      this.sourceQuery = await SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia).toPromise();
+      this.sourceQuery = await lastValueFrom(SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia));
       this.providers = await this.providerService.getAll(true, this.sourceQuery.category);
     }
 
@@ -222,7 +216,11 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.settingsSubscription = this.settingsService.settings$.subscribe((settings) => {
       this.settings = settings.newValue;
-      this.filterSources(this.streamLinkSources, this.torrentSources, this.settings);
+      this.filterSources({
+        streamLinkSources: this.allStreamLinkSources,
+        torrentSources: this.allTorrentSources,
+        settings: this.settings,
+      });
       this.cdr.detectChanges();
     });
 
@@ -258,22 +256,22 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.totalStreamLinkSource = 0;
     this.totalTorrentSource = 0;
 
-    this.streamLinkSourcesByQuality = {
+    this.streamLinkSourcesByQualityFiltered = {
       sources2160p: [],
       sources1080p: [],
       sources720p: [],
       sourcesOther: [],
     };
 
-    this.torrentSourcesByQuality = {
+    this.torrentSourcesByQualityFiltered = {
       sources2160p: [],
       sources1080p: [],
       sources720p: [],
       sourcesOther: [],
     };
 
-    this.streamLinkSources = [];
-    this.torrentSources = [];
+    this.allStreamLinkSources = [];
+    this.allTorrentSources = [];
 
     this.sourceByProviders = [];
 
@@ -291,14 +289,14 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
         category: this.manualSearchCategory,
       };
     } else {
-      this.sourceQuery = await SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia).toPromise();
+      this.sourceQuery = await lastValueFrom(SourceQueryFromKodiOpenMediaQuery.getData(this.kodiOpenMedia));
 
       if (this.kodiOpenMedia.movie) {
-        this.lastPlayedSource = await this.sourceService.getLastMoviePlayedSource().toPromise();
+        this.lastPlayedSource = await lastValueFrom(this.sourceService.getLastMoviePlayedSource());
       } else if (this.kodiOpenMedia.show && this.kodiOpenMedia.episode) {
-        this.lastPlayedSource = await this.sourceService
-          .getLastEpisodePlayedSource(this.kodiOpenMedia.show.ids.trakt)
-          .toPromise();
+        this.lastPlayedSource = await lastValueFrom(
+          this.sourceService.getLastEpisodePlayedSource(this.kodiOpenMedia.show.ids.trakt),
+        );
       }
     }
 
@@ -330,13 +328,13 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
 
         delete this.providerIsLoading[sourceByProvider.provider];
 
-        this.setSources(sourceByProvider, this.settings);
+        this.setSources({ sourceByProvider, settings: this.settings });
 
         this.progressBarValue = total / this.providers.length;
       });
   }
 
-  private setSources(sourceByProvider: SourceByProvider, settings: Settings) {
+  private setSources({ sourceByProvider, settings }: { sourceByProvider: SourceByProvider; settings: Settings }) {
     const sources = this.sourceByProviders.slice(0);
     sources.push(sourceByProvider);
 
@@ -367,48 +365,61 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     streamLinkSources = removeDuplicates<StreamLinkSource>(streamLinkSources, 'id');
     torrentSources = removeDuplicates<TorrentSource>(torrentSources, 'hash');
 
-    this.filterSources(streamLinkSources, torrentSources, settings);
-    this.cdr.markForCheck();
+    this.filterSources({ streamLinkSources, torrentSources, settings });
   }
 
-  private filterSources(streamLinkSources: StreamLinkSource[], torrentSources: TorrentSource[], settings: Settings) {
-    if (
-      this.areSourcesEqual(this.streamLinkSourcesCopy, streamLinkSources) &&
-      this.areSourcesEqual(this.torrentSourcesCopy, torrentSources)
-    ) {
-      return;
-    }
-
-    const streamSortMethod: (source) => void = sortTorrentsBySize;
+  private filterSources({
+    streamLinkSources,
+    torrentSources,
+    settings,
+  }: {
+    streamLinkSources: StreamLinkSource[];
+    torrentSources: TorrentSource[];
+    settings: Settings;
+  }) {
+    const streamLinkSortMethod: (source) => void = sortTorrentsBySize;
     const torrentSortMethod = this.getCachedSortMethod(torrentSources, settings.sourceFilter.sortTorrentsBy);
 
-    streamSortMethod(streamLinkSources);
+    streamLinkSortMethod(streamLinkSources);
     torrentSortMethod(torrentSources);
 
-    this.streamLinkSources = streamLinkSources;
-    this.torrentSources = torrentSources;
+    let streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, streamLinkSortMethod);
+    let torrentSourcesByQuality = getSourcesByQuality<TorrentSource>(torrentSources, torrentSortMethod);
 
-    this.streamLinkSourcesByQuality = getSourcesByQuality<StreamLinkSource>(streamLinkSources, streamSortMethod);
-    this.torrentSourcesByQuality = getSourcesByQuality<TorrentSource>(torrentSources, torrentSortMethod);
+    this.allStreamLinkSources = streamLinkSources;
+    this.allTorrentSources = torrentSources;
 
-    this.streamLinkSourcesByQualityCopy = Object.assign(this.streamLinkSourcesByQuality);
-    this.torrentSourcesByQualityCopy = Object.assign(this.torrentSourcesByQuality);
+    if (this.searchInput.length > 0) {
+      streamLinkSourcesByQuality = this.getSourcesFilteredByQuality<StreamLinkSource>(
+        streamLinkSourcesByQuality,
+        this.searchInput,
+      );
 
-    this.streamLinkSourcesCopy = Object.assign(this.streamLinkSources);
-    this.torrentSourcesCopy = Object.assign(this.torrentSources);
+      torrentSourcesByQuality = this.getSourcesFilteredByQuality<TorrentSource>(
+        torrentSourcesByQuality,
+        this.searchInput,
+      );
+    }
+
+    this.streamLinkSourcesByQualityFiltered = streamLinkSourcesByQuality;
+    this.torrentSourcesByQualityFiltered = torrentSourcesByQuality;
 
     this.updateTotalCounts();
 
-    if (this.searchInput.length > 0) {
-      this.filterSearch();
-    }
-
     this.resetPagination();
+
+    this.cdr.detectChanges();
   }
 
   private updateTotalCounts() {
-    this.totalStreamLinkSource = this.streamLinkSources.length;
-    this.totalTorrentSource = this.torrentSources.length;
+    this.totalStreamLinkSource = Object.keys(this.streamLinkSourcesByQualityFiltered).reduce(
+      (acc, quality) => acc + this.streamLinkSourcesByQualityFiltered[quality].length,
+      0,
+    );
+    this.totalTorrentSource = Object.keys(this.torrentSourcesByQualityFiltered).reduce(
+      (acc, quality) => acc + this.torrentSourcesByQualityFiltered[quality].length,
+      0,
+    );
   }
 
   private getCachedSortMethod(sources: TorrentSource[], method: string): (source: any) => void {
@@ -428,22 +439,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
       this.sortTorrentsCache.set(cacheKey, sortMethod);
     }
     return this.sortTorrentsCache.get(cacheKey);
-  }
-
-  private getSourcesFiltered<T>(sources: T[], filter: string) {
-    const cacheKey = `${filter}-${sources.length}`;
-    if (!this.filterSourcesCache.has(cacheKey)) {
-      const filtered = sources.filter((source: any) => {
-        return this.isMatching(source.title + ' ' + source.provider, filter);
-      });
-      this.filterSourcesCache.set(cacheKey, filtered);
-    }
-    return this.filterSourcesCache.get(cacheKey);
-  }
-
-  private areSourcesEqual<T extends { id: string }>(sources1: T[], sources2: T[]): boolean {
-    if (sources1.length !== sources2.length) return false;
-    return sources1.every((source, index) => source.id === sources2[index].id);
   }
 
   getProviderStatus(name: string) {
@@ -486,58 +481,20 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   onSearch(event: any) {
     this.searchInput = event.target.value ? event.target.value : '';
 
-    if (this.searchInput === '') {
-      this.resetSearch();
-      return;
-    }
-    this.filterSearch();
+    this.filterSources({
+      streamLinkSources: this.allStreamLinkSources,
+      torrentSources: this.allTorrentSources,
+      settings: this.settings,
+    });
   }
 
-  private filterSearch() {
-    const streamLinkSourceByQuality: SourceByQuality<StreamLinkSource> = {
+  private getSourcesFilteredByQuality<T>(sources: SourceByQuality<T>, filter: string) {
+    const targets: SourceByQuality<T> = {
       sources2160p: [],
       sources1080p: [],
       sources720p: [],
       sourcesOther: [],
     };
-
-    const torrentSourceByQuality: SourceByQuality<TorrentSource> = {
-      sources2160p: [],
-      sources1080p: [],
-      sources720p: [],
-      sourcesOther: [],
-    };
-
-    this.streamLinkSourcesByQuality = this.getSourcesFilteredByQuality<StreamLinkSource>(
-      streamLinkSourceByQuality,
-      this.streamLinkSourcesByQualityCopy,
-      this.searchInput,
-    );
-
-    this.torrentSourcesByQuality = this.getSourcesFilteredByQuality<TorrentSource>(
-      torrentSourceByQuality,
-      this.torrentSourcesByQualityCopy,
-      this.searchInput,
-    );
-
-    this.streamLinkSources = this.getSourcesFiltered<StreamLinkSource>(this.streamLinkSourcesCopy, this.searchInput);
-    this.torrentSources = this.getSourcesFiltered<TorrentSource>(this.torrentSourcesCopy, this.searchInput);
-
-    this.updateTotalCounts();
-  }
-
-  private resetSearch() {
-    this.searchInput = '';
-    this.streamLinkSourcesByQuality = Object.assign(this.streamLinkSourcesByQualityCopy);
-    this.torrentSourcesByQuality = Object.assign(this.torrentSourcesByQualityCopy);
-
-    this.streamLinkSources = Object.assign(this.streamLinkSourcesCopy);
-    this.torrentSources = Object.assign(this.torrentSourcesCopy);
-
-    this.updateTotalCounts();
-  }
-
-  private getSourcesFilteredByQuality<T>(targets: SourceByQuality<T>, sources: SourceByQuality<T>, filter: string) {
     Object.keys(targets).forEach((key) => {
       if (sources.hasOwnProperty(key)) {
         targets[key] = sources[key].filter((source: StreamLinkSource | TorrentSource) => {
@@ -559,12 +516,12 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     count?: number;
   }> {
     if (!this.settings.sourceFilter.groupStreamsByQuality) {
-      return this.streamLinkSources.map((source) => ({ isHeader: false, source }));
+      return this.allStreamLinkSources.map((source) => ({ isHeader: false, source }));
     }
 
     const result = [];
-    Object.keys(this.streamLinkSourcesByQuality).forEach((quality) => {
-      const sources = this.streamLinkSourcesByQuality[quality];
+    Object.keys(this.streamLinkSourcesByQualityFiltered).forEach((quality) => {
+      const sources = this.streamLinkSourcesByQualityFiltered[quality];
       if (sources.length > 0) {
         result.push({
           isHeader: true,
@@ -584,12 +541,12 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     count?: number;
   }> {
     if (!this.settings.sourceFilter.groupTorrentsByQuality) {
-      return this.torrentSources.map((source) => ({ isHeader: false, source }));
+      return this.allTorrentSources.map((source) => ({ isHeader: false, source }));
     }
 
     const result = [];
-    Object.keys(this.torrentSourcesByQuality).forEach((quality) => {
-      const sources = this.torrentSourcesByQuality[quality];
+    Object.keys(this.torrentSourcesByQualityFiltered).forEach((quality) => {
+      const sources = this.torrentSourcesByQualityFiltered[quality];
       if (sources.length > 0) {
         result.push({
           isHeader: true,

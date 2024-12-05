@@ -34,7 +34,7 @@
       <ion-searchbar
         wkHideKeyboardEnter
         *ngIf="segment === 'debrid' || segment === 'torrents'"
-        (ionChange)="onSearch($event)"
+        (ionInput)="onSearch($event)"
         [value]="searchInput"
         [placeholder]="'source-list.manualFilter' | translate"
         mode="ios"

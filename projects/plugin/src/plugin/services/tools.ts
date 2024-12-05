@@ -230,7 +230,10 @@ export function isEpisodeCodeMatchesFileName(episodeCode: string, filename: stri
   return match;
 }
 
-export function getSourcesByQuality<T>(sources: StreamLinkSource[] | TorrentSource[], sortFunction: (source) => void) {
+export function getSourcesByQuality<T>(
+  sources: StreamLinkSource[] | TorrentSource[],
+  sortFunction: (source: T[]) => void,
+) {
   const sourceByQuality: SourceByQuality<T> = {
     sources2160p: [],
     sources1080p: [],
