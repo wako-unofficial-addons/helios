@@ -167,7 +167,6 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   settings: Settings;
 
   private sortTorrentsCache = new Map<string, (source: any) => void>();
-  private filterSourcesCache = new Map<string, any[]>();
 
   private settingsSubscription: Subscription;
 
