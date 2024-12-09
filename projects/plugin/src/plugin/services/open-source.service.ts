@@ -1365,20 +1365,23 @@ export class OpenSourceService {
    *
    */
   private async resetPlaylistVideoUrls(playlistVideo: PlaylistVideo, showLoader = true) {
+    let newUrl: string = undefined;
     const customData: PlaylistVideoHeliosCustomData = playlistVideo.customData;
     if (customData.sourceQuery && customData.torrentSource) {
       if (customData.type === 'torrent') {
         const url = this.getStreamUrlFromSource(customData.torrentSource, customData.sourceQuery);
         if (url) {
           playlistVideo.url = url;
+          newUrl = url;
         }
       } else {
-        const sources = await this.cachedTorrentService
-          .getFromTorrents([customData.torrentSource], customData.sourceQuery)
-          .toPromise();
+        const sources = await lastValueFrom(
+          this.cachedTorrentService.getFromTorrents([customData.torrentSource], customData.sourceQuery),
+        );
+
         const source = sources.pop();
         if (!source) {
-          return;
+          return newUrl;
         }
         const streamLinks = await this.getStreamLinksWithLoader(source, customData.sourceQuery, showLoader);
         if (streamLinks) {
@@ -1388,7 +1391,7 @@ export class OpenSourceService {
 
           if (url) {
             playlistVideo.url = url;
-
+            newUrl = url;
             const transcodedUrl = this.getStreamUrlFromSource(source, customData.sourceQuery, true);
 
             if (transcodedUrl) {
@@ -1398,6 +1401,8 @@ export class OpenSourceService {
         }
       }
     }
+
+    return newUrl;
   }
 
   async openPlaylistVideo(playlistVideo: PlaylistVideo) {
