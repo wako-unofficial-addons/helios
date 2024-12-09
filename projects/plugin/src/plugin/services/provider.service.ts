@@ -14,6 +14,7 @@ const CACHE_TIMEOUT_PROVIDERS = '1d';
 export class ProviderService {
   private providerStorageKey = 'provider_key';
   private providerUrlsStorageKey = 'provider_urls';
+  private providerStatusStorageKey = 'provider_status';
 
   /**
    * In latest wako's sdk, it seems wako backups everything that's saved with WakoSettingsService
@@ -46,6 +47,8 @@ export class ProviderService {
       return;
     }
 
+    const providerStatus = await WakoSettingsService.getByCategory<string[]>(this.providerStatusStorageKey);
+
     if (JSON.stringify(providerUrlsToSync) !== JSON.stringify(providerUrls)) {
       logData('Restore providers', providerUrls, providerUrlsToSync);
       // Restore provider
@@ -56,6 +59,21 @@ export class ProviderService {
         await this.addProviderUrl(url).toPromise();
       }
     }
+
+    if (!providerStatus) {
+      // Not set yet
+      return;
+    }
+
+    const providerList = await this.getProviders();
+
+    Object.keys(providerList).forEach((key) => {
+      if (providerStatus.hasOwnProperty(key)) {
+        providerList[key].enabled = providerStatus[key];
+      }
+    });
+
+    await this.setProviders(providerList, false);
   }
 
   static getNameWithEmojiFlag(provider: Provider) {
@@ -200,7 +218,7 @@ export class ProviderService {
 
       Object.keys(oldProviders).forEach((key) => {
         if (providers.hasOwnProperty(key)) {
-          providers[key].enabled = oldProviders[key].enabled;
+          providers[key].enabled = oldProviders[key].enabled === true;
         }
       });
     }
@@ -209,7 +227,16 @@ export class ProviderService {
       if (!isAutomatic) {
         HeliosCacheService.clear();
       }
+      this.saveProviderStatus(providers);
     });
+  }
+
+  private saveProviderStatus(providers: ProviderList) {
+    const providerStatus: Record<string, boolean> = {};
+    Object.keys(providers).forEach((key) => {
+      providerStatus[key] = providers[key].enabled;
+    });
+    return WakoSettingsService.setByCategory(this.providerStatusStorageKey, providerStatus);
   }
 
   private setProvidersFromUrls(urls: string[], isAutomatic = false) {
