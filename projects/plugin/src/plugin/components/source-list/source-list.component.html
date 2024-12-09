@@ -27,7 +27,9 @@
         <div>
           <ion-segment (ionChange)="segment = $any($event).detail.value" [value]="segment" scrollable>
             <ion-segment-button value="debrid">
-              <ion-spinner *ngIf="providerIsLoading['debrid']" name="dots"></ion-spinner>
+              @if (providerIsLoading['debrid']) {
+                <ion-spinner name="dots"></ion-spinner>
+              }
               <ion-label> {{ 'sources.segments.debrid' | translate }} ({{ totalStreamLinkSource }})</ion-label>
             </ion-segment-button>
             <ion-segment-button value="torrents">
