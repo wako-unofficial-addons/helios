@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   PlayButtonAction,
   PlayButtonActionAndroid,
@@ -7,9 +7,11 @@ import {
   Settings,
 } from '../entities/settings';
 import { WakoGlobal, WakoSettingsService } from '@wako-app/mobile-sdk';
+import { Platform } from '@ionic/angular';
 
 @Injectable()
 export class SettingsService {
+  private readonly platform = inject(Platform);
   private readonly storageCategory = 'plugin.helios_settings';
 
   settings$ = WakoSettingsService.onChangeByCategory<Settings>(this.storageCategory);
@@ -19,7 +21,7 @@ export class SettingsService {
   async get() {
     let settings: Settings = await WakoSettingsService.getByCategory<Settings>(this.storageCategory);
 
-    const defaultSettings = new Settings();
+    const defaultSettings = new Settings(this.platform);
     if (!settings) {
       settings = defaultSettings;
     }

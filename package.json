@@ -30,7 +30,7 @@
     "@angular/router": "^18.2.11",
     "@ionic/angular": "^8.4.1",
     "@ionic/storage-angular": "^4.0.0",
-    "@wako-app/mobile-sdk": "10.0.3",
+    "@wako-app/mobile-sdk": "10.0.6",
     "concurrently": "^8.2.2",
     "ionicons": "^7.4.0",
     "ngx-clipboard": "^16.0.0",

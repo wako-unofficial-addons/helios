@@ -1,4 +1,7 @@
 import { SourceQuality } from './source-quality';
+import { inject } from '@angular/core';
+import { Platform } from '@ionic/angular';
+import { WakoFileActionAndroid, WakoFileActionIos } from '@wako-app/mobile-sdk';
 
 export declare type PlayButtonAction =
   | 'open-kodi'
@@ -18,7 +21,6 @@ export declare type PlayButtonAction =
   | 'cast'
   | 'let-me-choose'
   | 'open-outplayer'
-  | 'wako-player'
   | 'add-to-torbox'
   | 'wako-player';
 
@@ -177,9 +179,18 @@ export class Settings {
 
   simultaneousProviderQueries = 0;
 
-  constructor() {
+  constructor(platform: Platform) {
+    const wakoAction = platform.is('ios') ? WakoFileActionIos : WakoFileActionAndroid;
+    const playButtonAction = platform.is('ios') ? PlayButtonActionIos : PlayButtonActionAndroid;
+
     // default actions
     this.availablePlayButtonActions = ['open-kodi', 'cast', 'open-vlc', 'share-url'];
+
+    if (wakoAction.includes('wako-video-player')) {
+      this.availablePlayButtonActions.unshift('wako-player');
+      playButtonAction.unshift('wako-player');
+    }
+
     this.availablePlayButtonActionsTv = PlayButtonActionAndroidTv;
   }
 }
