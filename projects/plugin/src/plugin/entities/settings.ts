@@ -123,9 +123,11 @@ export class Settings {
   allDebrid: AllDebridSettings = null;
   torbox?: TorboxSettings;
 
+  // When the user clicks on the play button, this is the action that will be used
   defaultPlayButtonAction: PlayButtonAction = 'let-me-choose';
   defaultPlayButtonActionTv: PlayButtonAction = 'let-me-choose';
 
+  // Will list all the available play button actions the user can choose from based on what he has enabled in the settings
   availablePlayButtonActions: PlayButtonAction[] = [];
   availablePlayButtonActionsTv: PlayButtonAction[] = [];
 
@@ -180,17 +182,36 @@ export class Settings {
   simultaneousProviderQueries = 0;
 
   constructor(platform: Platform) {
+    // Set default values
+
     const wakoAction = platform.is('ios') ? WakoFileActionIos : WakoFileActionAndroid;
     const playButtonAction = platform.is('ios') ? PlayButtonActionIos : PlayButtonActionAndroid;
 
-    // default actions
     this.availablePlayButtonActions = ['open-kodi', 'cast', 'open-vlc', 'share-url'];
 
     if (wakoAction.includes('wako-video-player')) {
-      this.availablePlayButtonActions.unshift('wako-player');
-      playButtonAction.unshift('wako-player');
+      if (!this.availablePlayButtonActions.includes('wako-player')) {
+        this.availablePlayButtonActions.unshift('wako-player');
+      }
+      if (!playButtonAction.includes('wako-player')) {
+        playButtonAction.unshift('wako-player');
+      }
     }
 
     this.availablePlayButtonActionsTv = PlayButtonActionAndroidTv;
+  }
+
+  static getAvailablePlayButtonActions(platform: Platform, isTvLayout: boolean) {
+    if (isTvLayout) {
+      return PlayButtonActionAndroidTv;
+    }
+    const wakoAction = platform.is('ios') ? WakoFileActionIos : WakoFileActionAndroid;
+    const playButtonAction = platform.is('ios') ? PlayButtonActionIos : PlayButtonActionAndroid;
+
+    if (wakoAction.includes('wako-video-player') && !playButtonAction.includes('wako-player')) {
+      playButtonAction.unshift('wako-player');
+    }
+
+    return playButtonAction;
   }
 }

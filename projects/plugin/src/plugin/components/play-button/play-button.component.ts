@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-  Platform,
   IonList,
   IonListHeader,
   IonLabel,
@@ -11,7 +10,7 @@ import {
   IonSelectOption,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { PlayButtonAction, PlayButtonActionAndroid, PlayButtonActionIos, Settings } from '../../entities/settings';
+import { PlayButtonAction, Settings } from '../../entities/settings';
 import { SettingsService } from '../../services/settings.service';
 import { addIcons } from 'ionicons';
 import { playOutline } from 'ionicons/icons';
@@ -40,10 +39,7 @@ export class PlayButtonComponent implements OnInit {
 
   availablePlayButtonActions: PlayButtonAction[] = [];
 
-  constructor(
-    private settingsService: SettingsService,
-    private platform: Platform,
-  ) {
+  constructor(private settingsService: SettingsService) {
     addIcons({ playOutline });
   }
 
@@ -51,17 +47,7 @@ export class PlayButtonComponent implements OnInit {
     this.settings = await this.settingsService.get();
     this.defaultPlayButtonAction = this.settingsService.getSavedDefaultPlayButtonAction();
 
-    this.availablePlayButtonActions = [];
-
-    const savedAvailablePlayButtonActions = this.settingsService.getSavedAvailablePlayButtonActions();
-
-    const playActions = this.settingsService.getAllAvailablePlayButtonActions(this.platform.is('ios'));
-
-    playActions.reverse().forEach((action) => {
-      if (savedAvailablePlayButtonActions.includes(action)) {
-        this.availablePlayButtonActions.push(action);
-      }
-    });
+    this.availablePlayButtonActions = this.settingsService.getAllAvailablePlayButtonActions();
   }
 
   changeDefaultPlayButtonAction(value: PlayButtonAction) {

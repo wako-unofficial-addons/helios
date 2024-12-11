@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   ModalController,
-  Platform,
   IonList,
   IonListHeader,
   IonLabel,
@@ -12,12 +11,12 @@ import {
   IonReorderGroup,
   IonReorder,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { FileSizeFilterComponent } from '../components/file-size-filter/file-size-filter.component';
 import { PlayButtonComponent } from '../components/play-button/play-button.component';
 import { SupportComponent } from '../components/support/support.component';
 import { SetupWizardComponent } from '../components/wizard/setup-wizard.component';
-import { PlayButtonAction, PlayButtonActionAndroid, PlayButtonActionIos, Settings } from '../entities/settings';
+import { PlayButtonAction, Settings } from '../entities/settings';
 import { SettingsService } from '../services/settings.service';
 import { CloudAccountListComponent } from './cloud-account/cloud-account-list/cloud-account-list.component';
 
@@ -52,10 +51,8 @@ export class SettingsComponent implements OnInit {
   playButtonActionsSettings: { action: PlayButtonAction; enabled: boolean }[] = [];
 
   constructor(
-    private translate: TranslateService,
     private modalCtrl: ModalController,
     private settingsService: SettingsService,
-    private platform: Platform,
   ) {
     addIcons({ settingsOutline, peopleOutline, wifiOutline, listOutline, funnelOutline });
   }
@@ -68,7 +65,7 @@ export class SettingsComponent implements OnInit {
 
     const savedAvailablePlayButtonActions = this.settingsService.getSavedAvailablePlayButtonActions();
 
-    const playActions = this.settingsService.getAllAvailablePlayButtonActions(this.platform.is('ios'));
+    const playActions = this.settingsService.getAllAvailablePlayButtonActions();
 
     savedAvailablePlayButtonActions.forEach((action) => {
       if (playActions.includes(action)) {

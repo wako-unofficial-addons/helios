@@ -59,12 +59,8 @@ export class SettingsService {
     return actions;
   }
 
-  getAllAvailablePlayButtonActions(isIos: boolean) {
-    if (WakoGlobal && WakoGlobal?.isTvLayout) {
-      return PlayButtonActionAndroidTv.slice(0);
-    }
-
-    return isIos ? PlayButtonActionIos.slice(0) : PlayButtonActionAndroid.slice(0);
+  getAllAvailablePlayButtonActions() {
+    return Settings.getAvailablePlayButtonActions(this.platform, WakoGlobal && WakoGlobal?.isTvLayout).slice(0);
   }
 
   getSavedDefaultPlayButtonAction() {
