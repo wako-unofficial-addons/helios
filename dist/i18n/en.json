@@ -112,6 +112,10 @@
         "torbox": {
           "explain": "Torbox is a cloud-based torrent downloader and streaming service that allows you to quickly access and stream content",
           "noAccount": "No Torbox account? Click here"
+        },
+        "easynews": {
+          "explain": "Easynews - Your Ultimate Internet Security and Usenet Solution",
+          "noAccount": "No Easynews account? Click here"
         }
       }
     },
@@ -164,7 +168,10 @@
     "torbox": {
       "invalidCredentials": "Invalid credentials"
     },
-    "noStreamLinkFound": "No stream link found"
+    "noStreamLinkFound": "No stream link found",
+    "easynews": {
+      "invalidCredentials": "Invalid Easynews credentials"
+    }
   },
   "actionSheets": {
     "open-source": {
