@@ -92,10 +92,7 @@
                       </wk-debrid-source-item>
                     }
                   }
-                  <ion-infinite-scroll
-                    (ionInfinite)="loadMoreDebridSources($event)"
-                    [disabled]="!searching && totalStreamLinkSource === 0"
-                  >
+                  <ion-infinite-scroll (ionInfinite)="loadMoreDebridSources($event)" [disabled]="!searching">
                     <ion-infinite-scroll-content></ion-infinite-scroll-content>
                   </ion-infinite-scroll>
                 </ion-list>
@@ -123,10 +120,7 @@
                       </wk-torrent-source-item>
                     }
                   }
-                  <ion-infinite-scroll
-                    (ionInfinite)="loadMoreTorrentSources($event)"
-                    [disabled]="!searching && totalTorrentSource === 0"
-                  >
+                  <ion-infinite-scroll (ionInfinite)="loadMoreTorrentSources($event)" [disabled]="!searching">
                     <ion-infinite-scroll-content></ion-infinite-scroll-content>
                   </ion-infinite-scroll>
                 </ion-list>
