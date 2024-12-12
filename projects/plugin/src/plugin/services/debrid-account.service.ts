@@ -111,6 +111,25 @@ export class DebridAccountService {
     return has;
   }
 
+  async hasAccountEnabled(account: 'premiumize' | 'realDebrid' | 'allDebrid' | 'torbox' | 'easynews') {
+    const settings = await this.settingsService.get();
+
+    switch (account) {
+      case 'premiumize':
+        return settings.premiumize && settings.premiumize.disabled !== true;
+      case 'realDebrid':
+        return settings.realDebrid && settings.realDebrid.disabled !== true;
+      case 'allDebrid':
+        return settings.allDebrid && settings.allDebrid.disabled !== true;
+      case 'torbox':
+        return settings.torbox && settings.torbox.disabled !== true;
+      case 'easynews':
+        return settings.easynews && settings.easynews.disabled !== true;
+      default:
+        return false;
+    }
+  }
+
   async getPremiumizeSettings(): Promise<PremiumizeSettings> {
     const settings = await this.settingsService.get();
     return settings.premiumize;

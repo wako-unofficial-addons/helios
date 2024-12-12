@@ -11,7 +11,7 @@ import { SourceByProvider } from '../../entities/source-by-provider';
 import { EASYNEWS_PROVIDER_NAME, ProviderService } from '../provider.service';
 import { LastPlayedSource } from '../../entities/last-played-source';
 import { StreamLinkSource } from '../../entities/stream-link-source';
-import { TorrentsFilterOnWantedQualityQuery } from '../../queries/torrents/torrents-filter-on-wanted-quality.query';
+import { SourcesFilterOnWantedQualityQuery } from '../../queries/sources-filter-on-wanted-quality.query';
 import { Settings } from '../../entities/settings';
 import { TorrentSource } from '../../entities/torrent-source';
 import { StreamLinkSourceDetail } from '../../entities/stream-link-source-detail';
@@ -37,14 +37,29 @@ export class SourceService {
 
   private getByProvider(sourceQuery: SourceQuery, provider: Provider) {
     if (provider.name === EASYNEWS_PROVIDER_NAME) {
-      return this.easyNewsSearchIfEnabled(sourceQuery);
+      return this.easyNewsSearchIfEnabled(sourceQuery).pipe(
+        switchMap((sourceByProvider) => {
+          return from(this.settingsService.get()).pipe(
+            switchMap((settings) => {
+              if (sourceQuery.movie || sourceQuery.episode) {
+                sourceByProvider.cachedTorrentDetail.sources =
+                  SourcesFilterOnWantedQualityQuery.getData<StreamLinkSource>(
+                    sourceByProvider.cachedTorrentDetail.sources,
+                    settings.qualities,
+                  );
+              }
+              return of(sourceByProvider);
+            }),
+          );
+        }),
+      );
     }
     return this.torrentSourceService.getByProvider(sourceQuery, provider).pipe(
       switchMap((torrentSourceDetail) => {
         return from(this.settingsService.get()).pipe(
           switchMap((settings) => {
             if (sourceQuery.movie || sourceQuery.episode) {
-              torrentSourceDetail.sources = TorrentsFilterOnWantedQualityQuery.getData(
+              torrentSourceDetail.sources = SourcesFilterOnWantedQualityQuery.getData<TorrentSource>(
                 torrentSourceDetail.sources,
                 settings.qualities,
               );
@@ -319,8 +334,8 @@ export class SourceService {
 
   private easyNewsSearchIfEnabled(sourceQuery: SourceQuery) {
     // check if service is enabled
-    const easynewsSettings = this.debridAccountService.getEasynewsSettings();
-    if (!easynewsSettings) {
+    const hasEasynews = this.debridAccountService.hasAccountEnabled('easynews');
+    if (!hasEasynews) {
       return EMPTY;
     }
 

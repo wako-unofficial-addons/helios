@@ -98,7 +98,10 @@ export class EasynewsSearchService {
 
   private static buildDownloadUrl(baseUrl: string, file: EasynewsFile): string {
     const credentials = EasynewsApiService.getCredentials();
-    baseUrl = baseUrl.replace('https://', `https://${credentials.username}:${credentials.password}@`);
+    baseUrl = baseUrl.replace(
+      'https://',
+      `https://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@`,
+    );
     return `${baseUrl}/${file.hash}/${file.fn}${file.extension}`;
   }
 

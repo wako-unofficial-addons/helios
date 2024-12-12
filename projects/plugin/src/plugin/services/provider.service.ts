@@ -95,7 +95,7 @@ export class ProviderService {
 
   async getEasynewsProvider() {
     // Check if EN is enabled
-    const hasEasynews = await this.debridAccountService.hasAtLeastOneAccount();
+    const hasEasynews = await this.debridAccountService.hasAccountEnabled('easynews');
     if (hasEasynews) {
       return {
         name: EASYNEWS_PROVIDER_NAME,

@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.3.9",
+  "version": "4.4.0",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a FREE and open-source third-party add-on developed by the community. It is a source finder, it scrapes third-party sites (called providers) that you have to provide and are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "ar": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/ar.json"
   },
   "changeLogs": {
+    "4.4.0": "Bug fixes",
     "4.3.9": "Easynews support (beta)",
     "4.3.8": "Fix some issues with RD",
     "4.3.7": "Bug fixes",

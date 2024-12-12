@@ -146,6 +146,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   segment = 'debrid';
 
   hasProvider = true;
+
   providers: Provider[] = [];
 
   searching = true;
@@ -209,13 +210,17 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.searchOnOpen = true;
 
-    this.settingsSubscription = this.settingsService.settings$.subscribe((settings) => {
+    this.settingsSubscription = this.settingsService.settings$.subscribe(async (settings) => {
+      this.hasProvider = (await this.providerService.getAll(true)).length > 0;
+      this.hasDebridAccount = await this.debridAccountService.hasAtLeastOneAccount();
+
       this.settings = settings.newValue;
       this.filterSources({
         streamLinkSources: this.allStreamLinkSources,
         torrentSources: this.allTorrentSources,
         settings: this.settings,
       });
+
       this.cdr.detectChanges();
     });
 
@@ -326,6 +331,8 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
         this.setSources({ sourceByProvider, settings: this.settings });
 
         this.progressBarValue = total / this.providers.length;
+
+        this.cdr.detectChanges();
       });
   }
 
