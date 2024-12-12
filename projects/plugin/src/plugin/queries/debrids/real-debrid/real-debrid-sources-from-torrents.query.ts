@@ -1,19 +1,15 @@
-import { from, Observable, of, throwError } from 'rxjs';
-import { RealDebridTorrentsInstantAvailabilityForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-instant-availability.form';
-import { catchError, finalize, map, retry, switchMap } from 'rxjs/operators';
+import { LoadingController } from '@ionic/angular/standalone';
+import { from, Observable, of } from 'rxjs';
+import { finalize, switchMap } from 'rxjs/operators';
 import { SourceQuery } from '../../../entities/source-query';
-import { getHashFromUrl, isEpisodeCodeMatchesFileName, isVideoFile } from '../../../services/tools';
-import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
-import { TorrentSource } from '../../../entities/torrent-source';
 import { StreamLinkSource } from '../../../entities/stream-link-source';
-import { RealDebridUnrestrictLinkDto } from '../../../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
-import { RealDebridGetCachedUrlQuery } from './real-debrid-get-cached-url.query';
-import { ActionSheetController, LoadingController } from '@ionic/angular/standalone';
-import { RealDebridTorrentsAddMagnetForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-add-magnet.form';
-import { RealDebridTorrentsInfoForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-info.form';
-import { RealDebridTorrentsDeleteForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-delete.form';
-import { RealDebridTorrentsSelectFilesForm } from '../../../services/real-debrid/forms/torrents/real-debrid-torrents-select-files.form';
+import { TorrentSource } from '../../../entities/torrent-source';
+import { RealDebridCacheUrlCommand } from '../../../services/real-debrid/commands/real-debrid-cache-url.command';
 import { RealDebridTorrentsAddMagnetDto } from '../../../services/real-debrid/dtos/torrents/real-debrid-torrents-add-magnet.dto';
+import { RealDebridUnrestrictLinkDto } from '../../../services/real-debrid/dtos/unrestrict/real-debrid-unrestrict-link.dto';
+import { RealDebridApiService } from '../../../services/real-debrid/services/real-debrid-api.service';
+import { getHashFromUrl, isEpisodeCodeMatchesFileName, isVideoFile } from '../../../services/tools';
+import { RealDebridGetCachedUrlQuery } from './real-debrid-get-cached-url.query';
 
 export class RealDebridSourcesFromTorrentsQuery {
   private static hasRealDebrid() {
@@ -71,8 +67,6 @@ export class RealDebridSourcesFromTorrentsQuery {
     debridSource: StreamLinkSource;
     sourceQuery: SourceQuery;
   }) {
-    const unrestrictLinks: RealDebridUnrestrictLinkDto[] = [];
-
     const loader = new LoadingController();
     let displayedLoader: HTMLIonLoadingElement = null;
 
@@ -95,36 +89,11 @@ export class RealDebridSourcesFromTorrentsQuery {
         if (displayedLoader) {
           displayedLoader.dismiss();
         }
-        if (magnetResponse) {
-          debugger;
-          RealDebridTorrentsDeleteForm.submit(magnetResponse.id).subscribe();
-        }
       }),
 
-      switchMap(() => RealDebridTorrentsAddMagnetForm.submit(debridSource.originalUrl)),
-      switchMap((addMagnetResponse) => {
-        magnetResponse = addMagnetResponse;
-        return RealDebridTorrentsInfoForm.submit(addMagnetResponse.id);
-      }),
+      switchMap(() => RealDebridCacheUrlCommand.handle({ url: debridSource.originalUrl })),
+
       switchMap((info) => {
-        if (info.files.length === 0) {
-          RealDebridTorrentsDeleteForm.submit(magnetResponse.id).subscribe();
-
-          return throwError(() => new Error('Cannot add this source: ' + info.status));
-        }
-
-        return RealDebridTorrentsSelectFilesForm.submit(info.id, 'all').pipe(retry(2));
-      }),
-      switchMap((selectFilesResponse) => {
-        return RealDebridTorrentsInfoForm.submit(magnetResponse.id);
-      }),
-      switchMap((info) => {
-        if (info.status !== 'downloaded') {
-          RealDebridTorrentsDeleteForm.submit(magnetResponse.id).subscribe();
-
-          return throwError(() => new Error('This source is not cached.'));
-        }
-
         const fileIds: string[] = [];
 
         let episodeCode = null;
@@ -150,7 +119,6 @@ export class RealDebridSourcesFromTorrentsQuery {
             fileIds.push(file.id.toString());
           }
         }
-        RealDebridTorrentsDeleteForm.submit(magnetResponse.id).subscribe();
 
         return RealDebridGetCachedUrlQuery.getData(debridSource.originalUrl, fileIds);
       }),
@@ -168,10 +136,10 @@ export class RealDebridSourcesFromTorrentsQuery {
         return of(links);
       }),
 
-      catchError((err) => {
-        console.error('Error checking RD cache:', err);
-        return of(unrestrictLinks);
-      }),
+      // catchError((err) => {
+      //   console.error('Error checking RD cache:', err);
+      //   return of(unrestrictLinks);
+      // }),
     );
   }
 
@@ -201,9 +169,14 @@ export class RealDebridSourcesFromTorrentsQuery {
           RealDebridSourcesFromTorrentsQuery.sourceIsCached({
             debridSource,
             sourceQuery,
-          }).subscribe((links) => {
-            observer.next(links);
-            observer.complete();
+          }).subscribe({
+            next: (links) => {
+              observer.next(links);
+              observer.complete();
+            },
+            error: (err) => {
+              observer.error(err);
+            },
           });
         });
 

@@ -832,7 +832,7 @@ export class OpenSourceService {
 
     loader.present();
 
-    RealDebridCacheUrlCommand.handle(url)
+    RealDebridCacheUrlCommand.handle({ url, deleteIt: false })
       .pipe(
         catchError((err) => {
           let error = err;
