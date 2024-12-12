@@ -6,9 +6,12 @@ import { Provider, ProviderList, testProviders } from '../entities/provider';
 import { HeliosCacheService } from './provider-cache.service';
 import { ToastService } from './toast.service';
 import { countryCodeToEmoji, logData } from './tools';
+import { DebridAccountService } from './debrid-account.service';
 
 const CACHE_KEY_PROVIDERS = 'CACHE_KEY_PROVIDERS';
 const CACHE_TIMEOUT_PROVIDERS = '1d';
+
+export const EASYNEWS_PROVIDER_NAME = '__easynews__';
 
 @Injectable()
 export class ProviderService {
@@ -27,6 +30,7 @@ export class ProviderService {
   constructor(
     private storage: WakoStorage,
     private toastService: ToastService,
+    private debridAccountService: DebridAccountService,
   ) {}
 
   async initialize() {
@@ -89,39 +93,65 @@ export class ProviderService {
     return provider.name + ' ' + emojiLanguages.join(' ');
   }
 
-  getAll(enabledOnly = true, category?: 'movie' | 'tv' | 'anime') {
-    return this.getProviders().then((providers) => {
-      if (!providers) {
-        return [];
-      }
+  async getEasynewsProvider() {
+    // Check if EN is enabled
+    const hasEasynews = await this.debridAccountService.hasAtLeastOneAccount();
+    if (hasEasynews) {
+      return {
+        name: EASYNEWS_PROVIDER_NAME,
+        enabled: true,
+        languages: ['en'],
+        base_url: 'https://members.easynews.com/2.0/search/solr-search/',
+        response_type: 'json',
+        anime: {
+          query: 'anime',
+          keywords: ['anime'],
+        },
+        movie: {
+          query: 'movie',
+          keywords: ['movie'],
+        },
+        season: {
+          query: 'season',
+          keywords: ['season'],
+        },
+      } as Provider;
+    }
+    return null;
+  }
 
-      let _providers: Provider[] = [];
+  async getAll(enabledOnly = true, category?: 'movie' | 'tv' | 'anime') {
+    const easynewsProvider = await this.getEasynewsProvider();
 
-      Object.keys(providers).forEach((key) => {
-        _providers.push(providers[key]);
-      });
-
-      if (enabledOnly) {
-        _providers = _providers.filter((provider) => provider.enabled === true);
-      }
-
-      if (category) {
-        _providers = _providers.filter((provider) => {
-          if (category === 'movie' && provider.movie) {
-            return true;
-          }
-          if (category === 'tv' && (provider.episode || provider.season)) {
-            return true;
-          }
-          if (category === 'anime' && provider.anime) {
-            return true;
-          }
-          return false;
-        });
-      }
-
-      return _providers;
+    const providers = await this.getProviders();
+    if (!providers && !easynewsProvider) {
+      return [];
+    }
+    let _providers: Provider[] = [];
+    if (easynewsProvider) {
+      _providers.push(easynewsProvider);
+    }
+    Object.keys(providers).forEach((key) => {
+      _providers.push(providers[key]);
     });
+    if (enabledOnly) {
+      _providers = _providers.filter((provider) => provider.enabled === true);
+    }
+    if (category) {
+      _providers = _providers.filter((provider_1) => {
+        if (category === 'movie' && provider_1.movie) {
+          return true;
+        }
+        if (category === 'tv' && (provider_1.episode || provider_1.season)) {
+          return true;
+        }
+        if (category === 'anime' && provider_1.anime) {
+          return true;
+        }
+        return false;
+      });
+    }
+    return _providers;
   }
 
   async getProviderUrls(): Promise<string[]> {

@@ -117,11 +117,18 @@ export interface TorboxSettings {
   apiKey: string;
 }
 
+export interface EasynewsSettings {
+  username: string;
+  password: string;
+  disabled?: boolean;
+}
+
 export class Settings {
   premiumize: PremiumizeSettings = null;
   realDebrid: RealDebridSettings = null;
   allDebrid: AllDebridSettings = null;
   torbox?: TorboxSettings;
+  easynews?: EasynewsSettings;
 
   // When the user clicks on the play button, this is the action that will be used
   defaultPlayButtonAction: PlayButtonAction = 'let-me-choose';

@@ -35,7 +35,6 @@ import { funnelOutline } from 'ionicons/icons';
     IonButton,
     IonIcon,
     IonItem,
-    IonLabel,
     IonSelect,
     IonSelectOption,
   ],

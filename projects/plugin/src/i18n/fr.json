@@ -92,6 +92,10 @@
         "torbox": {
           "explain": "Torbox est un service de téléchargement et de streaming de torrents basé sur le cloud qui vous permet d'accéder et de diffuser rapidement du contenu",
           "noAccount": "Pas de compte Torbox ? Cliquez ici"
+        },
+        "easynews": {
+          "explain": "Easynews - Votre solution ultime pour la sécurité Internet et Usenet",
+          "noAccount": "Pas de compte Easynews ? Cliquez ici"
         }
       }
     }
@@ -130,6 +134,9 @@
     },
     "elementumNotInstalled": "Pour utiliser Elementum kodi add-on, vous devez l'installer sur kodi",
     "torbox": {
+      "invalidCredentials": "Identifiants invalides"
+    },
+    "easynews": {
       "invalidCredentials": "Identifiants invalides"
     }
   },

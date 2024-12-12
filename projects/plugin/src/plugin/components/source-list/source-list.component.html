@@ -1,4 +1,8 @@
-@if (initialized) {
+@if (!initialized) {
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+    <ion-spinner></ion-spinner>
+  </div>
+} @else {
   <div class="ion-content">
     <div class="source-list-container">
       @if (searching) {

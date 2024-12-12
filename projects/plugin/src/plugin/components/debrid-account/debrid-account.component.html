@@ -169,3 +169,41 @@
     </ion-list>
   </ion-card-content>
 </ion-card>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>
+      Easynews
+      @if (isLoadingEasynews) {
+        <ion-spinner></ion-spinner>
+      }
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-text [innerHTML]="'pages.debrid-account.list.easynews.explain' | translate"> </ion-text>
+    <ion-list lines="full">
+      @if (isEasynewsLogged) {
+        <ion-item class="ion-no-padding">
+          <ion-toggle [(ngModel)]="isEasynewsEnabled" (ngModelChange)="toggleEnabledEasynews($event)">
+            {{ 'shared.enabled' | translate }}
+          </ion-toggle>
+        </ion-item>
+      }
+      @if (isEasynewsLogged) {
+        <ion-item class="ion-no-padding" button (click)="logoutEasynews()">
+          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
+        </ion-item>
+      }
+      @if (!isEasynewsLogged) {
+        <ion-item class="ion-no-padding" button (click)="loginEasynews()">
+          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
+        </ion-item>
+      }
+      @if (!isEasynewsLogged) {
+        <ion-item class="ion-no-padding" button (click)="openEasynews()">
+          <ion-label>{{ 'pages.debrid-account.list.easynews.noAccount' | translate }}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  </ion-card-content>
+</ion-card>

@@ -28,6 +28,10 @@ import { RealDebridApiService } from '../../services/real-debrid/services/real-d
 import { ToastService } from '../../services/toast.service';
 import { TorboxUserMeForm } from '../../services/torbox/forms/user/torbox-user-me.form';
 import { TorboxApiService } from '../../services/torbox/services/torbox-api.service';
+import { EasynewsApiService } from '../../services/easynews/services/easynews-api.service';
+import { EasynewsSearchService } from '../../services/easynews/services/easynews-search.service';
+import { SourceQuery } from '../../entities/source-query';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'wk-debrid-account',
@@ -53,6 +57,7 @@ export class DebridAccountComponent implements OnInit {
   isLoadingPremiumize = false;
   isLoadingAllDebrid = false;
   isLoadingTorbox = false;
+  isLoadingEasynews = false;
 
   preferTranscoded = false;
   preferTranscodedFilesChromecast = false;
@@ -61,11 +66,13 @@ export class DebridAccountComponent implements OnInit {
   isRealDebridEnabled = true;
   isAllDebridEnabled = true;
   isTorboxEnabled = true;
+  isEasynewsEnabled = true;
 
   isPremiumizeLogged = false;
   isRealDebridLogged = false;
   isAllDebridLogged = false;
   isTorboxLogged = false;
+  isEasynewsLogged = false;
 
   constructor(
     private debridAccountService: DebridAccountService,
@@ -103,6 +110,11 @@ export class DebridAccountComponent implements OnInit {
       this.isTorboxLogged = !!settings;
       this.isTorboxEnabled = settings ? settings.disabled !== true : false;
       TorboxApiService.setApiKey(settings ? settings.apiKey : null);
+    });
+
+    this.debridAccountService.getEasynewsSettings().then((settings) => {
+      this.isEasynewsLogged = !!settings;
+      this.isEasynewsEnabled = settings ? settings.disabled !== true : false;
     });
   }
 
@@ -491,5 +503,83 @@ export class DebridAccountComponent implements OnInit {
 
   openTorbox() {
     BrowserService.open('https://torbox.app');
+  }
+
+  async loginEasynews() {
+    const alert = await this.alertController.create({
+      header: 'Enter Easynews Credentials',
+      inputs: [
+        {
+          name: 'username',
+          type: 'text',
+          placeholder: 'Username',
+        },
+        {
+          name: 'password',
+          type: 'password',
+          placeholder: 'Password',
+        },
+      ],
+      buttons: [
+        {
+          text: this.translateService.instant('alerts.cancelButton'),
+          role: 'cancel',
+        },
+        {
+          text: 'Login',
+          handler: async (data) => {
+            this.isLoadingEasynews = true;
+
+            try {
+              EasynewsApiService.setCredentials(data.username, data.password);
+              const testQuery: SourceQuery = {
+                query: 'test',
+                category: 'movie',
+              };
+              const testSearch = await firstValueFrom(EasynewsSearchService.search(testQuery));
+
+              if (testSearch) {
+                const settings = {
+                  username: data.username,
+                  password: data.password,
+                  disabled: false,
+                };
+
+                await this.debridAccountService.setEasynewsSettings(settings);
+                this.ngOnInit();
+              }
+            } catch (err) {
+              this.toastService.simpleMessage('toasts.easynews.invalidCredentials');
+            } finally {
+              this.isLoadingEasynews = false;
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  logoutEasynews() {
+    this.debridAccountService.deleteEasynewsSettings().then(() => {
+      this.ngOnInit();
+    });
+  }
+
+  toggleEnabledEasynews(enabled: boolean) {
+    this.debridAccountService.getEasynewsSettings().then((settings) => {
+      if (!settings) return;
+
+      settings.disabled = !enabled;
+      this.debridAccountService.setEasynewsSettings(settings).then(() => {
+        this.ngOnInit();
+        document.location.reload();
+      });
+    });
+  }
+
+  openEasynews() {
+    BrowserService.open('https://signup.easynews.com');
   }
 }

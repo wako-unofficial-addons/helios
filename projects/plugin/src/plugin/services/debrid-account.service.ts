@@ -11,8 +11,15 @@ import { RealDebridOauthCredentialsForm } from './real-debrid/forms/oauth/real-d
 import { WakoHttpError } from '@wako-app/mobile-sdk';
 import { AllDebridApiService } from './all-debrid/services/all-debrid-api.service';
 import { SettingsService } from './settings.service';
-import { AllDebridSettings, PremiumizeSettings, RealDebridSettings, TorboxSettings } from '../entities/settings';
+import {
+  AllDebridSettings,
+  EasynewsSettings,
+  PremiumizeSettings,
+  RealDebridSettings,
+  TorboxSettings,
+} from '../entities/settings';
 import { TorboxApiService } from './torbox/services/torbox-api.service';
+import { EasynewsApiService } from './easynews/services/easynews-api.service';
 
 export const REAL_DEBRID_CLIENT_ID = 'X245A4XAIBGVM';
 
@@ -69,6 +76,11 @@ export class DebridAccountService {
       TorboxApiService.setApiKey(torboxSettings.apiKey);
     }
 
+    const easynewsSettings = settings.easynews;
+    if (easynewsSettings && easynewsSettings.disabled !== true) {
+      EasynewsApiService.setCredentials(easynewsSettings.username, easynewsSettings.password);
+    }
+
     this.ready$.next(true);
   }
 
@@ -79,6 +91,7 @@ export class DebridAccountService {
     const realDebridSettings = settings.realDebrid;
     const allDebridSettings = settings.allDebrid;
     const torboxSettings = settings.torbox;
+    const easynewsSettings = settings.easynews;
 
     let has = false;
     if (premiumizeSettings && premiumizeSettings.disabled !== true) {
@@ -88,6 +101,8 @@ export class DebridAccountService {
     } else if (allDebridSettings && allDebridSettings.disabled !== true) {
       has = true;
     } else if (torboxSettings && torboxSettings.disabled !== true) {
+      has = true;
+    } else if (easynewsSettings && easynewsSettings.disabled !== true) {
       has = true;
     }
 
@@ -279,5 +294,26 @@ export class DebridAccountService {
 
   deleteTorboxSettings() {
     return this.setTorboxSettings(null);
+  }
+
+  //
+  //
+  // EASYNEWS
+  //
+  //
+
+  async getEasynewsSettings(): Promise<EasynewsSettings> {
+    const settings = await this.settingsService.get();
+    return settings.easynews;
+  }
+
+  async setEasynewsSettings(easynewsSettings: EasynewsSettings) {
+    const settings = await this.settingsService.get();
+    settings.easynews = easynewsSettings;
+    return await this.settingsService.set(settings);
+  }
+
+  deleteEasynewsSettings() {
+    return this.setEasynewsSettings(null);
   }
 }

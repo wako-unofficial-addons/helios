@@ -8,7 +8,7 @@ import { concat, EMPTY, forkJoin, from, merge, Observable, of, Subject } from 'r
 import { SettingsService } from '../settings.service';
 import { Provider } from '../../entities/provider';
 import { SourceByProvider } from '../../entities/source-by-provider';
-import { ProviderService } from '../provider.service';
+import { EASYNEWS_PROVIDER_NAME, ProviderService } from '../provider.service';
 import { LastPlayedSource } from '../../entities/last-played-source';
 import { StreamLinkSource } from '../../entities/stream-link-source';
 import { TorrentsFilterOnWantedQualityQuery } from '../../queries/torrents/torrents-filter-on-wanted-quality.query';
@@ -19,6 +19,8 @@ import { KodiOpenMedia } from '../../entities/kodi-open-media';
 import { TmdbSeasonGetByIdForm } from '../tmdb/forms/seasons/tmdb-season-get-by-id.form';
 import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-from-kodi-open-media.query';
 import { incrementEpisodeCode } from '../tools';
+import { EasynewsSearchService } from '../easynews/services/easynews-search.service';
+import { DebridAccountService } from '../debrid-account.service';
 
 const GET_LAST_MOVIE_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_movie2';
 const GET_LAST_SHOW_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_show2';
@@ -30,9 +32,13 @@ export class SourceService {
     private torrentSourceService: TorrentSourceService,
     private settingsService: SettingsService,
     private providerService: ProviderService,
+    private debridAccountService: DebridAccountService,
   ) {}
 
   private getByProvider(sourceQuery: SourceQuery, provider: Provider) {
+    if (provider.name === EASYNEWS_PROVIDER_NAME) {
+      return this.easyNewsSearchIfEnabled(sourceQuery);
+    }
     return this.torrentSourceService.getByProvider(sourceQuery, provider).pipe(
       switchMap((torrentSourceDetail) => {
         return from(this.settingsService.get()).pipe(
@@ -307,6 +313,37 @@ export class SourceService {
     return SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).pipe(
       switchMap((sourceQuery) => {
         return this.getBestSource(sourceQuery);
+      }),
+    );
+  }
+
+  private easyNewsSearchIfEnabled(sourceQuery: SourceQuery) {
+    // check if service is enabled
+    const easynewsSettings = this.debridAccountService.getEasynewsSettings();
+    if (!easynewsSettings) {
+      return EMPTY;
+    }
+
+    const startTime = Date.now();
+    return EasynewsSearchService.search(sourceQuery).pipe(
+      map((data) => {
+        const timeElapsed = Date.now() - startTime;
+        // Return a SourceByProvider
+        const streamLinkSourceDetail = new StreamLinkSourceDetail();
+        streamLinkSourceDetail.provider = EASYNEWS_PROVIDER_NAME;
+        streamLinkSourceDetail.sources = data;
+        streamLinkSourceDetail.timeElapsed = timeElapsed;
+
+        return {
+          provider: EASYNEWS_PROVIDER_NAME,
+          torrentSourceDetail: {
+            provider: EASYNEWS_PROVIDER_NAME,
+            sources: [],
+            timeElapsed: timeElapsed,
+          },
+          cachedTorrentDetail: streamLinkSourceDetail,
+          timeElapsedTotal: timeElapsed,
+        } as SourceByProvider;
       }),
     );
   }

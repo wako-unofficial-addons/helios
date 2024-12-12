@@ -9,7 +9,7 @@ export class BaseSource {
     public size: number,
     public quality: SourceQuality,
     public provider: string,
-    public type: 'torrent' | 'cached_torrent' | 'unchecked_cached_torrent',
+    public type: 'torrent' | 'cached_torrent' | 'unchecked_cached_torrent' | 'direct',
   ) {}
 }
 

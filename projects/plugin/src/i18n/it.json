@@ -94,6 +94,10 @@
         "torbox": {
           "explain": "Torbox è un servizio di download e streaming di torrent basato su cloud che ti permette di accedere e riprodurre rapidamente i contenuti",
           "noAccount": "Nessun account Torbox? Clicca qui"
+        },
+        "easynews": {
+          "explain": "Easynews - La tua soluzione definitiva per la sicurezza Internet e Usenet",
+          "noAccount": "Nessun account Easynews? Clicca qui"
         }
       }
     },

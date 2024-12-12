@@ -111,7 +111,12 @@ export class OpenSourceService {
   ) {
     const streamLinks = await this.getStreamLinksWithLoader(streamLinkSource, sourceQuery);
 
-    const actions = this.settingsService.getPlayButtonActions(action === 'default');
+    let actions = this.settingsService.getPlayButtonActions(action === 'default');
+
+    if (streamLinkSource.type === 'direct') {
+      // Remove debrid actions
+      actions = actions.filter((action) => !['add-to-pm', 'add-to-rd', 'add-to-ad', 'add-to-torbox'].includes(action));
+    }
 
     streamLinkSource.streamLinks = streamLinks;
 
