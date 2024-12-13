@@ -3,9 +3,11 @@ import {
   EventCategory,
   EventName,
   EventService,
+  isSameId,
   OpenMedia,
   Playlist,
   PlaylistService,
+  PlaylistVideo,
   WakoStorage,
 } from '@wako-app/mobile-sdk';
 import { KodiOpenMedia } from '../entities/kodi-open-media';
@@ -80,12 +82,34 @@ export class HeliosPlaylistService {
     let savedPlaylist = await this.playListService.get(playlist.id);
 
     if (!savedPlaylist) {
-      console.log('CREATE playlist ', { playlist });
       await this.playListService.addOrUpdate(playlist);
       savedPlaylist = await this.playListService.get(playlist.id);
     }
 
     return savedPlaylist;
+  }
+
+  private itemsAreEqual(item1: PlaylistVideo, item2: PlaylistVideo) {
+    if (item1.openMedia && item2.openMedia) {
+      return (
+        isSameId(item1.openMedia.showIds, item2.openMedia.showIds) ||
+        isSameId(item1.openMedia.movieIds, item2.openMedia.movieIds)
+      );
+    }
+    return item1.url === item2.url;
+  }
+
+  addItemToPlaylist({ playlist, item }: { playlist: Playlist; item: PlaylistVideo }) {
+    // Check if the item is already in the playlist
+    if (playlist.items.some((i) => this.itemsAreEqual(i, item))) {
+      // update the item
+      const index = playlist.items.findIndex((i) => this.itemsAreEqual(i, item));
+      const oldItem = playlist.items[index];
+      item.currentSeconds = oldItem.currentSeconds;
+      playlist.items[index] = item;
+    } else {
+      playlist.items.push(item);
+    }
   }
 
   async savePlaylist(playlist: Playlist) {

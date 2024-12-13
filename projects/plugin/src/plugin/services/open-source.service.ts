@@ -1017,22 +1017,28 @@ export class OpenSourceService {
         return from(this.heliosPlaylistService.setPlaylist(source, kodiOpenMedia)).pipe(
           switchMap((playlist) => {
             if (kodiOpenMedia && kodiOpenMedia.movie) {
-              playlist.items.push({
-                label: sourceQuery.movie.title,
-                url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
-                currentSeconds: 0,
-                pluginId: 'plugin.helios',
-                openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
-                customData: this.getCustomDataFromSource(source, sourceQuery),
+              this.heliosPlaylistService.addItemToPlaylist({
+                playlist,
+                item: {
+                  label: sourceQuery.movie.title,
+                  url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
+                  currentSeconds: 0,
+                  pluginId: 'plugin.helios',
+                  openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
+                  customData: this.getCustomDataFromSource(source, sourceQuery),
+                },
               });
             } else if (kodiOpenMedia && kodiOpenMedia.episode) {
-              playlist.items.push({
-                label: sourceQuery.episode.episodeCode,
-                url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
-                currentSeconds: 0,
-                pluginId: 'plugin.helios',
-                openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
-                customData: this.getCustomDataFromSource(source, sourceQuery),
+              this.heliosPlaylistService.addItemToPlaylist({
+                playlist,
+                item: {
+                  label: sourceQuery.episode.episodeCode,
+                  url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
+                  currentSeconds: 0,
+                  pluginId: 'plugin.helios',
+                  openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
+                  customData: this.getCustomDataFromSource(source, sourceQuery),
+                },
               });
 
               playlist.currentItem = playlist.items.length - 1;
@@ -1079,13 +1085,16 @@ export class OpenSourceService {
 
                       kodiOpenMediaCopy.episode.number++;
 
-                      playlist.items.push({
-                        label: _sourceQuery.episode.episodeCode,
-                        url: url,
-                        currentSeconds: 0,
-                        pluginId: 'plugin.helios',
-                        openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null,
-                        customData: this.getCustomDataFromSource(childSource, _sourceQuery),
+                      this.heliosPlaylistService.addItemToPlaylist({
+                        playlist,
+                        item: {
+                          label: _sourceQuery.episode.episodeCode,
+                          url: url,
+                          currentSeconds: 0,
+                          pluginId: 'plugin.helios',
+                          openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMediaCopy) : null,
+                          customData: this.getCustomDataFromSource(childSource, _sourceQuery),
+                        },
                       });
                     });
                   });
@@ -1095,23 +1104,29 @@ export class OpenSourceService {
             } else if (!isAutomatic) {
               if (source.type === 'torrent') {
                 const torrent = source as TorrentSource;
-                playlist.items.push({
-                  label: torrent.title,
-                  url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
-                  currentSeconds: 0,
-                  pluginId: 'plugin.helios',
-                  openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
-                  customData: this.getCustomDataFromSource(source, sourceQuery),
-                });
-              } else if (source instanceof StreamLinkSource) {
-                source.streamLinks.forEach((link) => {
-                  playlist.items.push({
-                    label: link.title,
+                this.heliosPlaylistService.addItemToPlaylist({
+                  playlist,
+                  item: {
+                    label: torrent.title,
                     url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
                     currentSeconds: 0,
                     pluginId: 'plugin.helios',
                     openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
                     customData: this.getCustomDataFromSource(source, sourceQuery),
+                  },
+                });
+              } else if (source instanceof StreamLinkSource) {
+                source.streamLinks.forEach((link) => {
+                  this.heliosPlaylistService.addItemToPlaylist({
+                    playlist,
+                    item: {
+                      label: link.title,
+                      url: this.getStreamUrlFromSource(source, sourceQuery, getTranscoded),
+                      currentSeconds: 0,
+                      pluginId: 'plugin.helios',
+                      openMedia: kodiOpenMedia ? getOpenMediaFromKodiOpenMedia(kodiOpenMedia) : null,
+                      customData: this.getCustomDataFromSource(source, sourceQuery),
+                    },
                   });
                 });
               }
@@ -1119,6 +1134,7 @@ export class OpenSourceService {
             return of(playlist);
           }),
           switchMap((playlist) => {
+            console.log('playlist', playlist);
             if (playlist.items.length === 0) {
               // Delete it
               this.heliosPlaylistService.delete(playlist);
