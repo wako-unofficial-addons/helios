@@ -1,5 +1,5 @@
 <div class="row">
-  <button class="ion-focusable download" (click)="download()">
+  <button class="ion-focusable download ion-padding" (click)="download()">
     <ion-ripple-effect></ion-ripple-effect>
     <p style="font-size: 15px">
       {{ source.title }}
@@ -12,6 +12,7 @@
       <ion-grid class="ion-no-margin ion-no-padding">
         <ion-row>
           <ion-col size="8" class="ion-text-left ion-no-margin ion-no-padding">
+            <ion-badge color="dark" class="ion-margin-end">{{ source.provider }}</ion-badge>
             <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality }}</ion-badge>
 
             <ion-badge color="light"> {{ source.size | bsFileSize }}</ion-badge>
@@ -26,9 +27,6 @@
         </ion-row>
 
         <ion-row>
-          <ion-col class="ion-text-left ion-no-margin ion-no-padding">
-            <ion-badge color="dark">{{ source.provider }}</ion-badge>
-          </ion-col>
           @if (source.type === 'unchecked_cached_torrent') {
             <ion-col class="ion-text-right ion-no-margin ion-no-padding">
               <ion-badge color="warning">Not checked</ion-badge>

@@ -1,5 +1,5 @@
 <div class="row">
-  <button class="ion-focusable download" (click)="download()">
+  <button class="ion-focusable download ion-padding" (click)="download()">
     <ion-ripple-effect></ion-ripple-effect>
     <p style="font-size: 15px">
       {{ source.title }}
@@ -12,37 +12,32 @@
       <ion-grid class="ion-no-margin ion-no-padding">
         <ion-row>
           <ion-col class="ion-text-left ion-no-margin ion-no-padding">
+            <ion-badge color="dark" class="ion-margin-end">{{ source.provider }}</ion-badge>
             <ion-badge class="ion-margin-end"> {{ source.quality === 'other' ? 'SD' : source.quality }}</ion-badge>
 
             @if (source.size !== null) {
-              <ion-badge color="light"> {{ source.size | bsFileSize }}</ion-badge>
+              <ion-badge color="light" class="ion-margin-end"> {{ source.size | bsFileSize }}</ion-badge>
             }
             @if (source.size === null) {
-              <ion-badge color="warning"> ? MB</ion-badge>
+              <ion-badge color="warning" class="ion-margin-end"> ? MB</ion-badge>
             }
             @if (source.isPackage) {
-              <ion-icon name="cube-outline" class="ion-margin-start"></ion-icon>
+              <ion-icon name="cube-outline" class="ion-margin-end"></ion-icon>
             }
-          </ion-col>
-
-          <ion-col class="ion-text-right ion-no-margin ion-no-padding">
             @if (source.seeds !== null) {
               <ion-badge
                 color="{{ source.seeds >= 20 ? (source.peers > source.seeds ? 'warning' : 'success') : 'danger' }}"
+                class="ion-margin-end"
                 >S: {{ source.seeds }} / L: {{ source.peers }}
               </ion-badge>
             }
             @if (source.seeds === null) {
-              <ion-badge color="warning">S: ? / L: ?</ion-badge>
+              <ion-badge color="warning" class="ion-margin-end">S: ? / L: ?</ion-badge>
             }
           </ion-col>
         </ion-row>
 
         <ion-row>
-          <ion-col class="ion-text-left ion-no-margin ion-no-padding">
-            <ion-badge color="dark">{{ source.provider }}</ion-badge>
-          </ion-col>
-
           @if (source.isCached) {
             <ion-col class="ion-text-right ion-no-margin ion-no-padding">
               <ion-badge> Cached {{ source.cachedService }} </ion-badge>
