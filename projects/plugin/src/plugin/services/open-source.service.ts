@@ -42,7 +42,10 @@ import { StreamLinkSource } from '../entities/stream-link-source';
 import { TorrentSource } from '../entities/torrent-source';
 import { SourceQueryFromKodiOpenMediaQuery } from '../queries/source-query-from-kodi-open-media.query';
 import { TorrentGetUrlQuery } from '../queries/torrents/torrent-get-url.query';
-import { RD_ERR_CODE_NOT_FULLY_CACHED } from './../queries/debrids/real-debrid/real-debrid-get-cached-url.query';
+import {
+  RD_ERR_CODE_NOT_FULLY_CACHED,
+  RD_ERR_CODE_NOT_CACHED,
+} from './../queries/debrids/real-debrid/real-debrid-get-cached-url.query';
 import { AllDebridMagnetUploadForm } from './all-debrid/forms/magnet/all-debrid-magnet-upload.form';
 import { DebridAccountService } from './debrid-account.service';
 import { HeliosPlaylistService } from './helios-playlist.service';
@@ -172,7 +175,10 @@ export class OpenSourceService {
         this.toastService.simpleMessage(err, null, 4000);
       } else if (err && err.message) {
         this.toastService.simpleMessage(err.message, null, 4000);
-        if (err?.code === RD_ERR_CODE_NOT_FULLY_CACHED && streamLinkSource.originalUrl) {
+        if (
+          (err?.code === RD_ERR_CODE_NOT_FULLY_CACHED || err?.code === RD_ERR_CODE_NOT_CACHED) &&
+          streamLinkSource.originalUrl
+        ) {
           const torrentSource: TorrentSource = {
             hash: streamLinkSource.originalHash,
             id: streamLinkSource.id,

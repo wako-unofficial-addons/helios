@@ -11,6 +11,7 @@ import { HeliosCacheService } from '../../../services/provider-cache.service';
 import { isVideoFile } from '../../../services/tools';
 
 export const RD_ERR_CODE_NOT_FULLY_CACHED = 100;
+export const RD_ERR_CODE_NOT_CACHED = 101;
 
 export class RealDebridGetCachedUrlQuery {
   static getData(url: string, fileIds: string[]): Observable<RealDebridUnrestrictLinkDto[]> {
@@ -41,8 +42,8 @@ export class RealDebridGetCachedUrlQuery {
                       RealDebridUnrestrictLinkForm.submit(link).pipe(
                         map((l) => {
                           links.push(l);
-                        })
-                      )
+                        }),
+                      ),
                     );
                   });
                   return forkJoin(obs).pipe(
@@ -68,18 +69,19 @@ export class RealDebridGetCachedUrlQuery {
                         videoLinks.push(...otherLinks);
                       }
                       return of(videoLinks);
-                    })
+                    }),
                   );
                 }
 
                 if (fileId !== 'all') {
                   return this.getData(url, []);
                 }
-                return throwError({
+                return throwError(() => ({
                   code: RD_ERR_CODE_NOT_FULLY_CACHED,
-                  message: 'Real Debrid: No links found. It seems the source is not fully cached, try to add the torrent manually'
-                });
-              })
+                  message:
+                    'Real Debrid: No links found. It seems the source is not fully cached, try to add the torrent manually',
+                }));
+              }),
             );
           }),
           finalize(() => {
@@ -92,22 +94,27 @@ export class RealDebridGetCachedUrlQuery {
 
             if (allLinks) {
               allLinks.forEach((link) => {
-                if (!link.mimeType || link.mimeType.match('video') !== null || link.mimeType === 'application/x-rar-compressed') {
+                if (
+                  !link.mimeType ||
+                  link.mimeType.match('video') !== null ||
+                  link.mimeType === 'application/x-rar-compressed'
+                ) {
                   links.push(link);
                 }
               });
             }
 
             if (links.length === 0) {
-              return throwError({
+              return throwError(() => ({
                 code: RD_ERR_CODE_NOT_FULLY_CACHED,
-                message: 'Real Debrid: No links found. It seems the source is not fully cached, try to add the torrent manually'
-              });
+                message:
+                  'Real Debrid: No links found. It seems the source is not fully cached, try to add the torrent manually',
+              }));
             }
             return from(HeliosCacheService.set(cacheKey, links, '15min')).pipe(mapTo(links));
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }

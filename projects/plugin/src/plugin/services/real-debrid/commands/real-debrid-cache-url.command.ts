@@ -6,6 +6,7 @@ import { RealDebridTorrentsSelectFilesForm } from '../forms/torrents/real-debrid
 import { RealDebridTorrentsDeleteForm } from '../forms/torrents/real-debrid-torrents-delete.form';
 import { RealDebridTorrentsAddMagnetDto } from '../dtos/torrents/real-debrid-torrents-add-magnet.dto';
 import { isVideoFile } from '../../tools';
+import { RD_ERR_CODE_NOT_CACHED } from '../../../queries/debrids/real-debrid/real-debrid-get-cached-url.query';
 
 export class RealDebridCacheUrlCommand {
   static handle({ url, deleteIt = true }: { url: string; deleteIt?: boolean }) {
@@ -55,7 +56,10 @@ export class RealDebridCacheUrlCommand {
               return RealDebridTorrentsDeleteForm.submit(magnetResponse.id).pipe(
                 switchMap(() => {
                   if (info.status !== 'downloaded') {
-                    return throwError(() => new Error('This source is not cached.'));
+                    return throwError(() => ({
+                      code: RD_ERR_CODE_NOT_CACHED,
+                      message: 'Real Debrid: This source is not cached. Try to add the torrent manually',
+                    }));
                   }
 
                   return of(info);
