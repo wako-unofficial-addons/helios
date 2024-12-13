@@ -1,6 +1,6 @@
 {
   "actionSheets.open-source.openTitle": "What to do?",
-  "actionSheets.open-source.options.add-to-ad": "Add to All Debrid",
+  "actionSheets.open-source.options.add-to-ad": "Add to AllDebrid",
   "actionSheets.open-source.options.add-to-playlist": "Add to wako's playlist",
   "actionSheets.open-source.options.add-to-pm": "Add to Premiumize.me",
   "actionSheets.open-source.options.add-to-rd": "Add to RealDebrid",
@@ -34,8 +34,8 @@
   "modals.search-manual.search": "Search a Source",
   "modals.search-source.manual": "Search Sources Manually",
   "open-button.more": "Sources List",
-  "pages.cloud-account.list.allDebrid.explain": "All Debrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
-  "pages.cloud-account.list.allDebrid.noAccount": "No All Debrid account? Click here",
+  "pages.cloud-account.list.allDebrid.explain": "AllDebrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
+  "pages.cloud-account.list.allDebrid.noAccount": "No AllDebrid account? Click here",
   "pages.cloud-account.list.easynews.explain": "Easynews - Your Ultimate Internet Security and Usenet Solution",
   "pages.cloud-account.list.easynews.noAccount": "No Easynews account? Click here",
   "pages.cloud-account.list.login": "Login",

@@ -1,6 +1,6 @@
 {
   "actionSheets.open-source.openTitle": "Que faire ?",
-  "actionSheets.open-source.options.add-to-ad": "Ajouter à tous les débris",
+  "actionSheets.open-source.options.add-to-ad": "Ajouter à AllDebrid",
   "actionSheets.open-source.options.add-to-playlist": "Ajouter à la liste de lecture de wako",
   "actionSheets.open-source.options.add-to-pm": "Ajouter à Premiumize.me",
   "actionSheets.open-source.options.add-to-rd": "Ajouter à RealDebrid",
@@ -34,8 +34,8 @@
   "modals.search-manual.search": "Rechercher une source",
   "modals.search-source.manual": "Search Sources Manually",
   "open-button.more": "Sources",
-  "pages.cloud-account.list.allDebrid.explain": "All Debrid est un téléchargeur sans restriction qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
-  "pages.cloud-account.list.allDebrid.noAccount": "Pas de compte All Debrid ? Cliquez ici",
+  "pages.cloud-account.list.allDebrid.explain": "AllDebrid est un téléchargeur sans restriction qui vous permet de télécharger rapidement des fichiers hébergés sur Internet.",
+  "pages.cloud-account.list.allDebrid.noAccount": "Pas de compte AllDebrid ? Cliquez ici",
   "pages.cloud-account.list.easynews.explain": "Easynews - Votre solution ultime en matière de sécurité Internet et de Usenet",
   "pages.cloud-account.list.easynews.noAccount": "Pas de compte Easynews ? Cliquez ici",
   "pages.cloud-account.list.login": "Connexion",

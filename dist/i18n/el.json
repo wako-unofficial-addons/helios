@@ -1,6 +1,6 @@
 {
   "actionSheets.open-source.openTitle": "Επιλέξτε μία ενέργεια",
-  "actionSheets.open-source.options.add-to-ad": "Προσθήκη στο All Debrid",
+  "actionSheets.open-source.options.add-to-ad": "Προσθήκη στο AllDebrid",
   "actionSheets.open-source.options.add-to-playlist": "Προσθήκη στη λίστα αναπαραγωγής του wako",
   "actionSheets.open-source.options.add-to-pm": "Προσθήκη στο Premiumize.me",
   "actionSheets.open-source.options.add-to-rd": "Προσθήκη στο Real-Debrid",
@@ -34,8 +34,8 @@
   "modals.search-manual.search": "Αναζήτηση πηγής",
   "modals.search-source.manual": "Χειροκίνητη αναζήτηση πηγών",
   "open-button.more": "Λίστα πηγών",
-  "pages.cloud-account.list.allDebrid.explain": "Το All Debrid είναι ένα πρόγραμμα λήψης χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε γρήγορα αρχεία που φιλοξενούνται στο διαδίκτυο.",
-  "pages.cloud-account.list.allDebrid.noAccount": "Δεν υπάρχει λογαριασμός All Debrid; Κάντε κλικ εδώ",
+  "pages.cloud-account.list.allDebrid.explain": "Το AllDebrid είναι ένα πρόγραμμα λήψης χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε γρήγορα αρχεία που φιλοξενούνται στο διαδίκτυο.",
+  "pages.cloud-account.list.allDebrid.noAccount": "Δεν έχετε λογαριασμό AllDebrid; Κάντε κλικ εδώ",
   "pages.cloud-account.list.easynews.explain": "Easynews - Η απόλυτη λύση για την ασφάλεια στο Internet και το Usenet",
   "pages.cloud-account.list.easynews.noAccount": "Δεν έχετε λογαριασμό Easynews; Κάντε κλικ εδώ",
   "pages.cloud-account.list.login": "Σύνδεση",

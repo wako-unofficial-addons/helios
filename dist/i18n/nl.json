@@ -1,6 +1,6 @@
 {
   "actionSheets.open-source.openTitle": "Wat moet ik doen?",
-  "actionSheets.open-source.options.add-to-ad": "Toevoegen aan Alle Debrideren",
+  "actionSheets.open-source.options.add-to-ad": "Toevoegen aan AllDebrid",
   "actionSheets.open-source.options.add-to-playlist": "Toevoegen aan wako's afspeellijst",
   "actionSheets.open-source.options.add-to-pm": "Toevoegen aan Premiumize.me",
   "actionSheets.open-source.options.add-to-rd": "Toevoegen aan RealDebrid",
@@ -34,8 +34,8 @@
   "modals.search-manual.search": "Een bron zoeken",
   "modals.search-source.manual": "Bronnen handmatig zoeken",
   "open-button.more": "Bronnenlijst",
-  "pages.cloud-account.list.allDebrid.explain": "All Debrid is een onbeperkte downloader waarmee je snel op het internet gehoste bestanden kunt downloaden",
-  "pages.cloud-account.list.allDebrid.noAccount": "Geen All Debrid account? Klik hier",
+  "pages.cloud-account.list.allDebrid.explain": "AllDebrid is een onbeperkte downloader waarmee je snel bestanden kunt downloaden die op het internet worden gehost",
+  "pages.cloud-account.list.allDebrid.noAccount": "Geen AllDebrid account? Klik hier",
   "pages.cloud-account.list.easynews.explain": "Easynews - Uw ultieme internetbeveiligings- en usenetoplossing",
   "pages.cloud-account.list.easynews.noAccount": "Geen Easynews-account? Klik hier",
   "pages.cloud-account.list.login": "Inloggen",

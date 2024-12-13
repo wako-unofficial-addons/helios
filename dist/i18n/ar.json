@@ -1,6 +1,6 @@
 {
   "actionSheets.open-source.openTitle": "ماذا أفعل؟",
-  "actionSheets.open-source.options.add-to-ad": "أضف إلى All Debrid",
+  "actionSheets.open-source.options.add-to-ad": "إضافة إلى أولديبرد",
   "actionSheets.open-source.options.add-to-playlist": "أضف إلى قائمة تشغيل واكو",
   "actionSheets.open-source.options.add-to-pm": "أضف إلى Premiumize.me",
   "actionSheets.open-source.options.add-to-rd": "أضف إلى RealDebrid",
@@ -34,8 +34,8 @@
   "modals.search-manual.search": "بحث عن مصدر",
   "modals.search-source.manual": "بحث عن مصدر يدويّاً",
   "open-button.more": "قائمة المصادر",
-  "pages.cloud-account.list.allDebrid.explain": "أول ديبريد هو برنامج تنزيل غير مقيد يسمح لك بتنزيل الملفات المستضافة على الإنترنت بسرعة",
-  "pages.cloud-account.list.allDebrid.noAccount": "لا يوجد حساب \"أول ديبريد\"؟ انقر هنا",
+  "pages.cloud-account.list.allDebrid.explain": "AllDebrid هو برنامج تنزيل غير مقيد يسمح لك بتنزيل الملفات المستضافة على الإنترنت بسرعة",
+  "pages.cloud-account.list.allDebrid.noAccount": "لا يوجد حساب AllDebrid؟ انقر هنا",
   "pages.cloud-account.list.easynews.explain": "Easynews - الحل الأمثل لأمن الإنترنت والإنترنت عبر الإنترنت",
   "pages.cloud-account.list.easynews.noAccount": "ليس لديك حساب Easynews؟ انقر هنا",
   "pages.cloud-account.list.login": "تسجيل الدخول",

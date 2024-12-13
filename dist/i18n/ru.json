@@ -1,6 +1,6 @@
 {
   "actionSheets.open-source.openTitle": "Что делать?",
-  "actionSheets.open-source.options.add-to-ad": "Добавить ко всем дебридам",
+  "actionSheets.open-source.options.add-to-ad": "Добавить в AllDebrid",
   "actionSheets.open-source.options.add-to-playlist": "Добавить в плейлист Вако",
   "actionSheets.open-source.options.add-to-pm": "Добавить в Premiumize.me",
   "actionSheets.open-source.options.add-to-rd": "Добавить в RealDebrid",
@@ -34,8 +34,8 @@
   "modals.search-manual.search": "Поиск источника",
   "modals.search-source.manual": "Поиск источников вручную",
   "open-button.more": "Список источников",
-  "pages.cloud-account.list.allDebrid.explain": "All Debrid - это неограниченный загрузчик, который позволяет быстро скачивать файлы, размещенные в Интернете.",
-  "pages.cloud-account.list.allDebrid.noAccount": "Нет учетной записи All Debrid? Нажмите здесь",
+  "pages.cloud-account.list.allDebrid.explain": "AllDebrid - это неограниченный загрузчик, который позволяет быстро скачивать файлы, размещенные в Интернете.",
+  "pages.cloud-account.list.allDebrid.noAccount": "Нет учетной записи на AllDebrid? Нажмите здесь",
   "pages.cloud-account.list.easynews.explain": "Easynews - ваше конечное решение для обеспечения безопасности Интернета и Usenet",
   "pages.cloud-account.list.easynews.noAccount": "Нет учетной записи Easynews? Нажмите здесь",
   "pages.cloud-account.list.login": "Вход в систему",
