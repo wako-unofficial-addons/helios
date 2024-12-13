@@ -1,260 +1,144 @@
 {
-  "pages": {
-    "tuto": {
-      "title": "Setup Wizard",
-      "skip": "Skip",
-      "prev": "Prev",
-      "next": "Next",
-      "slideDisclaimer": {
-        "title": "About Helios",
-        "description": "Helios is a FREE and open-source third-party add-on developed by the community.<br>It is a source finder, it scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are <strong>publicly available</strong> on the internet.",
-        "titleDisclaimer": "Disclaimer",
-        "disclaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites provided by the end user. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them. <br/><br/>Helios doesn't come with any providers, you have to add them manually.<br/><br/>Helios is not developed nor endorsed by wako, for support create issue on its github or discuss with the community on reddit: https://www.reddit.com/r/Addons4Wako/",
-        "accept": "I have read and agree with this"
-      },
-      "slide2": {
-        "title": "Add some providers",
-        "description": "As said earlier, Helios relies on providers to find sources, so let's add some"
-      },
-      "slide3": {
-        "title": "Choose quality",
-        "description": "Select the highest quality you want to play"
-      },
-      "slide4": {
-        "title": "Debrid Account",
-        "description": "If you want to play sources without any buffering issue, it's recommended to connect Helios to a debrid service"
-      },
-      "slide5": {
-        "title": "Where to play?",
-        "description": "Helios can play the source on different player, select your default player"
-      },
-      "slide6": {
-        "title": "All done",
-        "description": "You're all done, if you want to change these settings, go into Wako > Settings > Addons > Helios > Settings page",
-        "button": "Close"
-      }
-    },
-    "settings": {
-      "list": {
-        "wizard": {
-          "header": "Setup wizard",
-          "item": "Run setup wizard"
-        },
-        "provider": {
-          "header": "Providers",
-          "item": "Configure Providers"
-        },
-        "debrid-account": {
-          "header": "Debrid accounts",
-          "item": "Configure Debrid Accounts"
-        },
-        "play-button": {
-          "header": "Default Play Action",
-          "item": "Play button default action"
-        },
-        "actions": {
-          "header": "Reorder/Toggle Actions"
-        },
-        "openRemoteList": {
-          "header": "Remote",
-          "item": "Open remote after clicking"
-        },
-        "playlist": {
-          "header": "Playlist",
-          "item": "Automatically seek for next episodes and create a playlist"
-        },
-        "fileSizeFilter": {
-          "header": "File Size Filter",
-          "enabled": "Enabled",
-          "packageWarning": "Filter won't apply on package source",
-          "maxSize": "Max size (in GB) - Set to 0 to disable it",
-          "minSize": "Min size (in GB)"
-        }
-      }
-    },
-    "providers": {
-      "title": "Providers",
-      "list": {
-        "header": "Setup",
-        "providersUrl": "Providers URLs",
-        "noUrl": "Click here to add one",
-        "addProvider": "Add providers",
-        "providerSimultaneousHeader": "Speed",
-        "providerSimultaneousLabel": "Number of providers to run in parallel. 0 for unlimited. On some phones too many parallel providers can crash helios."
-      },
-      "enabledSource": {
-        "header": "Enabled Source",
-        "howItWorks": "For performance reason, it's recommended to only enable the best quality you prefer. If less than 20 sources are found for this quality, then the lower quality will be used until the lowest quality is reach"
-      },
-      "providerList": {
-        "header": "Providers"
-      }
-    },
-    "debrid-account": {
-      "list": {
-        "title": "Debrid accounts",
-        "logout": "Logout",
-        "login": "Login",
-        "realDebrid": {
-          "explain": "RealDebrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
-          "noAccount": "No RealDebrid account? Click here"
-        },
-        "allDebrid": {
-          "explain": "All Debrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
-          "noAccount": "No All Debrid account? Click here"
-        },
-        "premiumize": {
-          "explain": "Premiumize.me is an unrestricted downloader (and more) that allows you to quickly download files hosted on the internet.<br><br>Moreover Premiumize let you test their service for free (you can play one file with a maximum filesize of 5 GB every 120 minutes)",
-          "preferTranscoded": "Prefer transcoded files",
-          "preferTranscodedFilesChromecast": "Prefer transcoded files for Chromecast",
-          "noAccount": "No Premiumize account? Click here"
-        },
-        "torbox": {
-          "explain": "Torbox is a cloud-based torrent downloader and streaming service that allows you to quickly access and stream content",
-          "noAccount": "No Torbox account? Click here"
-        },
-        "easynews": {
-          "explain": "Easynews - Your Ultimate Internet Security and Usenet Solution",
-          "noAccount": "No Easynews account? Click here"
-        }
-      }
-    },
-    "support": {
-      "list": {
-        "header": "Support",
-        "reddit": "Our official Reddit"
-      }
-    }
-  },
-  "toasts": {
-    "kodi": {
-      "hostUnreachable": "Ouch, your kodi host {{hostName}} is unreachable",
-      "noHost": "No host set for kodi"
-    },
-    "startOpening": "Opening {{title}} on {{hostName}}",
-    "providersUpdated": "Providers have been updated",
-    "providers": {
-      "providerUrlAdded": "Providers added",
-      "providerUrlFailedToAdd": "Failed to add Providers, please check the given URL"
-    },
-    "cloud-account": {
-      "needToAddProviders": "You need to add some providers to enjoy debrid services."
-    },
-    "premiumize": {
-      "invalidApiKey": "The API Key is not valid"
-    },
-    "real-debrid": {
-      "failedToLogin": "Failed to login"
-    },
-    "all-debrid": {
-      "invalidCredentials": "Invalid credentials"
-    },
-    "copyToClipboard": "{{element}} has been copied to your clipboard",
-    "open-source": {
-      "cannotRetrieveUrl": "This source is unplayable, cannot retrieve its URL",
-      "addedToPM": "Source has been added to you PM account",
-      "failedToAddToPM": "Failed to add the source to your PM account: {{error}}",
-      "addedToRD": "Source has been added to you RD account",
-      "failedToAddToRD": "Failed to add the source to your RD account: {{error}}",
-      "addedToAD": "Source has been added to you AD account",
-      "failedToAddToAD": "Failed to add the source to your AD account: {{error}}",
-      "sourceNotCached": "Failed to retrieved the video URL",
-      "permissionDenied": "Permission denied (account {{debridService}} locked)",
-      "addedToTorbox": "Source has been added to your Torbox account",
-      "failedToAddToTorbox": "Failed to add the source to your Torbox account: {{error}}"
-    },
-    "elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi",
-    "playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items",
-    "torbox": {
-      "invalidCredentials": "Invalid credentials"
-    },
-    "noStreamLinkFound": "No stream link found",
-    "easynews": {
-      "invalidCredentials": "Invalid Easynews credentials"
-    }
-  },
-  "actionSheets": {
-    "open-source": {
-      "openTitle": "What to do?",
-      "options": {
-        "open-kodi": "Play on Kodi",
-        "open-browser": "Play in your browser",
-        "copy-url": "Copy URL",
-        "share-url": "Share URL",
-        "open-vlc": "Play on VLC",
-        "open-outplayer": "Play on Outplayer",
-        "download-vlc": "Download with VLC",
-        "open-elementum": "Play on Kodi via Elementum",
-        "open-with": "Play on...",
-        "open-nplayer": "Play on nPlayer",
-        "open-infuse": "Play on Infuse",
-        "add-to-pm": "Add to Premiumize.me",
-        "add-to-rd": "Add to RealDebrid",
-        "add-to-playlist": "Add to wako's playlist",
-        "add-to-ad": "Add to All Debrid",
-        "add-to-torbox": "Add to Torbox",
-        "cast": "Chromecast",
-        "letMeChoose": "Let Me choose",
-        "wako-player": "Play on Wako"
-      },
-      "selectLink": {
-        "openTitle": "This source has multiple links, which one you want to open?"
-      }
-    },
-    "search-source": {
-      "selectTitle": "Select title"
-    }
-  },
-  "alerts": {
-    "cancelButton": "Cancel",
-    "removeButton": "Remove",
-    "removeAlert": "Are you sure you want to delete the following?",
-    "cloud-account": {
-      "real-debrid": {
-        "authHeader": "Real Debrid Auth",
-        "enterCode": "Open this link: https://real-debrid.com/device<br><br>Enter this code:",
-        "openUrlButton": "Open the link"
-      }
-    }
-  },
-  "modals": {
-    "search-manual": {
-      "search": "Search a Source",
-      "category": "Category",
-      "categoryOptions": {
-        "movies": "Movie",
-        "tv": "TV Show",
-        "anime": "Anime"
-      }
-    },
-    "search-source": {
-      "manual": "Search Sources Manually"
-    }
-  },
-  "source-list": {
-    "noProviderSet": "No providers set",
-    "noProviderSetCategory": "No providers set for category: {{category}}",
-    "manualFilter": "Search from results"
-  },
-  "open-button": {
-    "more": "Sources List"
-  },
-  "sources": {
-    "segments": {
-      "debrid": "Streams",
-      "torrents": "Torrents",
-      "stats": "Stats"
-    },
-    "statsInfo": "Note: Duplicated torrents are removed from the torrents list",
-    "addToQueue": "{{totalEpisode}} next episodes have been queued"
-  },
-  "shared": {
-    "noDebridAccountSet": "No Debrid Account",
-    "clickToAddDebridAccount": "Click here to add a debrid service",
-    "clickToAddProvider": "Click here to add some provider",
-    "noSourceFound": "No source found",
-    "noBestSource": "Helios didn't find the best source for you, please choose it manually",
-    "cancel": "Cancel",
-    "enabled": "Enabled"
-  }
+  "actionSheets.open-source.openTitle": "What to do?",
+  "actionSheets.open-source.options.add-to-ad": "Add to All Debrid",
+  "actionSheets.open-source.options.add-to-playlist": "Add to wako's playlist",
+  "actionSheets.open-source.options.add-to-pm": "Add to Premiumize.me",
+  "actionSheets.open-source.options.add-to-rd": "Add to RealDebrid",
+  "actionSheets.open-source.options.add-to-torbox": "Add to Torbox",
+  "actionSheets.open-source.options.cast": "Chromecast",
+  "actionSheets.open-source.options.copy-url": "Copy URL",
+  "actionSheets.open-source.options.download-vlc": "Download with VLC",
+  "actionSheets.open-source.options.letMeChoose": "Let Me choose",
+  "actionSheets.open-source.options.open-browser": "Play in your browser",
+  "actionSheets.open-source.options.open-elementum": "Play on Kodi via Elementum",
+  "actionSheets.open-source.options.open-infuse": "Play on Infuse",
+  "actionSheets.open-source.options.open-kodi": "Play on Kodi",
+  "actionSheets.open-source.options.open-nplayer": "Play on nPlayer",
+  "actionSheets.open-source.options.open-outplayer": "Play on Outplayer",
+  "actionSheets.open-source.options.open-vlc": "Play on VLC",
+  "actionSheets.open-source.options.open-with": "Play on...",
+  "actionSheets.open-source.options.share-url": "Share URL",
+  "actionSheets.open-source.options.wako-player": "Play on Wako",
+  "actionSheets.open-source.selectLink.openTitle": "This source has multiple links, which one you want to open?",
+  "actionSheets.search-source.selectTitle": "Select title",
+  "alerts.cancelButton": "Cancel",
+  "alerts.cloud-account.real-debrid.authHeader": "Real Debrid Auth",
+  "alerts.cloud-account.real-debrid.enterCode": "Open this link: https://real-debrid.com/device<br><br>Enter this code:",
+  "alerts.cloud-account.real-debrid.openUrlButton": "Open the link",
+  "alerts.removeAlert": "Are you sure you want to delete the following?",
+  "alerts.removeButton": "Remove",
+  "modals.search-manual.category": "Category",
+  "modals.search-manual.categoryOptions.anime": "Anime",
+  "modals.search-manual.categoryOptions.movies": "Movie",
+  "modals.search-manual.categoryOptions.tv": "TV Show",
+  "modals.search-manual.search": "Search a Source",
+  "modals.search-source.manual": "Search Sources Manually",
+  "open-button.more": "Sources List",
+  "pages.cloud-account.list.allDebrid.explain": "All Debrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
+  "pages.cloud-account.list.allDebrid.noAccount": "No All Debrid account? Click here",
+  "pages.cloud-account.list.easynews.explain": "Easynews - Your Ultimate Internet Security and Usenet Solution",
+  "pages.cloud-account.list.easynews.noAccount": "No Easynews account? Click here",
+  "pages.cloud-account.list.login": "Login",
+  "pages.cloud-account.list.logout": "Logout",
+  "pages.cloud-account.list.premiumize.explain": "Premiumize.me is an unrestricted downloader (and more) that allows you to quickly download files hosted on the internet.<br><br>Moreover Premiumize let you test their service for free (you can play one file with a maximum filesize of 5 GB every 120 minutes)",
+  "pages.cloud-account.list.premiumize.noAccount": "No Premiumize account? Click here",
+  "pages.cloud-account.list.premiumize.preferTranscoded": "Prefer transcoded files",
+  "pages.cloud-account.list.premiumize.preferTranscodedFilesChromecast": "Prefer transcoded files for Chromecast",
+  "pages.cloud-account.list.realDebrid.explain": "RealDebrid is an unrestricted downloader that allows you to quickly download files hosted on the internet",
+  "pages.cloud-account.list.realDebrid.noAccount": "No RealDebrid account? Click here",
+  "pages.cloud-account.list.title": "Debrid accounts",
+  "pages.cloud-account.list.torbox.explain": "Torbox is a cloud-based torrent downloader and streaming service that allows you to quickly access and stream content",
+  "pages.cloud-account.list.torbox.noAccount": "No Torbox account? Click here",
+  "pages.providers.enabledSource.header": "Enabled Source",
+  "pages.providers.enabledSource.howItWorks": "For performance reason, it's recommended to only enable the best quality you prefer. If less than 20 sources are found for this quality, then the lower quality will be used until the lowest quality is reach",
+  "pages.providers.list.addProvider": "Add providers",
+  "pages.providers.list.header": "Setup",
+  "pages.providers.list.noUrl": "Click here to add one",
+  "pages.providers.list.providerSimultaneousHeader": "Speed",
+  "pages.providers.list.providerSimultaneousLabel": "Number of providers to run in parallel. 0 for unlimited. On some phones too many parallel providers can crash helios.",
+  "pages.providers.list.providersUrl": "Providers URLs",
+  "pages.providers.providerList.header": "Providers",
+  "pages.providers.title": "Providers",
+  "pages.settings.list.actions.header": "Reorder/Toggle Actions",
+  "pages.settings.list.cloud-account.header": "Cloud accounts",
+  "pages.settings.list.cloud-account.item": "Configure Cloud Accounts",
+  "pages.settings.list.fileSizeFilter.enabled": "Enabled",
+  "pages.settings.list.fileSizeFilter.header": "File Size Filter",
+  "pages.settings.list.fileSizeFilter.maxSize": "Max size (in GB) - Set to 0 to disable it",
+  "pages.settings.list.fileSizeFilter.minSize": "Min size (in GB)",
+  "pages.settings.list.fileSizeFilter.packageWarning": "Filter won't apply on package source",
+  "pages.settings.list.openRemoteList.header": "Remote",
+  "pages.settings.list.openRemoteList.item": "Open remote after clicking",
+  "pages.settings.list.play-button.header": "Default Play Action",
+  "pages.settings.list.play-button.item": "Play button default action",
+  "pages.settings.list.playlist.header": "Playlist",
+  "pages.settings.list.playlist.item": "Automatically seek for next episodes and create a playlist",
+  "pages.settings.list.provider.header": "Providers",
+  "pages.settings.list.provider.item": "Configure Providers",
+  "pages.settings.list.wizard.header": "Setup wizard",
+  "pages.settings.list.wizard.item": "Run setup wizard",
+  "pages.support.list.header": "Support",
+  "pages.support.list.reddit": "Our official Reddit",
+  "pages.tuto.next": "Next",
+  "pages.tuto.prev": "Prev",
+  "pages.tuto.skip": "Skip",
+  "pages.tuto.slide2.description": "As said earlier, Helios relies on providers to find sources, so let's add some",
+  "pages.tuto.slide2.title": "Add some providers",
+  "pages.tuto.slide3.description": "Select the highest quality you want to play",
+  "pages.tuto.slide3.title": "Choose quality",
+  "pages.tuto.slide4.description": "If you want to play sources without any buffering issue, it's recommended to connect Helios to a debrid service",
+  "pages.tuto.slide4.title": "Debrid Account",
+  "pages.tuto.slide5.description": "Helios can play the source on different player, select your default player",
+  "pages.tuto.slide5.title": "Where to play?",
+  "pages.tuto.slide6.button": "Close",
+  "pages.tuto.slide6.description": "You're all done, if you want to change these settings, go into Wako > Settings > Addons > Helios > Settings page",
+  "pages.tuto.slide6.title": "All done",
+  "pages.tuto.slideDisclaimer.accept": "I have read and agree with this",
+  "pages.tuto.slideDisclaimer.description": "Helios is a FREE and open-source third-party add-on developed by the community.<br>It is a source finder, it scrapes third-party sites (called providers) that <strong>you have to provide</strong> and are <strong>publicly available</strong> on the internet.",
+  "pages.tuto.slideDisclaimer.disclaimer": "Helios does not host, upload or manage any of the content on these sites and Helios’s add-on, staff and/or developers have no control over the content on these third party sites provided by the end user. Helios claims no responsibility for copyright, legality, accuracy, compliance, decency or any other aspect of the content displayed. It is positively the responsibility of the end user to avoid any actions that may constitute a violation of national, federal or terrestrial laws applicable to them. <br/><br/>Helios doesn't come with any providers, you have to add them manually.<br/><br/>Helios is not developed nor endorsed by wako, for support create issue on its github or discuss with the community on reddit: https://www.reddit.com/r/Addons4Wako/",
+  "pages.tuto.slideDisclaimer.title": "About Helios",
+  "pages.tuto.slideDisclaimer.titleDisclaimer": "Disclaimer",
+  "pages.tuto.title": "Setup Wizard",
+  "shared.cancel": "Cancel",
+  "shared.clickToAddDebridAccount": "Click here to add a debrid service",
+  "shared.clickToAddProvider": "Click here to add some provider",
+  "shared.enabled": "Enabled",
+  "shared.noBestSource": "Helios didn't find the best source for you, please choose it manually",
+  "shared.noDebridAccountSet": "No Debrid Account",
+  "shared.noSourceFound": "No source found",
+  "source-list.manualFilter": "Search from results",
+  "source-list.noProviderSet": "No providers set",
+  "source-list.noProviderSetCategory": "No providers set for category: {{category}}",
+  "sources.addToQueue": "{{totalEpisode}} next episodes have been queued",
+  "sources.segments.debrid": "Streams",
+  "sources.segments.stats": "Stats",
+  "sources.segments.torrents": "Torrents",
+  "sources.statsInfo": "Note: Duplicated torrents are removed from the torrents list",
+  "toasts.all-debrid.invalidCredentials": "Invalid credentials: {{error}}",
+  "toasts.cloud-account.needToAddProviders": "You need to add some providers to enjoy debrid services.",
+  "toasts.copyToClipboard": "{{element}} has been copied to your clipboard",
+  "toasts.easynews.invalidCredentials": "Invalid Easynews credentials",
+  "toasts.elementumNotInstalled": "To use Elementum kodi add-on, you have to install it on kodi",
+  "toasts.kodi.hostUnreachable": "Ouch, your kodi host {{hostName}} is unreachable",
+  "toasts.kodi.noHost": "No host set for kodi",
+  "toasts.noStreamLinkFound": "No stream link found",
+  "toasts.open-source.addedToAD": "Source has been added to you AD account",
+  "toasts.open-source.addedToPM": "Source has been added to you PM account",
+  "toasts.open-source.addedToRD": "Source has been added to you RD account",
+  "toasts.open-source.addedToTorbox": "Source has been added to your Torbox account",
+  "toasts.open-source.cannotRetrieveUrl": "This source is unplayable, cannot retrieve its URL",
+  "toasts.open-source.failedToAddToAD": "Failed to add the source to your AD account: {{error}}",
+  "toasts.open-source.failedToAddToPM": "Failed to add the source to your PM account: {{error}}",
+  "toasts.open-source.failedToAddToRD": "Failed to add the source to your RD account: {{error}}",
+  "toasts.open-source.failedToAddToTorbox": "Failed to add the source to your Torbox account: {{error}}",
+  "toasts.open-source.permissionDenied": "Permission denied (account {{debridService}} locked)",
+  "toasts.open-source.sourceNotCached": "Failed to retrieved the video URL",
+  "toasts.playlist": "Playlist {{playlistName}} has been created/updated. It contains {{items}} items",
+  "toasts.premiumize.invalidApiKey": "The API Key is not valid",
+  "toasts.providers.providerUrlAdded": "Providers added",
+  "toasts.providers.providerUrlFailedToAdd": "Failed to add Providers, please check the given URL",
+  "toasts.providersUpdated": "Providers have been updated",
+  "toasts.real-debrid.failedToLogin": "Failed to login",
+  "toasts.startOpening": "Opening {{title}} on {{hostName}}",
+  "toasts.torbox.invalidCredentials": "Invalid credentials"
 }
