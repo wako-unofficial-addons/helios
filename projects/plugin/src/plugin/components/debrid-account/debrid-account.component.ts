@@ -118,6 +118,12 @@ export class DebridAccountComponent implements OnInit {
     });
   }
 
+  //
+  //
+  // PREMIUMIZE
+  //
+  //
+
   logoutPremiumize() {
     this.debridAccountService.deletePremiumizeSettings().then(() => {
       this.ngOnInit();
@@ -230,6 +236,12 @@ export class DebridAccountComponent implements OnInit {
     });
   }
 
+  //
+  //
+  // REAL DEBRID
+  //
+  //
+
   toggleEnabledRD(enabled: boolean) {
     this.debridAccountService.getRealDebridSettings().then((settings) => {
       if (!settings) {
@@ -321,6 +333,12 @@ export class DebridAccountComponent implements OnInit {
     BrowserService.open('http://real-debrid.com/?id=4105935');
   }
 
+  //
+  //
+  // ALL DEBRID
+  //
+  //
+
   toggleEnabledAD(enabled: any) {
     this.debridAccountService.getAllDebridSettings().then((settings) => {
       if (!settings) {
@@ -374,7 +392,13 @@ export class DebridAccountComponent implements OnInit {
               .pipe(finalize(() => (this.isLoadingAllDebrid = false)))
               .subscribe((res) => {
                 if (res.status === 'error') {
-                  this.toastService.simpleMessage('toasts.all-debrid.invalidCredentials');
+                  this.toastService.simpleMessage(
+                    'toasts.all-debrid.invalidCredentials',
+                    {
+                      error: res.error.message,
+                    },
+                    5000,
+                  );
                   return;
                 }
                 this.providerService.getAll(false).then((providers) => {
@@ -412,6 +436,12 @@ export class DebridAccountComponent implements OnInit {
   openAllDebrid() {
     BrowserService.open('https://alldebrid.com/?uid=2e70s&lang=en');
   }
+
+  //
+  //
+  // TORBOX
+  //
+  //
 
   toggleEnabledTorbox(enabled: boolean) {
     this.debridAccountService.getTorboxSettings().then((settings) => {
@@ -504,6 +534,12 @@ export class DebridAccountComponent implements OnInit {
   openTorbox() {
     BrowserService.open('https://torbox.app');
   }
+
+  //
+  //
+  // EASYNEWS
+  //
+  //
 
   async loginEasynews() {
     const alert = await this.alertController.create({

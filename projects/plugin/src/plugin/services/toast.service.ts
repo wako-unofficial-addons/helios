@@ -14,7 +14,6 @@ export class ToastService {
       this.toastCtrl
         .create({
           message: 'Helios: ' + message,
-          mode: 'ios',
           position: position as any,
           duration: duration,
         })

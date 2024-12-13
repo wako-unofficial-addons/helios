@@ -9,7 +9,7 @@
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-text [innerHTML]="'pages.debrid-account.list.premiumize.explain' | translate"> </ion-text>
+    <ion-text [innerHTML]="'pages.cloud-account.list.premiumize.explain' | translate"> </ion-text>
     <ion-list lines="full">
       @if (isPremiumizeLogged) {
         <ion-item class="ion-no-padding">
@@ -22,7 +22,7 @@
         <ion-item class="ion-no-padding">
           <ion-toggle [(ngModel)]="preferTranscoded" (ngModelChange)="togglePreferTranscoded($event)">
             <span class="ion-text-wrap">
-              {{ 'pages.debrid-account.list.premiumize.preferTranscoded' | translate }}
+              {{ 'pages.cloud-account.list.premiumize.preferTranscoded' | translate }}
             </span>
           </ion-toggle>
         </ion-item>
@@ -33,23 +33,23 @@
             [(ngModel)]="preferTranscodedFilesChromecast"
             (ngModelChange)="togglePreferTranscodedChromecast($event)"
           >
-            {{ 'pages.debrid-account.list.premiumize.preferTranscodedFilesChromecast' | translate }}</ion-toggle
+            {{ 'pages.cloud-account.list.premiumize.preferTranscodedFilesChromecast' | translate }}</ion-toggle
           >
         </ion-item>
       }
       @if (isPremiumizeLogged) {
         <ion-item class="ion-no-padding" button (click)="logoutPremiumize()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
+          <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isPremiumizeLogged) {
         <ion-item class="ion-no-padding" button (click)="loginPremiumize()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isPremiumizeLogged) {
         <ion-item class="ion-no-padding" button (click)="openPremiumize()">
-          <ion-label>{{ 'pages.debrid-account.list.premiumize.noAccount' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.premiumize.noAccount' | translate }}</ion-label>
         </ion-item>
       }
     </ion-list>
@@ -66,7 +66,7 @@
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-text [innerHTML]="'pages.debrid-account.list.torbox.explain' | translate"> </ion-text>
+    <ion-text [innerHTML]="'pages.cloud-account.list.torbox.explain' | translate"> </ion-text>
     <ion-list lines="full">
       @if (isTorboxLogged) {
         <ion-item class="ion-no-padding">
@@ -77,17 +77,17 @@
       }
       @if (isTorboxLogged) {
         <ion-item class="ion-no-padding" button (click)="logoutTorbox()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
+          <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isTorboxLogged) {
         <ion-item class="ion-no-padding" button (click)="loginTorbox()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isTorboxLogged) {
         <ion-item class="ion-no-padding" button (click)="openTorbox()">
-          <ion-label>{{ 'pages.debrid-account.list.torbox.noAccount' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.torbox.noAccount' | translate }}</ion-label>
         </ion-item>
       }
     </ion-list>
@@ -102,7 +102,7 @@
   </ion-card-header>
   <ion-card-content>
     <ion-text>
-      {{ 'pages.debrid-account.list.realDebrid.explain' | translate }}
+      {{ 'pages.cloud-account.list.realDebrid.explain' | translate }}
     </ion-text>
 
     <ion-list lines="full">
@@ -115,17 +115,17 @@
       }
       @if (isRealDebridLogged) {
         <ion-item class="ion-no-padding" button (click)="logoutRealDebrid()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
+          <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isRealDebridLogged) {
         <ion-item class="ion-no-padding" button (click)="loginRealDebrid()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isRealDebridLogged) {
         <ion-item class="ion-no-padding" button (click)="openRealDebrid()">
-          <ion-label>{{ 'pages.debrid-account.list.realDebrid.noAccount' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.realDebrid.noAccount' | translate }}</ion-label>
         </ion-item>
       }
     </ion-list>
@@ -142,7 +142,7 @@
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-text [innerHTML]="'pages.debrid-account.list.allDebrid.explain' | translate"> </ion-text>
+    <ion-text [innerHTML]="'pages.cloud-account.list.allDebrid.explain' | translate"> </ion-text>
     <ion-list lines="full">
       @if (isAllDebridLogged) {
         <ion-item class="ion-no-padding">
@@ -153,17 +153,17 @@
       }
       @if (isAllDebridLogged) {
         <ion-item class="ion-no-padding" button (click)="logoutAllDebrid()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
+          <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isAllDebridLogged) {
         <ion-item class="ion-no-padding" button (click)="loginAllDebrid()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isAllDebridLogged) {
         <ion-item class="ion-no-padding" button (click)="openAllDebrid()">
-          <ion-label>{{ 'pages.debrid-account.list.allDebrid.noAccount' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.allDebrid.noAccount' | translate }}</ion-label>
         </ion-item>
       }
     </ion-list>
@@ -180,7 +180,7 @@
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-text [innerHTML]="'pages.debrid-account.list.easynews.explain' | translate"> </ion-text>
+    <ion-text [innerHTML]="'pages.cloud-account.list.easynews.explain' | translate"> </ion-text>
     <ion-list lines="full">
       @if (isEasynewsLogged) {
         <ion-item class="ion-no-padding">
@@ -191,17 +191,17 @@
       }
       @if (isEasynewsLogged) {
         <ion-item class="ion-no-padding" button (click)="logoutEasynews()">
-          <ion-label color="danger">{{ 'pages.debrid-account.list.logout' | translate }}</ion-label>
+          <ion-label color="danger">{{ 'pages.cloud-account.list.logout' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isEasynewsLogged) {
         <ion-item class="ion-no-padding" button (click)="loginEasynews()">
-          <ion-label>{{ 'pages.debrid-account.list.login' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.login' | translate }}</ion-label>
         </ion-item>
       }
       @if (!isEasynewsLogged) {
         <ion-item class="ion-no-padding" button (click)="openEasynews()">
-          <ion-label>{{ 'pages.debrid-account.list.easynews.noAccount' | translate }}</ion-label>
+          <ion-label>{{ 'pages.cloud-account.list.easynews.noAccount' | translate }}</ion-label>
         </ion-item>
       }
     </ion-list>

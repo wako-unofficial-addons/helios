@@ -11,29 +11,25 @@ import { PluginLoaderFakeService } from './services/plugin-loader-fake.service';
 import { PluginLoaderService } from './services/plugin-loader.service';
 
 @NgModule({
-    declarations: [AppComponent],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        TranslateModule.forRoot(),
-        PluginModule,
-    ],
-    providers: [
-        {
-            provide: RouteReuseStrategy,
-            useClass: IonicRouteStrategy,
-        },
-        {
-            provide: PluginLoaderService,
-            useClass: PluginLoaderFakeService,
-        },
-        ...WakoProviders,
-        provideIonicAngular({
-            swipeBackEnabled: true,
-            backButtonText: '',
-            mode: 'md',
-        })
-    ],
-    bootstrap: [AppComponent],
+  declarations: [AppComponent],
+  imports: [BrowserModule, AppRoutingModule, TranslateModule.forRoot(), PluginModule],
+  providers: [
+    {
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy,
+    },
+    {
+      provide: PluginLoaderService,
+      useClass: PluginLoaderFakeService,
+    },
+    ...WakoProviders,
+    provideIonicAngular({
+      swipeBackEnabled: true,
+      backButtonText: '',
+      mode: 'md',
+      innerHTMLTemplatesEnabled: true,
+    }),
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

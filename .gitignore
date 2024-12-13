@@ -44,3 +44,5 @@ resources/ios/splash
 .gradle/
 android/.idea
 src/assets/plugins/*
+
+.env

@@ -1,243 +1,144 @@
 {
-  "pages": {
-    "tuto": {
-      "title": "Οδηγός εγκατάστασης",
-      "skip": "Παράλειψη",
-      "slide1": {
-        "title": "Τί είναι το Helios",
-        "description": "Το Helios είναι ένας ανιχνευτής πηγών, εξάγει δεδομένα από ιστοσελίδες τρίτων (που ονομάζονται πάροχοι) οι οποίες είναι <strong>δημοσίως προσβάσιμες</strong> στο διαδίκτυο",
-        "titleDisclaimer": "Αποποίηση ευθυνών",
-        "disclaimer": "Το Helios δεν φιλοξενεί, ανεβάζει ούτε διαχειρίζεται το οποιοδήποτε υλικό σε αυτές τις σελίδες και το πρόσθετο, οι συνεργάτες καί/ή δημιουργοί δεν εχουν έλεγχο πάνω στο υλικό αυτών τών σελίδων. Το Helios αποποιείται οποιασδήποτε ευθύνης περί πνευματικών δικαιωμάτων, νομιμότητας, ακρίβειας, συμβατότητας, ευπρέπειας ή άλλων χαρακτηριστικών του προβαλλόμενου περιεχομένου. Ο τελικός χρήστης είναι αποκλειστικά υπεύθυνος να αποφύγει οποιεσδήποτε παράνομες πράξεις σύμφωνα με την εθνική ή παγκόσμια νομοθεσία. <br/><br/>Το Helios δεν αναπτύσσεται ούτε εγκρίνεται από τους δημιουργούς του wako, για υποστήριξη δημιουργήστε μια αναφορά προβλήματος στο Github ή μπείτε στη συζήτηση της κοινότητας στο Reddit: https://www.reddit.com/r/Addons4Wako/",
-        "accept": "Διάβασα τα παραπάνω και συμφωνώ"
-      },
-      "slide2": {
-        "title": "Προσθήκη παρόχων",
-        "description": "Όπως προαναφέρθηκε, το Helios απαιτεί παρόχους για την εξεύρεση πηγών, ας προσθέσουμε λοιπόν κάποιους"
-      },
-      "slide3": {
-        "title": "Επιλογή ποιότητας",
-        "description": "Επιλέξτε την μέγιστη ποιότητα που θέλετε να αναπαράγετε"
-      },
-      "slide4": {
-        "title": "Λογαριασμός Debrid",
-        "description": "Αν θέλετε να αναπαράγετε πηγές χωρίς κολλήματα, συνιστάται να συνδέσετε το Helios με μια υπηρεσία debrid"
-      },
-      "slide5": {
-        "title": "Επιλογή προγράμματος αναπαραγωγής",
-        "description": "Το Helios μπορεί να αναπαράγει τα μέσα των πηγών με διαφορά media players, επιλέξτε το προεπιλεγμένο"
-      },
-      "slide6": {
-        "title": "Είμαστε έτοιμοι",
-        "description": "Είστε έτοιμοι, αν επιθυμείτε να αλλάξετε αυτές τις ρυθμίσεις, μεταβείτε στο Wako > Ρυθμίσεις > Πρόσθετα > Helios > Ρυθμίσεις",
-        "button": "Κλείσιμο"
-      }
-    },
-    "settings": {
-      "list": {
-        "wizard": {
-          "header": "Οδηγός εγκατάστασης",
-          "item": "Εκκίνηση οδηγού εγκατάστασης"
-        },
-        "provider": {
-          "header": "Πάροχοι",
-          "item": "Διαμόρφωση παρόχων"
-        },
-        "debrid-account": {
-          "header": "Λογαριασμοί Debrid",
-          "item": "Διαμόρφωση λογαριασμών Debrid"
-        },
-        "play-button": {
-          "header": "Ενέργεια πλήκτρου αναπαραγωγής",
-          "item": "Προεπιλεγμένη ενέργεια του πλήκτρου αναπαραγωγής"
-        },
-        "actions": {
-          "header": "Αλλαγή σειράς και διακόπτες ενεργειών"
-        },
-        "openRemoteList": {
-          "header": "Τηλεχειριστήριο",
-          "item": "Άνοιγμα τηλεχειριστηρίου μετά την επιλογή"
-        },
-        "playlist": {
-          "header": "Λίστα αναπαραγωγής",
-          "item": "Αυτόματη αναζήτηση επόμενων επεισοδίων και δημιουργία λίστας αναπαραγωγής"
-        },
-        "fileSizeFilter": {
-          "header": "Φίλτρο μεγέθους αρχείου",
-          "enabled": "Ενεργό",
-          "packageWarning": "Το φίλτρο δεν θα εφαρμοστεί σε πηγή πακέτου",
-          "maxSize": "Μέγιστο μέγεθος (σε GB) - βάλτε την τιμή 0 για απενεργοποίηση",
-          "minSize": "Ελάχιστο μέγεθος (σε GB)"
-        }
-      }
-    },
-    "providers": {
-      "title": "Πάροχοι",
-      "list": {
-        "header": "Εγκατάσταση",
-        "providersUrl": "Διευθύνσεις URL παρόχων",
-        "noUrl": "Πιέστε εδώ για προσθήκη",
-        "addProvider": "Προσθήκη παρόχων"
-      },
-      "enabledSource": {
-        "header": "Ενεργοποιημένη πηγή",
-        "howItWorks": "Για λόγους λειτουργικότητας, συνιστάται να ενεργοποιήσετε μόνο την βέλτιστη ποιότητα που επιθυμείτε. Αν βρεθούν λιγότερες από 20 πηγές για αυτήν την ποιότητα, τότε θα χρησιμοποιηθεί η επόμενη κατώτερη κατεβαίνοντας έως την κατώτατη αν χρειαστεί"
-      },
-      "providerList": {
-        "header": "Πάροχοι"
-      }
-    },
-    "debrid-account": {
-      "list": {
-        "title": "Λογαριασμοί Debrid",
-        "logout": "Αποσύνδεση",
-        "login": "Σύνδεση",
-        "realDebrid": {
-          "explain": "Το Real-Debrid είναι μία υπηρεσία μεταφόρτωσης αρχείων χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε αρχεία στο διαδίκτυο με μεγάλες ταχύτητες",
-          "noAccount": "Δεν διαθέτετε λογαριασμό Real-Debrid; Πατήστε εδώ"
-        },
-        "allDebrid": {
-          "explain": "Το All Debrid είναι μία υπηρεσία μεταφόρτωσης αρχείων χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε αρχεία στο διαδίκτυο με μεγάλες ταχύτητες",
-          "noAccount": "Δεν διαθέτετε λογαριασμό All Debrid; Πατήστε εδώ"
-        },
-        "premiumize": {
-          "explain": "Το Premiumize.me είναι μία υπηρεσία μεταφόρτωσης αρχείων χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε αρχεία στο διαδίκτυο με μεγάλες ταχύτητες.<br><br>Διαθέτει δωρεάν συνδρομή για δοκιμή (με όριο το ένα αρχείο μεγίστου μέγεθος 5 GB κάθε 120 λεπτά)",
-          "preferTranscoded": "Προτίμηση διακωδικοποιημένων αρχείων",
-          "preferTranscodedFilesChromecast": "Προτίμηση διακωδικοποιημένων αρχείων για το Chromecast",
-          "noAccount": "Δεν διαθέτετε λογαριασμό Premiumize; Πατήστε εδώ"
-        },
-        "torbox": {
-          "explain": "Το Torbox είναι μια υπηρεσία λήψης και streaming torrent που βασίζεται στο cloud και σας επιτρέπει να έχετε γρήγορη πρόσβαση και streaming περιεχομένου",
-          "noAccount": "Δεν έχετε λογαριασμό Torbox; Κάντε κλικ εδώ"
-        }
-      }
-    },
-    "support": {
-      "list": {
-        "header": "Υποστήριξη",
-        "reddit": "Επίσημο Reddit"
-      }
-    }
-  },
-  "toasts": {
-    "kodi": {
-      "hostUnreachable": "Ο εξυπηρετητής Kodi {{hostName}} δεν είναι διαθέσιμος",
-      "noHost": "Δεν έχει καταχωρηθεί εξυπηρετητής Kodi"
-    },
-    "startOpening": "Άνοιγμα του {{title}} στο {{hostName}}",
-    "providersUpdated": "Οι πάροχοι ενημερωθηκαν",
-    "providers": {
-      "providerUrlAdded": "Οι πάροχοι προστέθηκαν",
-      "providerUrlFailedToAdd": "Αδυναμία προσθήκης παρόχων, παρακαλώ ελέγξτε την διεύθυνση URL"
-    },
-    "cloud-account": {
-      "needToAddProviders": "Απαιτείται προσθήκη παροχών για να απολαύσετε τις υπηρεσίες debrid."
-    },
-    "premiumize": {
-      "invalidApiKey": "Το κλειδί API δεν είναι έγκυρο"
-    },
-    "real-debrid": {
-      "failedToLogin": "Αδυναμία σύνδεσης"
-    },
-    "all-debrid": {
-      "invalidCredentials": "Λανθασμένα στοιχεία χρήστη"
-    },
-    "copyToClipboard": "Το στοιχείο {{element}} αντιγράφηκε στο πρόχειρο",
-    "open-source": {
-      "cannotRetrieveUrl": "Αυτή η πηγή δεν μπορεί να αναπαραχθεί, αδυναμία λήψης της διεύθυνσης URL",
-      "addedToPM": "Η πηγή προστέθηκε στο λογαριασμό PM σας",
-      "failedToAddToPM": "Η προσθήκη της πηγής στο λογαριασμό PM σας απέτυχε: {{error}}",
-      "addedToRD": "Η πηγή προστέθηκε στο λογαριασμό RD σας",
-      "failedToAddToRD": "Η προσθήκη της πηγής στο λογαριασμό RD σας απέτυχε: {{error}}",
-      "addedToAD": "Η πηγή προστέθηκε στο λογαριασμό AD σας",
-      "failedToAddToAD": "Η προσθήκη της πηγής στο λογαριασμό AD σας απέτυχε: {{error}}",
-      "sourceNotCached": "Αποτυχία λήψης της διεύθυνσης URL του βίντεο",
-      "permissionDenied": "{{debridService}} - Η άδεια απορρίφθηκε - Παρακαλώ ελέγξτε το λογαριασμό σας",
-      "addedToTorbox": "Η πηγή προστέθηκε στον λογαριασμό σας Torbox",
-      "failedToAddToTorbox": "Αποτυχία προσθήκης της πηγής στον λογαριασμό σας Torbox: {{error}}"
-    },
-    "elementumNotInstalled": "Για να χρησιμοποιήσετε το πρόσθετο Elementum του Kodi, πρέπει να είναι εγκατεστημένο",
-    "playlist": "Η λίστα {{playlistName}} δημιουργήθηκε/ενημερώθηκε. Περιέχει {{items}} στοιχεία"
-  },
-  "actionSheets": {
-    "open-source": {
-      "openTitle": "Επιλέξτε μία ενέργεια",
-      "options": {
-        "open-kodi": "Αναπαραγωγή με Kodi",
-        "open-browser": "Αναπαραγωγή στο πρόγραμμα περιήγησης ιστού",
-        "copy-url": "Αντιγραφή διεύθυνσης URL",
-        "share-url": "Κοινοποίηση διεύθυνσης URL",
-        "open-vlc": "Αναπαραγωγή με VLC",
-        "download-vlc": "Λήψη μέσω VLC",
-        "open-elementum": "Αναπαραγωγή στο Kodi με το Elementum",
-        "open-with": "Αναπαραγωγή με...",
-        "open-nplayer": "Αναπαραγωγή με nPlayer",
-        "open-infuse": "Αναπαραγωγή με Infuse",
-        "add-to-pm": "Προσθήκη στο Premiumize.me",
-        "add-to-rd": "Προσθήκη στο Real-Debrid",
-        "add-to-playlist": "Προσθήκη στη λίστα αναπαραγωγής του wako",
-        "add-to-ad": "Προσθήκη στο All Debrid",
-        "cast": "Chromecast",
-        "letMeChoose": "Χειροκίνητη επιλογή",
-        "wako-player": "Αναπαραγωγή στο Wako"
-      },
-      "selectLink": {
-        "openTitle": "Η πηγή έχει πολλαπλούς συνδέσμους, ποιόν θέλετε να ανοίξετε;"
-      }
-    },
-    "search-source": {
-      "selectTitle": "Επιλέξτε τίτλο"
-    }
-  },
-  "alerts": {
-    "cancelButton": "Ακύρωση",
-    "removeButton": "Αφαίρεση",
-    "removeAlert": "Είστε βέβαιοι ότι θέλετε να διαγράψετε τα παρακάτω;",
-    "cloud-account": {
-      "real-debrid": {
-        "authHeader": "Ταυτοποίηση Real-Debrid",
-        "enterCode": "Ανοίξτε τον σύνδεσμο: https://real-debrid.com/device<br><br>Εισάγετε τον παρακάτω κωδικό:",
-        "openUrlButton": "Άνοιγμα συνδέσμου"
-      }
-    }
-  },
-  "modals": {
-    "search-manual": {
-      "search": "Αναζήτηση πηγής",
-      "category": "Κατηγορία",
-      "categoryOptions": {
-        "movies": "Ταινία",
-        "tv": "Σειρά",
-        "anime": "Anime"
-      }
-    },
-    "search-source": {
-      "manual": "Χειροκίνητη αναζήτηση πηγών"
-    }
-  },
-  "source-list": {
-    "noProviderSet": "Δεν έχουν καταχωρηθεί πάροχοι",
-    "noProviderSetCategory": "Δεν έχουν καταχωρηθεί πάροχοι για την κατηγορία: {{category}}",
-    "manualFilter": "Αναζήτηση στα αποτελέσματα"
-  },
-  "open-button": {
-    "more": "Λίστα πηγών"
-  },
-  "sources": {
-    "segments": {
-      "debrid": "Ροές",
-      "torrents": "Torrents",
-      "stats": "Στατιστικά"
-    },
-    "statsInfo": "Υποσημείωση: Τα πολλαπλά ίδια torrents αφαιρούνται από την λίστα torrents",
-    "addToQueue": "Τα επόμενα {{totalEpisode}} επεισόδια μπήκαν στην ουρά αναπαραγωγής"
-  },
-  "shared": {
-    "noDebridAccountSet": "Δεν έχει καταχωρηθεί λογαριασμός Debrid",
-    "clickToAddDebridAccount": "Πατήστε εδώ για προσθήκη υπηρεσίας debrid",
-    "clickToAddProvider": "Πατήστε εδώ για να προσθέσετε κάποιον πάροχο",
-    "noSourceFound": "Δεν βρέθηκε καμμία πηγή",
-    "noBestSource": "Το Helios δεν εντόπισε την καλύτερη πηγή για εσάς, παρακαλώ διαλέξτε την χειροκίνητα",
-    "cancel": "Ακύρωση",
-    "enabled": "Ενεργό"
-  }
+  "actionSheets.open-source.openTitle": "Επιλέξτε μία ενέργεια",
+  "actionSheets.open-source.options.add-to-ad": "Προσθήκη στο All Debrid",
+  "actionSheets.open-source.options.add-to-playlist": "Προσθήκη στη λίστα αναπαραγωγής του wako",
+  "actionSheets.open-source.options.add-to-pm": "Προσθήκη στο Premiumize.me",
+  "actionSheets.open-source.options.add-to-rd": "Προσθήκη στο Real-Debrid",
+  "actionSheets.open-source.options.add-to-torbox": "Προσθήκη στο Torbox",
+  "actionSheets.open-source.options.cast": "Chromecast",
+  "actionSheets.open-source.options.copy-url": "Αντιγραφή διεύθυνσης URL",
+  "actionSheets.open-source.options.download-vlc": "Λήψη μέσω VLC",
+  "actionSheets.open-source.options.letMeChoose": "Χειροκίνητη επιλογή",
+  "actionSheets.open-source.options.open-browser": "Αναπαραγωγή στο πρόγραμμα περιήγησης ιστού",
+  "actionSheets.open-source.options.open-elementum": "Αναπαραγωγή στο Kodi με το Elementum",
+  "actionSheets.open-source.options.open-infuse": "Αναπαραγωγή με Infuse",
+  "actionSheets.open-source.options.open-kodi": "Αναπαραγωγή με Kodi",
+  "actionSheets.open-source.options.open-nplayer": "Αναπαραγωγή με nPlayer",
+  "actionSheets.open-source.options.open-outplayer": "Παίξτε στο Outplayer",
+  "actionSheets.open-source.options.open-vlc": "Αναπαραγωγή με VLC",
+  "actionSheets.open-source.options.open-with": "Αναπαραγωγή με...",
+  "actionSheets.open-source.options.share-url": "Κοινοποίηση διεύθυνσης URL",
+  "actionSheets.open-source.options.wako-player": "Αναπαραγωγή στο Wako",
+  "actionSheets.open-source.selectLink.openTitle": "Η πηγή έχει πολλαπλούς συνδέσμους, ποιόν θέλετε να ανοίξετε;",
+  "actionSheets.search-source.selectTitle": "Επιλέξτε τίτλο",
+  "alerts.cancelButton": "Ακύρωση",
+  "alerts.cloud-account.real-debrid.authHeader": "Ταυτοποίηση Real-Debrid",
+  "alerts.cloud-account.real-debrid.enterCode": "Ανοίξτε τον σύνδεσμο: https://real-debrid.com/device<br><br>Εισάγετε τον παρακάτω κωδικό:",
+  "alerts.cloud-account.real-debrid.openUrlButton": "Άνοιγμα συνδέσμου",
+  "alerts.removeAlert": "Είστε βέβαιοι ότι θέλετε να διαγράψετε τα παρακάτω;",
+  "alerts.removeButton": "Αφαίρεση",
+  "modals.search-manual.category": "Κατηγορία",
+  "modals.search-manual.categoryOptions.anime": "Anime",
+  "modals.search-manual.categoryOptions.movies": "Ταινία",
+  "modals.search-manual.categoryOptions.tv": "Σειρά",
+  "modals.search-manual.search": "Αναζήτηση πηγής",
+  "modals.search-source.manual": "Χειροκίνητη αναζήτηση πηγών",
+  "open-button.more": "Λίστα πηγών",
+  "pages.cloud-account.list.allDebrid.explain": "Το All Debrid είναι ένα πρόγραμμα λήψης χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε γρήγορα αρχεία που φιλοξενούνται στο διαδίκτυο.",
+  "pages.cloud-account.list.allDebrid.noAccount": "Δεν υπάρχει λογαριασμός All Debrid; Κάντε κλικ εδώ",
+  "pages.cloud-account.list.easynews.explain": "Easynews - Η απόλυτη λύση για την ασφάλεια στο Internet και το Usenet",
+  "pages.cloud-account.list.easynews.noAccount": "Δεν έχετε λογαριασμό Easynews; Κάντε κλικ εδώ",
+  "pages.cloud-account.list.login": "Σύνδεση",
+  "pages.cloud-account.list.logout": "Αποσύνδεση",
+  "pages.cloud-account.list.premiumize.explain": "Το Premiumize.me είναι ένας απεριόριστος downloader (και όχι μόνο) που σας επιτρέπει να κατεβάζετε γρήγορα αρχεία που φιλοξενούνται στο διαδίκτυο.<br><br>Επιπλέον, το Premiumize σας επιτρέπει να δοκιμάσετε την υπηρεσία του δωρεάν (μπορείτε να αναπαράγετε ένα αρχείο με μέγιστο μέγεθος αρχείου 5 GB κάθε 120 λεπτά).",
+  "pages.cloud-account.list.premiumize.noAccount": "Δεν έχετε λογαριασμό Premiumize; Κάντε κλικ εδώ",
+  "pages.cloud-account.list.premiumize.preferTranscoded": "Προτιμήστε μετακωδικοποιημένα αρχεία",
+  "pages.cloud-account.list.premiumize.preferTranscodedFilesChromecast": "Προτιμήστε μετακωδικοποιημένα αρχεία για Chromecast",
+  "pages.cloud-account.list.realDebrid.explain": "Το RealDebrid είναι ένα πρόγραμμα λήψης χωρίς περιορισμούς που σας επιτρέπει να κατεβάζετε γρήγορα αρχεία που φιλοξενούνται στο διαδίκτυο.",
+  "pages.cloud-account.list.realDebrid.noAccount": "Δεν έχετε λογαριασμό RealDebrid; Κάντε κλικ εδώ",
+  "pages.cloud-account.list.title": "Λογαριασμοί Debrid",
+  "pages.cloud-account.list.torbox.explain": "Το Torbox είναι μια υπηρεσία λήψης και ροής torrent που βασίζεται στο cloud και σας επιτρέπει να έχετε γρήγορη πρόσβαση και ροή περιεχομένου",
+  "pages.cloud-account.list.torbox.noAccount": "Δεν έχετε λογαριασμό στο Torbox; Κάντε κλικ εδώ",
+  "pages.providers.enabledSource.header": "Ενεργοποιημένη πηγή",
+  "pages.providers.enabledSource.howItWorks": "Για λόγους λειτουργικότητας, συνιστάται να ενεργοποιήσετε μόνο την βέλτιστη ποιότητα που επιθυμείτε. Αν βρεθούν λιγότερες από 20 πηγές για αυτήν την ποιότητα, τότε θα χρησιμοποιηθεί η επόμενη κατώτερη κατεβαίνοντας έως την κατώτατη αν χρειαστεί",
+  "pages.providers.list.addProvider": "Προσθήκη παρόχων",
+  "pages.providers.list.header": "Εγκατάσταση",
+  "pages.providers.list.noUrl": "Πιέστε εδώ για προσθήκη",
+  "pages.providers.list.providerSimultaneousHeader": "Ταχύτητα",
+  "pages.providers.list.providerSimultaneousLabel": "Αριθμός παρόχων για παράλληλη εκτέλεση. 0 για απεριόριστο. Σε ορισμένα τηλέφωνα, πάρα πολλοί παράλληλοι πάροχοι μπορεί να προκαλέσουν κατάρρευση του helios.",
+  "pages.providers.list.providersUrl": "Διευθύνσεις URL παρόχων",
+  "pages.providers.providerList.header": "Πάροχοι",
+  "pages.providers.title": "Πάροχοι",
+  "pages.settings.list.actions.header": "Αλλαγή σειράς και διακόπτες ενεργειών",
+  "pages.settings.list.cloud-account.header": "Λογαριασμοί Cloud",
+  "pages.settings.list.cloud-account.item": "Διαμόρφωση λογαριασμών Cloud",
+  "pages.settings.list.fileSizeFilter.enabled": "Ενεργό",
+  "pages.settings.list.fileSizeFilter.header": "Φίλτρο μεγέθους αρχείου",
+  "pages.settings.list.fileSizeFilter.maxSize": "Μέγιστο μέγεθος (σε GB) - βάλτε την τιμή 0 για απενεργοποίηση",
+  "pages.settings.list.fileSizeFilter.minSize": "Ελάχιστο μέγεθος (σε GB)",
+  "pages.settings.list.fileSizeFilter.packageWarning": "Το φίλτρο δεν θα εφαρμοστεί σε πηγή πακέτου",
+  "pages.settings.list.openRemoteList.header": "Τηλεχειριστήριο",
+  "pages.settings.list.openRemoteList.item": "Άνοιγμα τηλεχειριστηρίου μετά την επιλογή",
+  "pages.settings.list.play-button.header": "Ενέργεια πλήκτρου αναπαραγωγής",
+  "pages.settings.list.play-button.item": "Προεπιλεγμένη ενέργεια του πλήκτρου αναπαραγωγής",
+  "pages.settings.list.playlist.header": "Λίστα αναπαραγωγής",
+  "pages.settings.list.playlist.item": "Αυτόματη αναζήτηση επόμενων επεισοδίων και δημιουργία λίστας αναπαραγωγής",
+  "pages.settings.list.provider.header": "Πάροχοι",
+  "pages.settings.list.provider.item": "Διαμόρφωση παρόχων",
+  "pages.settings.list.wizard.header": "Οδηγός εγκατάστασης",
+  "pages.settings.list.wizard.item": "Εκκίνηση οδηγού εγκατάστασης",
+  "pages.support.list.header": "Υποστήριξη",
+  "pages.support.list.reddit": "Επίσημο Reddit",
+  "pages.tuto.next": "Επόμενο",
+  "pages.tuto.prev": "Προηγούμενο",
+  "pages.tuto.skip": "Παράλειψη",
+  "pages.tuto.slide2.description": "Όπως προαναφέρθηκε, το Helios απαιτεί παρόχους για την εξεύρεση πηγών, ας προσθέσουμε λοιπόν κάποιους",
+  "pages.tuto.slide2.title": "Προσθήκη παρόχων",
+  "pages.tuto.slide3.description": "Επιλέξτε την μέγιστη ποιότητα που θέλετε να αναπαράγετε",
+  "pages.tuto.slide3.title": "Επιλογή ποιότητας",
+  "pages.tuto.slide4.description": "Αν θέλετε να αναπαράγετε πηγές χωρίς κολλήματα, συνιστάται να συνδέσετε το Helios με μια υπηρεσία debrid",
+  "pages.tuto.slide4.title": "Λογαριασμός Debrid",
+  "pages.tuto.slide5.description": "Το Helios μπορεί να αναπαράγει τα μέσα των πηγών με διαφορά media players, επιλέξτε το προεπιλεγμένο",
+  "pages.tuto.slide5.title": "Επιλογή προγράμματος αναπαραγωγής",
+  "pages.tuto.slide6.button": "Κλείσιμο",
+  "pages.tuto.slide6.description": "Είστε έτοιμοι, αν επιθυμείτε να αλλάξετε αυτές τις ρυθμίσεις, μεταβείτε στο Wako > Ρυθμίσεις > Πρόσθετα > Helios > Ρυθμίσεις",
+  "pages.tuto.slide6.title": "Είμαστε έτοιμοι",
+  "pages.tuto.slideDisclaimer.accept": "Έχω διαβάσει και συμφωνώ με αυτό",
+  "pages.tuto.slideDisclaimer.description": "Το Helios είναι ένα ΔΩΡΕΑΝ και ανοικτού κώδικα πρόσθετο τρίτου μέρους που αναπτύχθηκε από την κοινότητα.<br>Είναι ένας ανιχνευτής πηγών, σαρώνει ιστότοπους τρίτων (που ονομάζονται πάροχοι) που <strong>πρέπει να παρέχετε</strong> και είναι <strong>δημόσια διαθέσιμοι</strong> στο διαδίκτυο.",
+  "pages.tuto.slideDisclaimer.disclaimer": "Η Helios δεν φιλοξενεί, μεταφορτώνει ή διαχειρίζεται οποιοδήποτε περιεχόμενο σε αυτές τις τοποθεσίες και το πρόσθετο, το προσωπικό ή/και οι προγραμματιστές της Helios δεν έχουν κανέναν έλεγχο επί του περιεχομένου σε αυτές τις τοποθεσίες τρίτων που παρέχονται από τον τελικό χρήστη. Η Helios δεν φέρει καμία ευθύνη για τα πνευματικά δικαιώματα, τη νομιμότητα, την ακρίβεια, τη συμμόρφωση, την ευπρέπεια ή οποιαδήποτε άλλη πτυχή του περιεχομένου που εμφανίζεται. Είναι θετικά ευθύνη του τελικού χρήστη να αποφεύγει οποιεσδήποτε ενέργειες που μπορεί να συνιστούν παραβίαση των εθνικών, ομοσπονδιακών ή επίγειων νόμων που ισχύουν γι' αυτόν. <br/><br/>ΤοHelios δεν συνοδεύεται από παρόχους, πρέπει να τους προσθέσετε χειροκίνητα.<br/><br/>ΤοHelios δεν έχει αναπτυχθεί ούτε υποστηρίζεται από την wako, για υποστήριξη δημιουργήστε θέμα στο github του ή συζητήστε με την κοινότητα στο reddit: https://www.reddit.com/r/Addons4Wako/",
+  "pages.tuto.slideDisclaimer.title": "Σχετικά με την Helios",
+  "pages.tuto.slideDisclaimer.titleDisclaimer": "Αποποίηση ευθύνης",
+  "pages.tuto.title": "Οδηγός εγκατάστασης",
+  "shared.cancel": "Ακύρωση",
+  "shared.clickToAddDebridAccount": "Πατήστε εδώ για προσθήκη υπηρεσίας debrid",
+  "shared.clickToAddProvider": "Πατήστε εδώ για να προσθέσετε κάποιον πάροχο",
+  "shared.enabled": "Ενεργό",
+  "shared.noBestSource": "Το Helios δεν εντόπισε την καλύτερη πηγή για εσάς, παρακαλώ διαλέξτε την χειροκίνητα",
+  "shared.noDebridAccountSet": "Δεν έχει καταχωρηθεί λογαριασμός Debrid",
+  "shared.noSourceFound": "Δεν βρέθηκε καμμία πηγή",
+  "source-list.manualFilter": "Αναζήτηση στα αποτελέσματα",
+  "source-list.noProviderSet": "Δεν έχουν καταχωρηθεί πάροχοι",
+  "source-list.noProviderSetCategory": "Δεν έχουν καταχωρηθεί πάροχοι για την κατηγορία: {{category}}",
+  "sources.addToQueue": "Τα επόμενα {{totalEpisode}} επεισόδια μπήκαν στην ουρά αναπαραγωγής",
+  "sources.segments.debrid": "Ροές",
+  "sources.segments.stats": "Στατιστικά",
+  "sources.segments.torrents": "Torrents",
+  "sources.statsInfo": "Υποσημείωση: Τα πολλαπλά ίδια torrents αφαιρούνται από την λίστα torrents",
+  "toasts.all-debrid.invalidCredentials": "Λανθασμένα στοιχεία χρήστη",
+  "toasts.cloud-account.needToAddProviders": "Απαιτείται προσθήκη παροχών για να απολαύσετε τις υπηρεσίες debrid.",
+  "toasts.copyToClipboard": "Το στοιχείο {{element}} αντιγράφηκε στο πρόχειρο",
+  "toasts.easynews.invalidCredentials": "Μη έγκυρα διαπιστευτήρια Easynews",
+  "toasts.elementumNotInstalled": "Για να χρησιμοποιήσετε το πρόσθετο Elementum του Kodi, πρέπει να είναι εγκατεστημένο",
+  "toasts.kodi.hostUnreachable": "Ο εξυπηρετητής Kodi {{hostName}} δεν είναι διαθέσιμος",
+  "toasts.kodi.noHost": "Δεν έχει καταχωρηθεί εξυπηρετητής Kodi",
+  "toasts.noStreamLinkFound": "Δεν βρέθηκε σύνδεσμος ροής",
+  "toasts.open-source.addedToAD": "Η πηγή προστέθηκε στο λογαριασμό AD σας",
+  "toasts.open-source.addedToPM": "Η πηγή προστέθηκε στο λογαριασμό PM σας",
+  "toasts.open-source.addedToRD": "Η πηγή προστέθηκε στο λογαριασμό RD σας",
+  "toasts.open-source.addedToTorbox": "Η πηγή προστέθηκε στον λογαριασμό σας Torbox",
+  "toasts.open-source.cannotRetrieveUrl": "Αυτή η πηγή δεν μπορεί να αναπαραχθεί, αδυναμία λήψης της διεύθυνσης URL",
+  "toasts.open-source.failedToAddToAD": "Η προσθήκη της πηγής στο λογαριασμό AD σας απέτυχε: {{error}}",
+  "toasts.open-source.failedToAddToPM": "Η προσθήκη της πηγής στο λογαριασμό PM σας απέτυχε: {{error}}",
+  "toasts.open-source.failedToAddToRD": "Η προσθήκη της πηγής στο λογαριασμό RD σας απέτυχε: {{error}}",
+  "toasts.open-source.failedToAddToTorbox": "Αποτυχία προσθήκης της πηγής στον λογαριασμό σας Torbox: {{error}}",
+  "toasts.open-source.permissionDenied": "{{debridService}} - Η άδεια απορρίφθηκε - Παρακαλώ ελέγξτε το λογαριασμό σας",
+  "toasts.open-source.sourceNotCached": "Αποτυχία λήψης της διεύθυνσης URL του βίντεο",
+  "toasts.playlist": "Η λίστα {{playlistName}} δημιουργήθηκε/ενημερώθηκε. Περιέχει {{items}} στοιχεία",
+  "toasts.premiumize.invalidApiKey": "Το κλειδί API δεν είναι έγκυρο",
+  "toasts.providers.providerUrlAdded": "Οι πάροχοι προστέθηκαν",
+  "toasts.providers.providerUrlFailedToAdd": "Αδυναμία προσθήκης παρόχων, παρακαλώ ελέγξτε την διεύθυνση URL",
+  "toasts.providersUpdated": "Οι πάροχοι ενημερωθηκαν",
+  "toasts.real-debrid.failedToLogin": "Αδυναμία σύνδεσης",
+  "toasts.startOpening": "Άνοιγμα του {{title}} στο {{hostName}}",
+  "toasts.torbox.invalidCredentials": "Μη έγκυρα διαπιστευτήρια"
 }
