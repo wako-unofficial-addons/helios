@@ -2,6 +2,7 @@ import { SourceQuality } from './source-quality';
 
 export class BaseSource {
   videoMetaData?: SourceVideoMetadata;
+  excludedReason?: string;
 
   constructor(
     public id: string,

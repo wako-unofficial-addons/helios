@@ -1,9 +1,8 @@
 import { WakoHttpError } from '@wako-app/mobile-sdk';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { Provider, testProviders } from '../../entities/provider';
+import { Provider, ProviderResponse, testProviders } from '../../entities/provider';
 import { SourceQuery } from '../../entities/source-query';
-import { TorrentSource } from '../../entities/torrent-source';
 import { TorrentSourceDetail } from '../../entities/torrent-source-detail';
 import { HeliosCacheService } from '../../services/provider-cache.service';
 import { logData } from '../../services/tools';
@@ -15,38 +14,38 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
   }
 
   private static getEpisodes(sourceQuery: SourceQuery, provider: Provider) {
-    let episodeTorrents: TorrentSource[] = [];
+    let episodeProviderResponses: ProviderResponse[] = [];
     // Get episodes
     return super.getTorrents(provider, sourceQuery, provider.episode).pipe(
-      switchMap((torrents) => {
-        episodeTorrents = episodeTorrents.concat(torrents);
+      switchMap((providerResponses) => {
+        episodeProviderResponses = episodeProviderResponses.concat(providerResponses);
         // Get season pack
         if (!provider.season) {
           return of([]);
         }
         return super.getTorrents(provider, sourceQuery, provider.season);
       }),
-      map((packTorrents) => {
-        return episodeTorrents.concat(packTorrents);
-      })
+      map((packProviderResponses) => {
+        return episodeProviderResponses.concat(packProviderResponses);
+      }),
     );
   }
 
   private static getAnimes(sourceQuery: SourceQuery, provider: Provider) {
-    let episodeTorrents: TorrentSource[] = [];
+    let episodeProviderResponses: ProviderResponse[] = [];
     // Get episodes
     return super.getTorrents(provider, sourceQuery, provider.anime).pipe(
-      switchMap((torrents) => {
-        episodeTorrents = episodeTorrents.concat(torrents);
+      switchMap((providerResponses) => {
+        episodeProviderResponses = episodeProviderResponses.concat(providerResponses);
         // Get season pack
         if (!provider.season) {
           return of([]);
         }
         return super.getTorrents(provider, sourceQuery, provider.season);
       }),
-      map((packTorrents) => {
-        return episodeTorrents.concat(packTorrents);
-      })
+      map((packProviderResponses) => {
+        return episodeProviderResponses.concat(packProviderResponses);
+      }),
     );
   }
 
@@ -63,7 +62,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
       return throwError(`Prodiver ${provider.name} doesn't handle category ${sourceQuery.category}`);
     }
 
-    const cacheKey = 'helios_' + provider.name + '_' + JSON.stringify(sourceQuery);
+    const cacheKey = 'helios_v1_' + provider.name + '_' + JSON.stringify(sourceQuery);
 
     return HeliosCacheService.get<TorrentSourceDetail>(cacheKey).pipe(
       switchMap((cache) => {
@@ -80,7 +79,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
           return of(cache);
         }
 
-        let obs: Observable<TorrentSource[]>;
+        let obs: Observable<ProviderResponse[]>;
 
         if (sourceQuery.category === 'movie') {
           obs = this.getMovies(sourceQuery, provider);
@@ -108,23 +107,45 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
             torrentSourceDetail.errorMessage = errorMessage;
             return of([]);
           }),
-          map((torrents) => {
+          map((providerResponses: ProviderResponse[]) => {
             const endTime = Date.now();
 
-            torrentSourceDetail.sources = torrents;
+            torrentSourceDetail.sources = providerResponses.flatMap((providerResponse) => {
+              return providerResponse.torrents;
+            });
+            torrentSourceDetail.providerResponses = providerResponses;
             torrentSourceDetail.timeElapsed = endTime - startTime;
+
+            const errorMessages = [];
+            for (const providerResponse of providerResponses) {
+              if (providerResponse.error != undefined) {
+                errorMessages.push(providerResponse.error);
+              }
+            }
+            if (errorMessages.length > 0) {
+              torrentSourceDetail.errorMessage = errorMessages.join('\n');
+            }
+
+            let allSkipped = false;
+            for (const providerResponse of providerResponses) {
+              if (providerResponse.skippedReason) {
+                allSkipped = true;
+              }
+            }
+
+            torrentSourceDetail.skipped = allSkipped;
 
             HeliosCacheService.set(cacheKey, torrentSourceDetail, '1h');
 
             return torrentSourceDetail;
-          })
+          }),
         );
       }),
       tap((torrentSourceDetail) => {
         logData(
-          `${torrentSourceDetail.provider} - ${torrentSourceDetail.sources.length} torrents found in ${torrentSourceDetail.timeElapsed} ms`
+          `${torrentSourceDetail.provider} - ${torrentSourceDetail.sources.length} torrents found in ${torrentSourceDetail.timeElapsed} ms`,
         );
-      })
+      }),
     );
   }
 }

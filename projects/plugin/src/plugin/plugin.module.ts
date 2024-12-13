@@ -42,6 +42,7 @@ import { CloudAccountListComponent } from './settings/cloud-account/cloud-accoun
 
 import { ProvidersComponent } from './settings/providers/providers.component';
 import { SettingsComponent } from './settings/settings.component';
+import { TorrentSourceDetailModalComponent } from './components/torrent-source-detail-modal/torrent-source-detail-modal.component';
 
 const components = [
   MovieButtonComponent,
@@ -66,6 +67,7 @@ const components = [
   FileSizeFilterComponent,
   DisclaimerComponent,
   SourcePopoverFilterComponent,
+  TorrentSourceDetailModalComponent,
 ];
 
 const directives = [HideKeyboardEnterDirective];

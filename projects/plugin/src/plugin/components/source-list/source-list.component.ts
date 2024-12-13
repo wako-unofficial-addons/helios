@@ -32,6 +32,7 @@ import {
   IonSpinner,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonButton,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { lastValueFrom, Subject, Subscription } from 'rxjs';
@@ -64,7 +65,9 @@ import { ProvidersComponent } from '../../settings/providers/providers.component
 import { DebridSourceItemComponent } from '../debrid-source-item/debrid-source-item.component';
 import { TorrentSourceItemComponent } from '../torrent-source-item/torrent-source-item.component';
 import { addIcons } from 'ionicons';
-import { removeCircleOutline, addOutline } from 'ionicons/icons';
+import { removeCircleOutline, addOutline, informationCircleOutline } from 'ionicons/icons';
+import { TorrentSourceDetail } from '../../entities/torrent-source-detail';
+import { TorrentSourceDetailModalComponent } from '../torrent-source-detail-modal/torrent-source-detail-modal.component';
 
 @Component({
   selector: 'wk-source-list',
@@ -99,6 +102,7 @@ import { removeCircleOutline, addOutline } from 'ionicons/icons';
     IonSpinner,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonButton,
   ],
 })
 export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
@@ -186,7 +190,7 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     private settingsService: SettingsService,
     private cdr: ChangeDetectorRef,
   ) {
-    addIcons({ removeCircleOutline, addOutline });
+    addIcons({ informationCircleOutline, removeCircleOutline, addOutline });
   }
 
   async ngOnInit() {
@@ -356,12 +360,14 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
         }
       });
 
-      sourceByProviders.torrentSourceDetail.sources.forEach((source) => {
-        if (!torrentIds.includes(source.id)) {
-          torrentIds.push(source.id);
-          torrentSources.push(source);
-        }
-      });
+      if (sourceByProviders.torrentSourceDetail) {
+        sourceByProviders.torrentSourceDetail.sources.forEach((source) => {
+          if (!torrentIds.includes(source.id)) {
+            torrentIds.push(source.id);
+            torrentSources.push(source);
+          }
+        });
+      }
     });
 
     streamLinkSources = removeDuplicates<StreamLinkSource>(streamLinkSources, 'id');
@@ -609,5 +615,16 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     this.visibleTorrentSources = [];
     this.loadMoreDebridSources();
     this.loadMoreTorrentSources();
+  }
+
+  async providerDetails(torrentSourceDetail: TorrentSourceDetail) {
+    const modal = await this.modalController.create({
+      component: TorrentSourceDetailModalComponent,
+      componentProps: {
+        sourceDetail: torrentSourceDetail,
+      },
+    });
+
+    await modal.present();
   }
 }

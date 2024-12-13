@@ -1,7 +1,7 @@
 import { replacer, WakoHttpError } from '@wako-app/mobile-sdk';
 import { concat, forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, last, map, mapTo, switchMap, tap } from 'rxjs/operators';
-import { Provider, ProviderQueryInfo, ProviderQueryReplacement } from '../../entities/provider';
+import { Provider, ProviderQueryInfo, ProviderQueryReplacement, ProviderResponse } from '../../entities/provider';
 import { SourceQuality } from '../../entities/source-quality';
 import { SourceQuery } from '../../entities/source-query';
 import { TorrentSource } from '../../entities/torrent-source';
@@ -44,11 +44,12 @@ export abstract class TorrentsFromProviderBaseQuery {
     provider: Provider,
     sourceQuery: SourceQuery,
     providerInfo: ProviderQueryInfo,
-  ): Observable<TorrentSource[]> {
+  ): Observable<ProviderResponse[]> {
     return this.getToken(provider).pipe(
       switchMap((token) => {
         return this._getTorrents(token, provider, sourceQuery, providerInfo).pipe(
           catchError((err) => {
+            debugger;
             if (err instanceof WakoHttpError && err.status > 0) {
               // Something goes wrong
               return throwError(err);
@@ -109,22 +110,22 @@ export abstract class TorrentsFromProviderBaseQuery {
     provider: Provider,
     sourceQuery: SourceQuery,
     providerInfo: ProviderQueryInfo,
-  ) {
+  ): Observable<ProviderResponse[]> {
     const keywords = typeof providerInfo.keywords === 'string' ? [providerInfo.keywords] : providerInfo.keywords;
 
     const torrentsObs = [];
 
     const providerUrls = [];
 
-    let allTorrents: TorrentSource[] = [];
+    const providerResponses: ProviderResponse[] = [];
 
-    keywords.forEach((_keywords) => {
+    keywords.forEach((keyword) => {
       const isPost = provider.http_method === 'POST';
 
-      const data = this.getProviderQueryReplacement(provider, sourceQuery, _keywords, token, isPost);
+      const data = this.getProviderQueryReplacement(provider, sourceQuery, keyword, token, isPost);
 
-      let query = replacer(_keywords, data.cleanedReplacement).trim();
-      const originalQuery = replacer(_keywords, data.rawReplacement).trim();
+      let query = replacer(keyword, data.cleanedReplacement).trim();
+      const originalQuery = replacer(keyword, data.rawReplacement).trim();
 
       if (provider.separator) {
         query = query.replace(/\s/g, provider.separator);
@@ -134,12 +135,23 @@ export abstract class TorrentsFromProviderBaseQuery {
 
       const replacerObj = Object.assign({ query: query }, data ? data.cleanedReplacement : {});
 
-      if (provider.base_url.match('imdbId') !== null || _keywords.match('imdbId') !== null) {
+      if (provider.base_url.match('imdbId') !== null || keyword.match('imdbId') !== null) {
         if (data && data.rawReplacement.imdbId === '') {
-          console.log('EMPTY QUERY');
+          const providerResponse = new ProviderResponse({
+            url: provider.base_url + providerInfo.query,
+            method: provider.http_method === 'POST' ? 'POST' : 'GET',
+            status: 0,
+            torrents: [],
+            timeElapsed: 0,
+            skippedReason: `Keyword: "${keyword}" not provided in the query - Skip`,
+          });
+
+          providerResponses.push(providerResponse);
+
           return;
         }
       }
+
       let providerBody = null;
 
       let providerUrl = provider.base_url;
@@ -158,20 +170,48 @@ export abstract class TorrentsFromProviderBaseQuery {
 
       providerUrls.push(providerUrl);
 
-      let torrents = [];
+      const providerResponse = new ProviderResponse({
+        url: providerUrl,
+        method: provider.http_method === 'POST' ? 'POST' : 'GET',
+        body: providerBody,
+        status: 0,
+        torrents: [],
+        timeElapsed: 0,
+      });
 
+      providerResponses.push(providerResponse);
+
+      const start = Date.now();
       torrentsObs.push(
         this.doProviderHttpRequest(providerUrl, provider, providerBody).pipe(
           catchError((err) => {
+            let errorMessage = '';
+            if (typeof err === 'string') {
+              errorMessage = err;
+            } else if (err instanceof WakoHttpError && err.status) {
+              errorMessage = err.status.toString();
+            } else if (err.message) {
+              errorMessage = err.message;
+            } else {
+              errorMessage = JSON.stringify(err);
+            }
+
             if (err instanceof WakoHttpError && err.status > 0) {
+              providerResponse.status = err.status;
+
               if (err.status && err.status === 404) {
                 return of([]);
               }
               console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
               return of([]);
             }
+            if (errorMessage === undefined) {
+              debugger;
+            }
+            providerResponse.error = errorMessage;
+            providerResponse.status = 500;
 
-            return throwError(err);
+            return of([]);
           }),
           map((response) => {
             if (!response) {
@@ -199,22 +239,20 @@ export abstract class TorrentsFromProviderBaseQuery {
             return this.getHashFromSubPages(_torrents);
           }),
           tap((_torrents) => {
-            torrents = torrents.concat(_torrents);
-            allTorrents = allTorrents.concat(torrents);
-            logData(`${provider.name} - Found ${torrents.length} torrents - URL: "${providerUrl}"`);
+            providerResponse.torrents = providerResponse.torrents.concat(_torrents);
+            providerResponse.timeElapsed = Date.now() - start;
+            logData(`${provider.name} - Found ${providerResponse.torrents.length} torrents - URL: "${providerUrl}"`);
           }),
         ),
       );
     });
 
-    if (torrentsObs.length === 0) {
-      return of([]);
-    }
+    const _obs = torrentsObs.length === 0 ? of([]) : concat(...torrentsObs);
 
-    return concat(...torrentsObs).pipe(
+    return _obs.pipe(
       last(),
       map(() => {
-        return allTorrents;
+        return providerResponses;
       }),
     );
   }

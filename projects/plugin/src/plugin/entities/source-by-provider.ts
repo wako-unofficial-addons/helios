@@ -3,7 +3,7 @@ import { StreamLinkSourceDetail } from './stream-link-source-detail';
 
 export interface SourceByProvider {
   provider: string;
-  torrentSourceDetail: TorrentSourceDetail;
+  torrentSourceDetail?: TorrentSourceDetail;
   cachedTorrentDetail: StreamLinkSourceDetail;
   timeElapsedTotal: number;
 }

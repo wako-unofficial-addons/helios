@@ -145,23 +145,38 @@
                       <ion-item lines="full">
                         <ion-label class="ion-text-wrap">
                           {{ sourceByProvider.provider }}
-                          @if (sourceByProvider.torrentSourceDetail.errorMessage) {
+                          @if (sourceByProvider.torrentSourceDetail?.errorMessage) {
                             <ion-text> Error: {{ sourceByProvider.torrentSourceDetail.errorMessage }}</ion-text>
                           }
                         </ion-label>
-                        <ion-note
-                          slot="end"
-                          [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
-                          >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
-                        >
-                        <ion-note
-                          slot="end"
-                          [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
-                          >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
-                          ms
-                        </ion-note>
-                        @if (sourceByProvider.torrentSourceDetail.errorMessage) {
-                          <ion-badge color="danger">Error</ion-badge>
+                        @if (sourceByProvider.torrentSourceDetail) {
+                          <ion-note
+                            slot="end"
+                            [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
+                            >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
+                          >
+                          <ion-note
+                            slot="end"
+                            [color]="sourceByProvider.torrentSourceDetail.timeElapsed < 5000 ? 'success' : 'warning'"
+                            >{{ sourceByProvider.torrentSourceDetail.timeElapsed }}
+                            ms
+                          </ion-note>
+
+                          @if (sourceByProvider.torrentSourceDetail.errorMessage) {
+                            <ion-badge color="danger">Error</ion-badge>
+                          }
+                          @if (sourceByProvider.torrentSourceDetail.skipped) {
+                            <ion-badge color="warning">Skipped</ion-badge>
+                          }
+
+                          <ion-button
+                            class="resume-button"
+                            color="transparent"
+                            slot="end"
+                            (click)="providerDetails(sourceByProvider.torrentSourceDetail)"
+                          >
+                            <ion-icon name="information-circle-outline"></ion-icon>
+                          </ion-button>
                         }
                       </ion-item>
                       <ion-item-options side="end">

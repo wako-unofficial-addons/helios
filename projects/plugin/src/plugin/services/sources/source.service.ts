@@ -41,12 +41,18 @@ export class SourceService {
         switchMap((sourceByProvider) => {
           return from(this.settingsService.get()).pipe(
             switchMap((settings) => {
+              SourcesFilterOnWantedQualityQuery.setExcludedReasonForHighestUnwantedQuality({
+                sources: sourceByProvider.cachedTorrentDetail.allSources,
+                qualities: settings.qualities,
+              });
+
               if (sourceQuery.movie || sourceQuery.episode) {
-                sourceByProvider.cachedTorrentDetail.sources =
-                  SourcesFilterOnWantedQualityQuery.getData<StreamLinkSource>(
-                    sourceByProvider.cachedTorrentDetail.sources,
-                    settings.qualities,
-                  );
+                const result = SourcesFilterOnWantedQualityQuery.getData<StreamLinkSource>({
+                  sources: sourceByProvider.cachedTorrentDetail.allSources,
+                  qualities: settings.qualities,
+                });
+                sourceByProvider.cachedTorrentDetail.sources = result.filteredSources;
+                sourceByProvider.cachedTorrentDetail.allSources = result.allSources;
               }
               return of(sourceByProvider);
             }),
@@ -59,10 +65,11 @@ export class SourceService {
         return from(this.settingsService.get()).pipe(
           switchMap((settings) => {
             if (sourceQuery.movie || sourceQuery.episode) {
-              torrentSourceDetail.sources = SourcesFilterOnWantedQualityQuery.getData<TorrentSource>(
-                torrentSourceDetail.sources,
-                settings.qualities,
-              );
+              const result = SourcesFilterOnWantedQualityQuery.getData<TorrentSource>({
+                sources: torrentSourceDetail.sources,
+                qualities: settings.qualities,
+              });
+              torrentSourceDetail.sources = result.filteredSources;
             }
 
             const startTime = Date.now();
@@ -346,16 +353,17 @@ export class SourceService {
         // Return a SourceByProvider
         const streamLinkSourceDetail = new StreamLinkSourceDetail();
         streamLinkSourceDetail.provider = EASYNEWS_PROVIDER_NAME;
+        streamLinkSourceDetail.allSources = data;
         streamLinkSourceDetail.sources = data;
         streamLinkSourceDetail.timeElapsed = timeElapsed;
 
         return {
           provider: EASYNEWS_PROVIDER_NAME,
-          torrentSourceDetail: {
-            provider: EASYNEWS_PROVIDER_NAME,
-            sources: [],
-            timeElapsed: timeElapsed,
-          },
+          // torrentSourceDetail: {
+          //   provider: EASYNEWS_PROVIDER_NAME,
+          //   sources: [],
+          //   timeElapsed: timeElapsed,
+          // },
           cachedTorrentDetail: streamLinkSourceDetail,
           timeElapsedTotal: timeElapsed,
         } as SourceByProvider;

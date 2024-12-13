@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ProviderService } from '../provider.service';
 import { SettingsService } from '../settings.service';
 import { from, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -9,12 +8,12 @@ import { Provider } from '../../entities/provider';
 import { SourceQuery } from '../../entities/source-query';
 import { TorrentsFromProviderQuery } from '../../queries/torrents/torrents-from-provider.query';
 import { LastPlayedSource } from '../../entities/last-played-source';
+import { SourcesFilterOnWantedQualityQuery } from '../../queries/sources-filter-on-wanted-quality.query';
+import { Settings } from '../../entities/settings';
 
 @Injectable()
 export class TorrentSourceService {
-  constructor(private providerService: ProviderService, private settingsService: SettingsService) {
-  }
-
+  constructor(private settingsService: SettingsService) {}
 
   getBestSource(torrents: TorrentSource[], lastPlayedSource?: LastPlayedSource) {
     const torrentQuality = getSourcesByQuality<TorrentSource>(torrents, sortTorrentsBalanced);
@@ -22,7 +21,7 @@ export class TorrentSourceService {
     if (lastPlayedSource) {
       let maxScore = 0;
       let source: TorrentSource;
-      torrents.forEach(t => {
+      torrents.forEach((t) => {
         const score = getScoreMatchingName(lastPlayedSource.title, t.title);
         if (score > maxScore) {
           source = t;
@@ -49,92 +48,75 @@ export class TorrentSourceService {
     return bestTorrent;
   }
 
-  private excludeUnwantedHighQuality(torrents: TorrentSource[]) {
-    return from(this.settingsService.get()).pipe(
-      map(settings => {
-        const excludeQualities = [];
-        let stop = false;
-        settings.qualities.forEach(quality => {
-          if (quality.enabled) {
-            stop = true;
-          }
-          if (!stop && !quality.enabled) {
-            excludeQualities.push(quality.quality);
-          }
-        });
+  private setExcludedReasonBySizeFilter({
+    sourceQuery,
+    torrents,
+    settings,
+  }: {
+    sourceQuery: SourceQuery;
+    torrents: TorrentSource[];
+    settings: Settings;
+  }) {
+    const filter = sourceQuery.category === 'movie' ? settings.fileSizeFilteringMovie : settings.fileSizeFilteringTv;
 
-        return torrents.filter(torrent => !excludeQualities.includes(torrent.quality));
-      })
-    );
-  }
+    if (filter.enabled === false) {
+      return torrents;
+    }
 
-  private applyFileSizeFilter(sourceQuery: SourceQuery, torrents: TorrentSource[]) {
-    return from(this.settingsService.get()).pipe(
-      map(settings => {
+    const maxSizeByte = filter.maxSize > 0 ? filter.maxSize * 1024 * 1024 * 1024 : 0;
+    const minSizeByte = filter.minSize > 0 ? filter.minSize * 1024 * 1024 * 1024 : 0;
 
-        const filter = sourceQuery.category === 'movie' ? settings.fileSizeFilteringMovie : settings.fileSizeFilteringTv;
+    return torrents.map((torrent) => {
+      if (torrent.size === null || torrent.size === 0 || torrent.isPackage) {
+        torrent.excludedReason = 'Size not available';
+        return torrent;
+      }
 
-        if (filter.enabled === false) {
-          return torrents;
-        }
+      let conditionValid = 0;
 
-        const maxSizeByte = filter.maxSize > 0 ? filter.maxSize * 1024 * 1024 * 1024 : 0;
-        const minSizeByte = filter.minSize > 0 ? filter.minSize * 1024 * 1024 * 1024 : 0;
+      if (minSizeByte === 0) {
+        conditionValid++;
+      }
 
+      if (maxSizeByte === 0) {
+        conditionValid++;
+      }
 
-        return torrents.filter(torrent => {
-          if (torrent.size === null || torrent.size === 0 || torrent.isPackage) {
-            // console.log('FILTERSIZE', 'exclude', torrent.title, 'cause', torrent.size);
-            return true;
-          }
+      if (minSizeByte > 0 && torrent.size >= minSizeByte) {
+        conditionValid++;
+      }
+      if (maxSizeByte > 0 && torrent.size <= maxSizeByte) {
+        conditionValid++;
+      }
 
-          let conditionValid = 0;
-
-          if (minSizeByte === 0) {
-            conditionValid++;
-          }
-
-          if (maxSizeByte === 0) {
-            conditionValid++;
-          }
-
-          if (minSizeByte > 0 && torrent.size >= minSizeByte) {
-            conditionValid++;
-          }
-          if (maxSizeByte > 0 && torrent.size <= maxSizeByte) {
-            conditionValid++;
-          }
-
-
-          if (conditionValid < 2) {
-            // console.log('FILTERSIZE', 'exclude', torrent.title, 'cause', torrent.size);
-          }
-          return conditionValid >= 2;
-
-        });
-      })
-    );
+      if (conditionValid < 2) {
+        torrent.excludedReason = `Size ${torrent.size} not in range ${minSizeByte} - ${maxSizeByte}`;
+      }
+      return torrent;
+    });
   }
 
   getByProvider(sourceQuery: SourceQuery, provider: Provider) {
-    return TorrentsFromProviderQuery.getData(sourceQuery, provider)
-      .pipe(
-        catchError(err => {
-          return throwError(err);
-        }),
-        switchMap(torrentSourceDetail => {
-          return this.excludeUnwantedHighQuality(torrentSourceDetail.sources)
-            .pipe(
-              switchMap(torrents => {
-                return this.applyFileSizeFilter(sourceQuery, torrents);
-              }),
-              map(torrents => {
-                torrentSourceDetail.sources = torrents;
-                return torrentSourceDetail;
-              })
-            );
-        })
-      );
+    return TorrentsFromProviderQuery.getData(sourceQuery, provider).pipe(
+      catchError((err) => {
+        return throwError(err);
+      }),
+      switchMap((torrentSourceDetail) => {
+        return from(this.settingsService.get()).pipe(
+          map((settings) => {
+            SourcesFilterOnWantedQualityQuery.setExcludedReasonForHighestUnwantedQuality({
+              sources: torrentSourceDetail.sources,
+              qualities: settings.qualities,
+            });
+
+            this.setExcludedReasonBySizeFilter({ sourceQuery, torrents: torrentSourceDetail.sources, settings });
+
+            torrentSourceDetail.sources = torrentSourceDetail.sources.filter((torrent) => !torrent.excludedReason);
+            return torrentSourceDetail;
+          }),
+        );
+      }),
+    );
   }
 
   private hasBestTorrent(torrents: TorrentSource[]) {

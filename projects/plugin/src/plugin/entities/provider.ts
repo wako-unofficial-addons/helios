@@ -1,3 +1,5 @@
+import { TorrentSource } from './torrent-source';
+
 export interface ProviderQueryInfo {
   query: string;
   keywords: string | string[];
@@ -95,3 +97,25 @@ export const fixProvider = (provider: Provider) => {
     provider.base_url = 'https://google.com';
   }
 };
+
+export class ProviderResponse {
+  url: string;
+  method: 'GET' | 'POST';
+  body?: any;
+  error?: string;
+  status: number;
+  torrents: TorrentSource[];
+  timeElapsed: number;
+  skippedReason?: string;
+
+  constructor({ url, method, body, error, status, torrents, timeElapsed, skippedReason }: ProviderResponse) {
+    this.url = url;
+    this.method = method;
+    this.body = body;
+    this.error = error;
+    this.status = status;
+    this.torrents = torrents;
+    this.timeElapsed = timeElapsed;
+    this.skippedReason = skippedReason;
+  }
+}
