@@ -64,6 +64,7 @@ import {
   incrementEpisodeCode,
 } from './tools';
 import { TorboxTransferCreateForm } from './torbox/forms/transfer/torbox-transfer-create.form';
+import { AD_ERR_CODE_NOT_CACHED } from '../queries/debrids/all-debrid/all-debrid-get-links.query';
 
 @Injectable()
 export class OpenSourceService {
@@ -175,10 +176,10 @@ export class OpenSourceService {
         this.toastService.simpleMessage(err, null, 4000);
       } else if (err && err.message) {
         this.toastService.simpleMessage(err.message, null, 4000);
-        if (
-          (err?.code === RD_ERR_CODE_NOT_FULLY_CACHED || err?.code === RD_ERR_CODE_NOT_CACHED) &&
-          streamLinkSource.originalUrl
-        ) {
+
+        const notCached = [RD_ERR_CODE_NOT_FULLY_CACHED, RD_ERR_CODE_NOT_CACHED, AD_ERR_CODE_NOT_CACHED];
+
+        if (notCached.includes(err?.code) && streamLinkSource.originalUrl) {
           const torrentSource: TorrentSource = {
             hash: streamLinkSource.originalHash,
             id: streamLinkSource.id,

@@ -5,6 +5,9 @@ import { from, of, throwError } from 'rxjs';
 import { AllDebridMagnetStatusForm } from '../../../services/all-debrid/forms/magnet/all-debrid-magnet-status.form';
 import { AllDebridMagnetStatusMagnetDto } from '../../../services/all-debrid/dtos/magnet/all-debrid-magnet-status.dto';
 
+export const AD_ERR_CODE_NOT_FULLY_CACHED = 100;
+export const AD_ERR_CODE_NOT_CACHED = 101;
+
 export class AllDebridGetLinksQuery {
   static getData(url: string, isPackage: boolean) {
     const cacheKey = 'setCachedLinksAD_' + url + isPackage;
@@ -36,7 +39,10 @@ export class AllDebridGetLinksQuery {
             magnetId = magnet.id;
 
             if (!magnet.ready) {
-              return throwError('All Debrid /magnet/upload - torrent is not ready yet');
+              return throwError(() => ({
+                code: AD_ERR_CODE_NOT_FULLY_CACHED,
+                message: 'All Debrid /magnet/upload - torrent is not ready yet',
+              }));
             }
 
             return AllDebridMagnetStatusForm.submit(magnet.id).pipe(
@@ -51,15 +57,18 @@ export class AllDebridGetLinksQuery {
                 }
 
                 if (magnetStatus.statusCode !== 4) {
-                  return throwError('All Debrid /magnet/status - torrent is not ready yet');
+                  return throwError(() => ({
+                    code: AD_ERR_CODE_NOT_FULLY_CACHED,
+                    message: 'All Debrid /magnet/status - torrent is not ready yet',
+                  }));
                 }
 
                 return from(HeliosCacheService.set(cacheKey, magnetStatus, '15min')).pipe(mapTo(magnetStatus));
-              })
+              }),
             );
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }
