@@ -4,6 +4,7 @@ import { EasynewsApiService } from './easynews-api.service';
 import { StreamLink, StreamLinkSource } from '../../../entities/stream-link-source';
 import { SourceQuery } from '../../../entities/source-query';
 import { SourceQuality } from '../../../entities/source-quality';
+import { SourceUtils } from '../../source-utils';
 
 interface EasynewsResponse {
   data: EasynewsFile[];
@@ -46,11 +47,18 @@ export class EasynewsSearchService {
             servicePlayerUrl: downloadUrl,
           };
 
+          const qualityFromTitle = SourceUtils.getQuality(file.fn);
+          const qualityFromResolution = this.getQualityFromResolution(file.yres);
+          let quality = qualityFromTitle;
+          if (quality === 'other') {
+            quality = qualityFromResolution;
+          }
+
           const source: StreamLinkSource = {
             id: file.hash,
             title: file.fn,
             size: file.size,
-            quality: this.getQualityFromResolution(file.yres),
+            quality,
             type: 'direct',
             provider: 'Easynews',
             debridService: 'EN',
