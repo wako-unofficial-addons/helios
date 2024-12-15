@@ -4,12 +4,11 @@ import { concat, EMPTY, from, of, throwError } from 'rxjs';
 import { catchError, last, map, switchMap } from 'rxjs/operators';
 import { Provider, ProviderList, testProviders } from '../entities/provider';
 import { HeliosCacheService } from './provider-cache.service';
-import { ToastService } from './toast.service';
 import { countryCodeToEmoji, logData } from './tools';
 import { DebridAccountService } from './debrid-account.service';
 
 const CACHE_KEY_PROVIDERS = 'CACHE_KEY_PROVIDERS';
-const CACHE_TIMEOUT_PROVIDERS = '1d';
+const CACHE_TIMEOUT_PROVIDERS = '5d';
 
 export const EASYNEWS_PROVIDER_NAME = '__easynews__';
 
@@ -29,7 +28,6 @@ export class ProviderService {
 
   constructor(
     private storage: WakoStorage,
-    private toastService: ToastService,
     private debridAccountService: DebridAccountService,
   ) {}
 
@@ -225,27 +223,6 @@ export class ProviderService {
     const oldProviders = await this.getProviders();
 
     if (oldProviders && isAutomatic) {
-      let areEquals = Object.keys(oldProviders).length === Object.keys(providers).length;
-
-      if (areEquals) {
-        Object.keys(oldProviders).forEach((key) => {
-          const _old = Object.assign({}, oldProviders[key]);
-          const _new = Object.assign({}, providers[key]);
-          _old.enabled = true;
-          _new.enabled = true;
-
-          if (JSON.stringify(_old) !== JSON.stringify(_new)) {
-            areEquals = false;
-          }
-        });
-      }
-
-      if (!areEquals) {
-        this.toastService.simpleMessage('toasts.providersUpdated');
-      } else {
-        console.log('no changes');
-      }
-
       Object.keys(oldProviders).forEach((key) => {
         if (providers.hasOwnProperty(key)) {
           providers[key].enabled = oldProviders[key].enabled === true;
