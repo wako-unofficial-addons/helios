@@ -88,7 +88,7 @@ export class SourcesFilterBySettingsQuery {
     settings: Settings;
   }) {
     const excludeQualities: SourceQuality[] = [];
-    settings.qualities.forEach((quality) => {
+    settings.qualityFiltering.forEach((quality) => {
       if (!quality.enabled) {
         excludeQualities.push(quality.quality);
       }
@@ -126,7 +126,6 @@ export class SourcesFilterBySettingsQuery {
 
     if (torrentSourceDetail) {
       torrentSourceDetail.sources = torrentSourceDetail.sources.filter((source) => !source.excludedReason);
-
       TorrentSourceDetail.setExcludedSources(torrentSourceDetail);
     }
 

@@ -138,11 +138,11 @@ export class Settings {
   availablePlayButtonActions: PlayButtonAction[] = [];
   availablePlayButtonActionsTv: PlayButtonAction[] = [];
 
-  qualities: SettingsQuality[] = [
+  qualityFiltering: SettingsQuality[] = [
     {
       quality: '2160p',
       displayName: '2160p/4k',
-      enabled: false,
+      enabled: true,
     },
     {
       quality: '1080p',
@@ -152,12 +152,12 @@ export class Settings {
     {
       quality: '720p',
       displayName: '720p',
-      enabled: false,
+      enabled: true,
     },
     {
       quality: 'other',
       displayName: 'Other',
-      enabled: false,
+      enabled: true,
     },
   ];
 

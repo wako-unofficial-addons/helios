@@ -110,11 +110,9 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
           map((providerResponses: ProviderResponse[]) => {
             const endTime = Date.now();
 
-            torrentSourceDetail.sources = providerResponses.flatMap((providerResponse) => {
-              return providerResponse.torrents;
-            });
-            torrentSourceDetail.providerResponses = providerResponses;
             torrentSourceDetail.timeElapsed = endTime - startTime;
+
+            torrentSourceDetail.providerResponses = providerResponses;
 
             const errorMessages = [];
             for (const providerResponse of providerResponses) {
@@ -126,20 +124,27 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
               torrentSourceDetail.errorMessage = errorMessages.join('\n');
             }
 
-            let allSkipped = false;
-            for (const providerResponse of providerResponses) {
-              if (providerResponse.skippedReason) {
-                allSkipped = true;
-              }
-            }
-
-            torrentSourceDetail.skipped = allSkipped;
-
             HeliosCacheService.set(cacheKey, torrentSourceDetail, '1h');
 
             return torrentSourceDetail;
           }),
         );
+      }),
+      map((torrentSourceDetail) => {
+        torrentSourceDetail.sources = torrentSourceDetail.providerResponses.flatMap((providerResponse) => {
+          return providerResponse.torrents;
+        });
+
+        let allSkipped = false;
+        for (const providerResponse of torrentSourceDetail.providerResponses) {
+          if (providerResponse.skippedReason) {
+            allSkipped = true;
+          }
+        }
+
+        torrentSourceDetail.skipped = allSkipped;
+
+        return torrentSourceDetail;
       }),
       tap((torrentSourceDetail) => {
         logData(

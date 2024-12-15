@@ -4,7 +4,7 @@
       <ion-label>{{ 'pages.providers.enabledQuality.header' | translate }}</ion-label>
     </ion-list-header>
 
-    @for (quality of settings.qualities; track quality) {
+    @for (quality of settings.qualityFiltering; track quality) {
       <ion-item>
         <ion-toggle [(ngModel)]="quality.enabled" (ngModelChange)="toggleSourceQuality()">
           {{ quality.displayName }}
