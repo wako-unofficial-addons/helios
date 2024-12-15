@@ -67,7 +67,7 @@ export class TorboxApiService extends ProviderHttpService {
         headers: headers,
       },
       cacheTime,
-      20000,
+      50000,
     );
   }
 }
