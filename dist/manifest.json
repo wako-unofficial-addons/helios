@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.4.4",
+  "version": "4.4.5",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a FREE and open-source third-party add-on developed by the community. It is a source finder, it scrapes third-party sites (called providers) that you have to provide and are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "ar": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/ar.json"
   },
   "changeLogs": {
+    "4.4.5": "Fix AllDebrid for iOS >= 17",
     "4.4.4": "Simplify how quality filter works: exclude unwanted qualities from the results",
     "4.4.2": "Fix EN quality. Don't trust EN quality value, use title instead.",
     "4.4.1": "- New modal in the stats page to find out the requests from each provider and the sources retrieved.<br>- Fix EN quality filter.<br>- Bug fixes",
