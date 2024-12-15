@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
-import { ProviderHttpService } from '../../provider-http.service';
+import { ApiServicesHttpService } from '../../api-service-http.service';
 
-export class AllDebridApiService extends ProviderHttpService {
+export class AllDebridApiService extends ApiServicesHttpService {
   private static apikey = null;
   private static appName = null;
 
@@ -23,7 +23,7 @@ export class AllDebridApiService extends ProviderHttpService {
 
   static getHeaders() {
     const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     };
 
     return headers;
@@ -54,9 +54,9 @@ export class AllDebridApiService extends ProviderHttpService {
         method: 'POST',
         url: this.getApiBaseUrl() + url,
         body: body,
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
       },
-      cacheTime
+      cacheTime,
     );
   }
 }
