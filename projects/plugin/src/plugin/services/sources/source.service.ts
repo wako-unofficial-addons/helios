@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, last, map, mapTo, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { catchError, filter, last, map, mapTo, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CachedTorrentSourceService } from './cached-torrent-source.service';
 import { TorrentSourceService } from './torrent-source.service';
 import { SourceQuery } from '../../entities/source-query';
@@ -11,7 +11,7 @@ import { SourceByProvider } from '../../entities/source-by-provider';
 import { EASYNEWS_PROVIDER_NAME, ProviderService } from '../provider.service';
 import { LastPlayedSource } from '../../entities/last-played-source';
 import { StreamLinkSource } from '../../entities/stream-link-source';
-import { SourcesFilterOnWantedQualityQuery } from '../../queries/sources-filter-on-wanted-quality.query';
+import { SourcesFilterBySettingsQuery } from '../../queries/sources-filter-by-settings.query';
 import { Settings } from '../../entities/settings';
 import { TorrentSource } from '../../entities/torrent-source';
 import { StreamLinkSourceDetail } from '../../entities/stream-link-source-detail';
@@ -21,6 +21,7 @@ import { SourceQueryFromKodiOpenMediaQuery } from '../../queries/source-query-fr
 import { incrementEpisodeCode } from '../tools';
 import { EasynewsSearchService } from '../easynews/services/easynews-search.service';
 import { DebridAccountService } from '../debrid-account.service';
+import { TorrentSourceDetail } from '../../entities/torrent-source-detail';
 
 const GET_LAST_MOVIE_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_movie2';
 const GET_LAST_SHOW_PLAYED_SOURCE_CACHE_KEY = 'helios_previousplayed_show2';
@@ -35,43 +36,43 @@ export class SourceService {
     private debridAccountService: DebridAccountService,
   ) {}
 
-  private getByProvider(sourceQuery: SourceQuery, provider: Provider) {
-    if (provider.name === EASYNEWS_PROVIDER_NAME) {
-      return this.easyNewsSearchIfEnabled(sourceQuery).pipe(
-        switchMap((sourceByProvider) => {
-          return from(this.settingsService.get()).pipe(
-            switchMap((settings) => {
-              SourcesFilterOnWantedQualityQuery.setExcludedReasonForHighestUnwantedQuality({
-                sources: sourceByProvider.cachedTorrentDetail.allSources,
-                qualities: settings.qualities,
+  private getByProvider(sourceQuery: SourceQuery, provider: Provider, applySettingsFilters = true) {
+    return from(this.settingsService.get()).pipe(
+      switchMap((settings) => {
+        if (provider.name === EASYNEWS_PROVIDER_NAME) {
+          return this.easyNewsSearchIfEnabled(sourceQuery).pipe(
+            map((sourceByProvider) => {
+              if (!applySettingsFilters) {
+                return sourceByProvider;
+              }
+
+              SourcesFilterBySettingsQuery.applySettingsFilters({
+                sourceQuery,
+                torrentSourceDetail: sourceByProvider.torrentSourceDetail,
+                streamLinkSourceDetail: sourceByProvider.cachedTorrentDetail,
+                settings,
               });
 
-              if (sourceQuery.movie || sourceQuery.episode) {
-                const result = SourcesFilterOnWantedQualityQuery.getData<StreamLinkSource>({
-                  sources: sourceByProvider.cachedTorrentDetail.allSources,
-                  qualities: settings.qualities,
-                });
-                sourceByProvider.cachedTorrentDetail.sources = result.filteredSources;
-                sourceByProvider.cachedTorrentDetail.allSources = result.allSources;
-              }
-              return of(sourceByProvider);
+              return sourceByProvider;
             }),
           );
-        }),
-      );
-    }
-    return this.torrentSourceService.getByProvider(sourceQuery, provider).pipe(
-      switchMap((torrentSourceDetail) => {
-        return from(this.settingsService.get()).pipe(
-          switchMap((settings) => {
-            if (sourceQuery.movie || sourceQuery.episode) {
-              const result = SourcesFilterOnWantedQualityQuery.getData<TorrentSource>({
-                sources: torrentSourceDetail.sources,
-                qualities: settings.qualities,
-              });
-              torrentSourceDetail.sources = result.filteredSources;
+        }
+
+        return this.torrentSourceService.getByProvider(sourceQuery, provider).pipe(
+          map((torrentSourceDetail) => {
+            if (!applySettingsFilters) {
+              return torrentSourceDetail;
             }
 
+            SourcesFilterBySettingsQuery.applySettingsFilters({
+              sourceQuery,
+              torrentSourceDetail: torrentSourceDetail,
+              settings,
+            });
+
+            return torrentSourceDetail;
+          }),
+          switchMap((torrentSourceDetail) => {
             const startTime = Date.now();
             return this.cachedTorrentSourceService.getFromTorrents(torrentSourceDetail.sources, sourceQuery).pipe(
               map((streamLinks) => {
@@ -371,26 +372,26 @@ export class SourceService {
     );
   }
 
-  getAll(sourceQuery: SourceQuery) {
+  getAll({ sourceQuery, applySettingsFilters = true }: { sourceQuery: SourceQuery; applySettingsFilters?: boolean }) {
     if (sourceQuery.query && sourceQuery.query.trim().length === 0) {
       return EMPTY;
     }
 
     let providers: Provider[];
 
-    return this.setEpisodeAbsoluteNumberIfAnime(sourceQuery).pipe(
-      switchMap(() => {
-        return from(this.providerService.getAll(true, sourceQuery.category));
-      }),
-      switchMap((d) => {
-        providers = d;
-        const obss: Observable<SourceByProvider>[] = [];
-        providers.forEach((provider) => {
-          obss.push(this.getByProvider(sourceQuery, provider));
-        });
+    return from(this.settingsService.get()).pipe(
+      switchMap((settings) => {
+        return this.setEpisodeAbsoluteNumberIfAnime(sourceQuery).pipe(
+          switchMap(() => {
+            return from(this.providerService.getAll(true, sourceQuery.category));
+          }),
+          switchMap((d) => {
+            providers = d;
+            const obss: Observable<SourceByProvider>[] = [];
+            providers.forEach((provider) => {
+              obss.push(this.getByProvider(sourceQuery, provider, applySettingsFilters));
+            });
 
-        return from(this.settingsService.get()).pipe(
-          switchMap((settings) => {
             if (settings.simultaneousProviderQueries === 0) {
               return merge(...obss);
             }

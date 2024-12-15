@@ -153,7 +153,15 @@
                           <ion-note
                             slot="end"
                             [color]="sourceByProvider.torrentSourceDetail.sources.length > 0 ? 'success' : 'danger'"
-                            >{{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
+                            >Inc. {{ sourceByProvider.torrentSourceDetail.sources.length }}</ion-note
+                          >
+
+                          <ion-note
+                            slot="end"
+                            [color]="
+                              sourceByProvider.torrentSourceDetail.excludedSources.length > 0 ? 'warning' : 'success'
+                            "
+                            >Exc. {{ sourceByProvider.torrentSourceDetail.excludedSources.length }}</ion-note
                           >
                           <ion-note
                             slot="end"

@@ -182,6 +182,9 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
   visibleDebridSources: Array<{ isHeader: boolean; quality?: string; source?: StreamLinkSource; count?: number }> = [];
   visibleTorrentSources: Array<{ isHeader: boolean; quality?: string; source?: TorrentSource; count?: number }> = [];
 
+  // Todo: We could show an alert if no sources are found but we have excluded sources.
+  applySettingsFilters = true;
+
   constructor(
     private sourceService: SourceService,
     private debridAccountService: DebridAccountService,
@@ -317,7 +320,10 @@ export class SourceListComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     this.sourceService
-      .getAll(this.sourceQuery)
+      .getAll({
+        sourceQuery: this.sourceQuery,
+        applySettingsFilters: this.applySettingsFilters,
+      })
       .pipe(
         takeUntil(this.stopSearch$),
         finalize(() => {

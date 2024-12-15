@@ -1,13 +1,9 @@
 @if (settings) {
   <ion-list>
     <ion-list-header>
-      <ion-label>{{ 'pages.providers.enabledSource.header' | translate }}</ion-label>
+      <ion-label>{{ 'pages.providers.enabledQuality.header' | translate }}</ion-label>
     </ion-list-header>
-    <ion-item>
-      <ion-label class="ion-text-wrap">
-        <em>{{ 'pages.providers.enabledSource.howItWorks' | translate }}</em>
-      </ion-label>
-    </ion-item>
+
     @for (quality of settings.qualities; track quality) {
       <ion-item>
         <ion-toggle [(ngModel)]="quality.enabled" (ngModelChange)="toggleSourceQuality()">

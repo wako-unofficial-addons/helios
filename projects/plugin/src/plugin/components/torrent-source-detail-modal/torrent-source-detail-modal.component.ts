@@ -35,7 +35,7 @@ import { FileSizePipe } from '../../services/file-size.pipe';
             <ion-col size="12" class="ion-text-left ion-no-margin ion-no-padding">
               <ion-label class="ion-text-wrap">
                 <h3>{{ torrent.title }}</h3>
-                <ion-text>{{ torrent.size | number }} MB</ion-text>
+                <ion-text>{{ torrent.size | bsFileSize }}</ion-text>
                 <br />
                 <ion-text>Seeds: {{ torrent.seeds }} | Peers: {{ torrent.peers }}</ion-text>
                 @if (torrent.excludedReason) {
@@ -111,13 +111,13 @@ import { FileSizePipe } from '../../services/file-size.pipe';
           <!-- Excluded Sources -->
           <ion-item button (click)="toggleSection('excluded')" detail="false">
             <ion-label>
-              {{ 'EXCLUDED_SOURCES' | translate }} ({{ getExcludedSources().length }})
+              {{ 'EXCLUDED_SOURCES' | translate }} ({{ sourceDetail.excludedSources.length }})
               <ion-icon [name]="isExpanded('excluded') ? 'chevron-down' : 'chevron-forward'" slot="end"></ion-icon>
             </ion-label>
           </ion-item>
           @if (isExpanded('excluded')) {
             <ion-list>
-              @for (source of getExcludedSources(); track source.hash) {
+              @for (source of sourceDetail.excludedSources; track source.hash) {
                 <ng-container *ngTemplateOutlet="torrentDetail; context: { $implicit: source }"></ng-container>
               }
             </ion-list>
@@ -252,29 +252,5 @@ export class TorrentSourceDetailModalComponent {
 
   dismiss() {
     this.modalCtrl.dismiss();
-  }
-
-  getExcludedSources(): any[] {
-    if (!this.sourceDetail) return [];
-
-    // Get all torrents from providerResponses
-    const allTorrents = this.sourceDetail.providerResponses.reduce(
-      (acc, response) => [...acc, ...response.torrents],
-      [],
-    );
-
-    // Create a Set of included source hashes for faster lookup
-    const includedHashes = new Set(this.sourceDetail.sources.map((source) => source.hash));
-
-    // Filter out sources that are not in sourceDetail.sources
-    // and remove duplicates using a Set of hashes
-    const seenHashes = new Set();
-    return allTorrents.filter((torrent) => {
-      if (!includedHashes.has(torrent.hash) && !seenHashes.has(torrent.hash)) {
-        seenHashes.add(torrent.hash);
-        return true;
-      }
-      return false;
-    });
   }
 }

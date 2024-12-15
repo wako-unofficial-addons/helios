@@ -62,7 +62,7 @@ export class TorrentsFromProviderQuery extends TorrentsFromProviderBaseQuery {
       return throwError(`Prodiver ${provider.name} doesn't handle category ${sourceQuery.category}`);
     }
 
-    const cacheKey = 'helios_v1_' + provider.name + '_' + JSON.stringify(sourceQuery);
+    const cacheKey = 'helios_v3_' + provider.name + '_' + JSON.stringify(sourceQuery);
 
     return HeliosCacheService.get<TorrentSourceDetail>(cacheKey).pipe(
       switchMap((cache) => {
