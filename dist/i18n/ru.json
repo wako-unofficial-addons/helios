@@ -25,6 +25,8 @@
   "alerts.cloud-account.real-debrid.authHeader": "Настоящий дебрид",
   "alerts.cloud-account.real-debrid.enterCode": "Откройте эту ссылку: https://real-debrid.com/device<br><br>Введите этот код:",
   "alerts.cloud-account.real-debrid.openUrlButton": "Откройте ссылку",
+  "alerts.confirmation": "Вы уверены?",
+  "alerts.providers.deleteConfirmation": "Вы уверены, что хотите удалить этого провайдера?",
   "alerts.removeAlert": "Вы уверены, что хотите удалить следующее?",
   "alerts.removeButton": "Удалить",
   "modals.search-manual.category": "Категория",
