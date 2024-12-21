@@ -25,6 +25,8 @@
   "alerts.cloud-account.real-debrid.authHeader": "Real Debridie Autor",
   "alerts.cloud-account.real-debrid.enterCode": "Öffnen Sie diesen Link: https://real-debrid.com/device<br><br>Geben Sie diesen Code ein:",
   "alerts.cloud-account.real-debrid.openUrlButton": "Öffnen Sie den Link",
+  "alerts.confirmation": "Sind Sie sicher?",
+  "alerts.providers.deleteConfirmation": "Sind Sie sicher, dass Sie diesen Anbieter löschen möchten?",
   "alerts.removeAlert": "Sind Sie sicher, dass Sie Folgendes löschen möchten?",
   "alerts.removeButton": "entfernen",
   "modals.search-manual.category": "Kategorie",

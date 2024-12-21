@@ -13,6 +13,10 @@ import {
   IonListHeader,
   IonSpinner,
   IonToggle,
+  IonButton,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -23,6 +27,7 @@ import { Settings } from '../../entities/settings';
 import { ProviderService } from '../../services/provider.service';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
+import { WakoGlobal } from '@wako-app/mobile-sdk';
 
 interface ProdviderArray {
   key: string;
@@ -36,6 +41,7 @@ interface ProdviderArray {
   styleUrls: ['./provider.component.scss'],
   standalone: true,
   imports: [
+    IonGrid,
     FormsModule,
     TranslateModule,
     IonList,
@@ -49,6 +55,9 @@ interface ProdviderArray {
     IonItemOptions,
     IonItemOption,
     IonToggle,
+    IonButton,
+    IonRow,
+    IonCol,
   ],
 })
 export class ProviderComponent implements OnInit {
@@ -63,6 +72,8 @@ export class ProviderComponent implements OnInit {
   isLoading = false;
 
   settings: Settings = null;
+
+  isTvLayout = false;
 
   constructor(
     private providerService: ProviderService,
@@ -83,6 +94,8 @@ export class ProviderComponent implements OnInit {
     this.providerArray = [];
 
     this.settings = await this.settingsService.get();
+
+    this.isTvLayout = WakoGlobal.isTvLayout;
 
     if (!this.providerList) {
       return;
@@ -166,13 +179,30 @@ export class ProviderComponent implements OnInit {
     this.providerService.setProviders(this.providerList);
   }
 
-  deleteProvider(url: string) {
-    this.isLoading = true;
-
-    this.providerService.deleteProviderUrl(url).subscribe(() => {
-      this.ngOnInit();
-      this.isLoading = false;
+  async deleteProvider(url: string) {
+    const alert = await this.alertController.create({
+      header: this.translateService.instant('alerts.confirmation'),
+      message: this.translateService.instant('alerts.providers.deleteConfirmation'),
+      buttons: [
+        {
+          text: this.translateService.instant('alerts.cancelButton'),
+          role: 'cancel',
+          cssClass: 'secondary',
+        },
+        {
+          text: this.translateService.instant('alerts.okButton'),
+          handler: () => {
+            this.isLoading = true;
+            this.providerService.deleteProviderUrl(url).subscribe(() => {
+              this.ngOnInit();
+              this.isLoading = false;
+            });
+          },
+        },
+      ],
     });
+
+    await alert.present();
   }
 
   async setSettings() {

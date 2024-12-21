@@ -30,16 +30,33 @@
     }
   </ion-list-header>
   @for (providerUrl of providersUrls; track providerUrl; let i = $index) {
-    <ion-item-sliding>
-      <ion-item button (click)="setUrl(i)">
-        {{ providerUrl }}
-      </ion-item>
-      <ion-item-options side="end">
-        <ion-item-option color="danger" (click)="deleteProvider(providerUrl)">
-          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
+    @if (isTvLayout) {
+      <ion-grid>
+        <ion-row>
+          <ion-col size="11">
+            <ion-item button (click)="setUrl(i)">
+              <ion-label>{{ providerUrl }}</ion-label>
+            </ion-item>
+          </ion-col>
+          <ion-col size="1">
+            <ion-button fill="clear" color="danger" (click)="deleteProvider(providerUrl)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    } @else {
+      <ion-item-sliding>
+        <ion-item button (click)="setUrl(i)">
+          {{ providerUrl }}
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="deleteProvider(providerUrl)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    }
   }
   <ion-item button (click)="setUrl()">
     {{ 'pages.providers.list.addProvider' | translate }}

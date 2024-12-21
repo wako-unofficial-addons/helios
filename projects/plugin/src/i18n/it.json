@@ -25,6 +25,8 @@
   "alerts.cloud-account.real-debrid.authHeader": "Autenticazione Real Debrid",
   "alerts.cloud-account.real-debrid.enterCode": "Apri questo link: https://real-debrid.com/device<br><br>Inserisci questo codice:",
   "alerts.cloud-account.real-debrid.openUrlButton": "Apri il link",
+  "alerts.confirmation": "Sei sicuro?",
+  "alerts.providers.deleteConfirmation": "Siete sicuri di voler cancellare questo provider?",
   "alerts.removeAlert": "Sei sicuro di voler eliminare quanto segue?",
   "alerts.removeButton": "Rimuovere",
   "modals.search-manual.category": "Categoria",
