@@ -592,6 +592,11 @@ export class OpenSourceService {
         class: '.outplayer',
         imgUrl: 'https://outplayer.app/images/logo.svg',
       },
+      {
+        class: '.vidhub',
+        imgUrl:
+          'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/10/42/73/104273e9-ff1e-e6f4-0ade-76985da05fa0/AppIcon-0-0-85-220-0-0-5-0-2x.png/460x0w.webp',
+      },
     ];
 
     data.forEach((d) => {
@@ -1356,6 +1361,13 @@ export class OpenSourceService {
           playVideo = true;
           break;
 
+        case 'open-vidhub':
+          this.openVidHub(
+            preferTranscodedFiles && streamLink.transcodedUrl ? streamLink.transcodedUrl : streamLink.url,
+          );
+          playVideo = true;
+          break;
+
         default:
           SourceQueryFromKodiOpenMediaQuery.getData(kodiOpenMedia).subscribe((sourceQuery) => {
             this.openStreamLinkSource(streamLinkSource, sourceQuery, kodiOpenMedia);
@@ -1623,6 +1635,13 @@ export class OpenSourceService {
             });
           };
           break;
+
+        case 'open-vidhub':
+          buttonOptions.cssClass = 'vidhub';
+          buttonOptions.handler = () => {
+            this.openVidHub(playlistVideo.url);
+          };
+          break;
       }
 
       buttons.push(buttonOptions);
@@ -1660,5 +1679,15 @@ export class OpenSourceService {
         this.clipboardService.copyFromContent(playlistVideo.url);
       }, 100);
     });
+  }
+
+  private async openVidHub(videoUrl: string) {
+    if (!this.platform.is('ios')) {
+      return;
+    }
+    // Encode the URL as per VidHub specs
+    const encodedUrl = encodeURIComponent(videoUrl);
+    const url = `open-vidhub://x-callback-url/open?url=${encodedUrl}`;
+    BrowserService.open(url, false);
   }
 }

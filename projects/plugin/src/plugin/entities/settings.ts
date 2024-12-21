@@ -1,5 +1,4 @@
 import { SourceQuality } from './source-quality';
-import { inject } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { WakoFileActionAndroid, WakoFileActionIos } from '@wako-app/mobile-sdk';
 
@@ -22,7 +21,8 @@ export declare type PlayButtonAction =
   | 'let-me-choose'
   | 'open-outplayer'
   | 'add-to-torbox'
-  | 'wako-player';
+  | 'wako-player'
+  | 'open-vidhub';
 
 export const PlayButtonActionIos: PlayButtonAction[] = [
   'open-elementum',
@@ -39,6 +39,7 @@ export const PlayButtonActionIos: PlayButtonAction[] = [
   'add-to-torbox',
   'add-to-playlist',
   'open-infuse',
+  'open-vidhub',
   'cast',
   'open-outplayer',
 ];
