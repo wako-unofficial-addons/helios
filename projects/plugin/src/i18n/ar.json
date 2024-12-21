@@ -26,6 +26,7 @@
   "alerts.cloud-account.real-debrid.enterCode": "افتح هذا الرابط : https://real-debrid.com/device<br><br>أدخل هذا الرمز :",
   "alerts.cloud-account.real-debrid.openUrlButton": "افتح هذا الرابط",
   "alerts.confirmation": "هل أنت متأكد؟",
+  "alerts.okButton": "حسناً",
   "alerts.providers.deleteConfirmation": "هل أنت متأكد من رغبتك في حذف هذا الموفر؟",
   "alerts.removeAlert": "هل أنت متأكّد أنّك تريد حذف ما يلي؟",
   "alerts.removeButton": "إزالة",

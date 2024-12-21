@@ -26,6 +26,7 @@
   "alerts.cloud-account.real-debrid.enterCode": "Abrir esta hiperligação: https://real-debrid.com/device<br><br> Introduzir este código:",
   "alerts.cloud-account.real-debrid.openUrlButton": "Abrir a ligação",
   "alerts.confirmation": "Tens a certeza?",
+  "alerts.okButton": "OK",
   "alerts.providers.deleteConfirmation": "Tem a certeza de que pretende eliminar este fornecedor?",
   "alerts.removeAlert": "Tem a certeza de que pretende apagar o seguinte?",
   "alerts.removeButton": "Remover",

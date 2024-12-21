@@ -26,6 +26,7 @@
   "alerts.cloud-account.real-debrid.enterCode": "Ανοίξτε τον σύνδεσμο: https://real-debrid.com/device<br><br>Εισάγετε τον παρακάτω κωδικό:",
   "alerts.cloud-account.real-debrid.openUrlButton": "Άνοιγμα συνδέσμου",
   "alerts.confirmation": "Είσαι σίγουρος;",
+  "alerts.okButton": "OK",
   "alerts.providers.deleteConfirmation": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτόν τον πάροχο;",
   "alerts.removeAlert": "Είστε βέβαιοι ότι θέλετε να διαγράψετε τα παρακάτω;",
   "alerts.removeButton": "Αφαίρεση",

@@ -26,6 +26,7 @@
   "alerts.cloud-account.real-debrid.enterCode": "Open this link: https://real-debrid.com/device<br><br>Enter this code:",
   "alerts.cloud-account.real-debrid.openUrlButton": "Open the link",
   "alerts.confirmation": "Are you sure?",
+  "alerts.okButton": "OK",
   "alerts.providers.deleteConfirmation": "Are you sure you want to delete this provider?",
   "alerts.removeAlert": "Are you sure you want to delete the following?",
   "alerts.removeButton": "Remove",
