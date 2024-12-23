@@ -1407,6 +1407,7 @@ export class OpenSourceService {
   private async resetPlaylistVideoUrls(playlistVideo: PlaylistVideo, showLoader = true) {
     let newUrl: string = undefined;
     const customData: PlaylistVideoHeliosCustomData = playlistVideo.customData;
+
     if (customData.sourceQuery && customData.torrentSource) {
       if (customData.type === 'torrent') {
         const url = this.getStreamUrlFromSource(customData.torrentSource, customData.sourceQuery);
@@ -1419,7 +1420,11 @@ export class OpenSourceService {
           this.cachedTorrentService.getFromTorrents([customData.torrentSource], customData.sourceQuery),
         );
 
-        const source = sources.pop();
+        let foundSourceFromeSameCachedService = sources.find(
+          (source) => source.debridService === customData.torrentSource.cachedService,
+        );
+        const source = foundSourceFromeSameCachedService ?? sources.pop();
+
         if (!source) {
           return newUrl;
         }
