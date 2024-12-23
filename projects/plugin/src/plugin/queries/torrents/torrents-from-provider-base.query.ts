@@ -49,7 +49,6 @@ export abstract class TorrentsFromProviderBaseQuery {
       switchMap((token) => {
         return this._getTorrents(token, provider, sourceQuery, providerInfo).pipe(
           catchError((err) => {
-            debugger;
             if (err instanceof WakoHttpError && err.status > 0) {
               // Something goes wrong
               return throwError(err);
@@ -205,9 +204,7 @@ export abstract class TorrentsFromProviderBaseQuery {
               console.error(`Error ${err.status} on ${provider.name} (${providerUrl}}`, err);
               return of([]);
             }
-            if (errorMessage === undefined) {
-              debugger;
-            }
+
             providerResponse.error = errorMessage;
             providerResponse.status = 500;
 
