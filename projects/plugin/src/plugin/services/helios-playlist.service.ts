@@ -91,10 +91,16 @@ export class HeliosPlaylistService {
 
   private itemsAreEqual(item1: PlaylistVideo, item2: PlaylistVideo) {
     if (item1.openMedia && item2.openMedia) {
-      return (
-        isSameId(item1.openMedia.showIds, item2.openMedia.showIds) ||
-        isSameId(item1.openMedia.movieIds, item2.openMedia.movieIds)
-      );
+      if (
+        item1.openMedia.showIds &&
+        isSameId(item1.openMedia.showIds, item2.openMedia.showIds) &&
+        item1.openMedia.seasonNumber === item2.openMedia.seasonNumber &&
+        item1.openMedia.episodeNumber === item2.openMedia.episodeNumber
+      ) {
+        return true;
+      } else if (item1.openMedia.movieIds && isSameId(item1.openMedia.movieIds, item2.openMedia.movieIds)) {
+        return true;
+      }
     }
     return item1.url === item2.url;
   }
@@ -105,6 +111,7 @@ export class HeliosPlaylistService {
       // update the item
       const index = playlist.items.findIndex((i) => this.itemsAreEqual(i, item));
       const oldItem = playlist.items[index];
+
       item.currentSeconds = oldItem.currentSeconds;
       playlist.items[index] = item;
     } else {
