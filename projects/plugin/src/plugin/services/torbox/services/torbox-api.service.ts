@@ -22,7 +22,7 @@ export class TorboxApiService extends ProviderHttpService {
 
   static getHeaders() {
     return {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: `Bearer ${this.apikey}`,
     };
   }
@@ -51,13 +51,18 @@ export class TorboxApiService extends ProviderHttpService {
     return super.get<T>(this.addParamsToUrl(url, params), null, cacheTime);
   }
 
-  static post<T>(url: string, body: object | FormData, cacheTime?: string) {
+  static post<T>(url: string, body: object, cacheTime?: string) {
     const headers = this.getHeaders();
 
-    // Si c'est un FormData, on retire le Content-Type pour laisser le navigateur le gérer
-    if (body instanceof FormData) {
-      headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    }
+    // if (body instanceof FormData) {
+    //   headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    //   // Convert FormData to object safely
+    //   const formDataObj = {};
+    //   body.forEach((value, key) => {
+    //     formDataObj[key] = value;
+    //   });
+    //   body = formDataObj;
+    // }
 
     return super.request<T>(
       {
