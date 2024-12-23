@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/@wako-app/mobile-sdk/dist/manifest-schema.json",
-  "version": "4.4.7",
+  "version": "4.4.8",
   "id": "plugin.helios",
   "name": "Helios",
   "description": "Helios is a FREE and open-source third-party add-on developed by the community. It is a source finder, it scrapes third-party sites (called providers) that you have to provide and are publicly available on the internet.",
@@ -15,6 +15,7 @@
     "ar": "https://raw.githubusercontent.com/wako-unofficial-addons/helios/master/dist/i18n/ar.json"
   },
   "changeLogs": {
+    "4.4.8": "Fix tv show playlist",
     "4.4.7": "Fix translation",
     "4.4.6": "VidHub support<br>Tv layout in providers",
     "4.4.5": "Fix AllDebrid for iOS >= 17",
