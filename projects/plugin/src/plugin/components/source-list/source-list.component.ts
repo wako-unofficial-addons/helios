@@ -73,7 +73,6 @@ import { TorrentSourceDetailModalComponent } from '../torrent-source-detail-moda
   selector: 'wk-source-list',
   templateUrl: './source-list.component.html',
   styleUrls: ['./source-list.component.scss'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HideKeyboardEnterDirective,

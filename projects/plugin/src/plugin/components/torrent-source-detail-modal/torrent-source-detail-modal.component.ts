@@ -193,7 +193,6 @@ import { FileSizePipe } from '../../services/file-size.pipe';
       }
     </ion-content>
   `,
-  standalone: true,
   imports: [
     CommonModule,
     TranslateModule,

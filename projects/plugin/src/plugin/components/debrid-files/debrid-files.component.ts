@@ -32,7 +32,6 @@ import { arrowBack, home, folderOpenOutline, documentOutline, play, trash } from
   selector: 'wk-debrid-files',
   templateUrl: './debrid-files.component.html',
   styleUrls: ['./debrid-files.component.scss'],
-  standalone: true,
   imports: [IonCard, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonList, IonItem, IonCardSubtitle],
 })
 export class DebridFilesComponent implements OnInit {

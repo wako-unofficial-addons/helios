@@ -15,7 +15,6 @@ import { SettingsService } from '../../services/settings.service';
 
 @Component({
   templateUrl: './source-popover-filter.component.html',
-  standalone: true,
   imports: [FormsModule, IonList, IonItem, IonLabel, IonToggle, IonRadioGroup, IonListHeader, IonRadio],
 })
 export class SourcePopoverFilterComponent implements OnInit {

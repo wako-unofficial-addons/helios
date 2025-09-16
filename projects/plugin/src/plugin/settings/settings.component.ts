@@ -27,7 +27,6 @@ import { settingsOutline, peopleOutline, wifiOutline, listOutline, funnelOutline
 @Component({
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  standalone: true,
   imports: [
     SupportComponent,
     FormsModule,

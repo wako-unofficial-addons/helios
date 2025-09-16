@@ -28,7 +28,6 @@ import { SupportComponent } from '../support/support.component';
   selector: 'app-tutorial',
   templateUrl: './setup-wizard.component.html',
   styleUrls: ['./setup-wizard.component.scss'],
-  standalone: true,
   imports: [
     ProviderComponent,
     QualityComponent,

@@ -23,7 +23,6 @@ import { funnelOutline } from 'ionicons/icons';
 @Component({
   selector: 'helios-plugin-detail',
   templateUrl: './plugin-detail.component.html',
-  standalone: true,
   imports: [
     HideKeyboardEnterDirective,
     FormsModule,

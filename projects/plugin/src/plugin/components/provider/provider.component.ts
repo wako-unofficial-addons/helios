@@ -39,7 +39,6 @@ interface ProdviderArray {
   selector: 'wk-providers',
   templateUrl: './provider.component.html',
   styleUrls: ['./provider.component.scss'],
-  standalone: true,
   imports: [
     IonGrid,
     FormsModule,

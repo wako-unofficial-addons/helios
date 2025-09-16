@@ -12,7 +12,6 @@ import { OpenSourceService } from '../../services/open-source.service';
   selector: 'wk-debrid-source-item',
   templateUrl: './debrid-source-item.component.html',
   styleUrls: ['./debrid-source-item.component.scss'],
-  standalone: true,
   imports: [FileSizePipe, IonRippleEffect, IonIcon, IonGrid, IonRow, IonCol, IonBadge],
 })
 export class DebridSourceItemComponent {

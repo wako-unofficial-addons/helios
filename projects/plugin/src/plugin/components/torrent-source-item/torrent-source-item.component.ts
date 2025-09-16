@@ -11,7 +11,6 @@ import { OpenSourceService } from '../../services/open-source.service';
   selector: 'wk-torrent-source-item',
   templateUrl: './torrent-source-item.component.html',
   styleUrls: ['./torrent-source-item.component.scss'],
-  standalone: true,
   imports: [FileSizePipe, IonRippleEffect, IonIcon, IonGrid, IonRow, IonCol, IonBadge],
 })
 export class TorrentSourceItemComponent {

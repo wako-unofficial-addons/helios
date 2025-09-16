@@ -9,7 +9,6 @@ import { IonList, IonListHeader, IonLabel, IonItem, IonToggle } from '@ionic/ang
   selector: 'wk-quality',
   templateUrl: './quality.component.html',
   styleUrls: ['./quality.component.scss'],
-  standalone: true,
   imports: [FormsModule, TranslateModule, IonList, IonListHeader, IonLabel, IonItem, IonToggle],
 })
 export class QualityComponent implements OnInit {

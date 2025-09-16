@@ -34,7 +34,6 @@ import { playOutline, listOutline } from 'ionicons/icons';
   selector: 'wk-open-button',
   templateUrl: './open-button.component.html',
   styleUrls: ['./open-button.component.scss'],
-  standalone: true,
   imports: [FileSizePipe, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonItemOption],
 })
 export class OpenButtonComponent implements OnInit {

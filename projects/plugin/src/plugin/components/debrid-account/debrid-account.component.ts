@@ -37,7 +37,6 @@ import { firstValueFrom } from 'rxjs';
   selector: 'wk-debrid-account',
   templateUrl: './debrid-account.component.html',
   styleUrls: ['./debrid-account.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     TranslateModule,

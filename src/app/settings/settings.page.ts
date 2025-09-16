@@ -18,7 +18,6 @@ import { AddonSettingsComponent } from './addon-settings/addon-settings.componen
   selector: 'app-tab2',
   templateUrl: 'settings.page.html',
   styleUrls: ['settings.page.scss'],
-  standalone: true,
   imports: [
     RouterLink,
     IonRouterLink,

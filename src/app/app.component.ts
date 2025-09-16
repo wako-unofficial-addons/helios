@@ -7,7 +7,6 @@ import { AppService } from './services/app.service';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  standalone: true,
   imports: [IonApp, IonRouterOutlet, IonApp, IonRouterOutlet, IonApp, IonRouterOutlet],
 })
 export class AppComponent {

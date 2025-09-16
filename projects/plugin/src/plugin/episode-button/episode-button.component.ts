@@ -3,10 +3,9 @@ import { Episode, EpisodeDetailBaseComponent, Show } from '@wako-app/mobile-sdk'
 import { OpenButtonComponent } from '../open-button/open-button.component';
 
 @Component({
-    templateUrl: './episode-button.component.html',
-    styleUrls: ['./episode-button.component.scss'],
-    standalone: true,
-    imports: [OpenButtonComponent]
+  templateUrl: './episode-button.component.html',
+  styleUrls: ['./episode-button.component.scss'],
+  imports: [OpenButtonComponent],
 })
 export class EpisodeButtonComponent extends EpisodeDetailBaseComponent {
   show: Show;

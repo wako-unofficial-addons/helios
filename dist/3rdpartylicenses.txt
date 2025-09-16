@@ -36,6 +36,8 @@ MIT
 
 @stencil/core/internal/app-data
 
+@stencil/core/internal/app-globals
+
 @stencil/core/internal/client
 
 ionicons
@@ -64,8 +66,6 @@ THE SOFTWARE.
 
 
 ionicons/components
-
-ionicons/icons
 
 ngx-clipboard
 MIT

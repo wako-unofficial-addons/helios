@@ -33,7 +33,6 @@ import {
   selector: 'app-tab1',
   templateUrl: 'filer.page.html',
   styleUrls: ['filer.page.scss'],
-  standalone: true,
   imports: [
     IonHeader,
     IonToolbar,

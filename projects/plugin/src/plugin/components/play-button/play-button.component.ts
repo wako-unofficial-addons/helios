@@ -19,7 +19,6 @@ import { playOutline } from 'ionicons/icons';
   selector: 'wk-play-button',
   templateUrl: './play-button.component.html',
   styleUrls: ['./play-button.component.scss'],
-  standalone: true,
   imports: [
     FormsModule,
     TranslateModule,

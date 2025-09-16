@@ -11,7 +11,6 @@ import { IonList, IonListHeader, IonLabel, IonIcon, IonItem, IonToggle, IonInput
   selector: 'wk-file-size-filter',
   templateUrl: './file-size-filter.component.html',
   styleUrls: ['./file-size-filter.component.scss'],
-  standalone: true,
   imports: [FormsModule, TranslateModule, IonList, IonListHeader, IonLabel, IonIcon, IonItem, IonToggle, IonInput],
 })
 export class FileSizeFilterComponent implements OnInit {

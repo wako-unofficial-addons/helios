@@ -26,7 +26,6 @@ import { WakoGlobal } from '@wako-app/mobile-sdk';
 
 @Component({
   templateUrl: './search-source.component.html',
-  standalone: true,
   imports: [
     SourceListComponent,
     PluginDetailComponent,

@@ -9,7 +9,6 @@ import { IonButton, IonList, IonListHeader, IonItem, IonLabel } from '@ionic/ang
   selector: 'app-playlist-list',
   templateUrl: './playlist-list.component.html',
   styleUrls: ['./playlist-list.component.scss'],
-  standalone: true,
   imports: [
     IonButton,
     IonList,
